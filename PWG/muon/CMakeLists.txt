@@ -47,10 +47,10 @@ set(SRCS
   AliAnalysisMuMuCutElement.cxx
   AliAnalysisMuMuCutRegistry.cxx
   AliAnalysisMuMuEventCutter.cxx
-  AliAnalysisMuMuFlow.cxx
   AliAnalysisMuMuGlobal.cxx
   AliAnalysisMuMuMCGene.cxx
   AliAnalysisMuMuMinv.cxx
+  AliAnalysisMuMuFlow.cxx
   AliAnalysisMuMuNch.cxx
   AliAnalysisMuMuSingle.cxx
   AliAnalysisMuonUtility.cxx

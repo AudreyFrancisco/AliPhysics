@@ -54,6 +54,9 @@ public:
   Bool_t IsPhysicsSelectedMUSPB(const AliInputEventHandler& eventHandler) const;
   void NameOfIsPhysicsSelectedMUSPB(TString& name) const { name="PSMUSPB"; }
 
+  Bool_t IsPhysicsSelectedMULorMLL(const AliInputEventHandler& eventHandler) const;
+  void NameOfIsPhysicsSelectedMULorMLL(TString& name) const { name="PSMULORMLL"; }
+
   Bool_t IsPhysicsSelectedMSL(const AliInputEventHandler& eventHandler) const;
   void NameOfIsPhysicsSelectedMSL(TString& name) const { name="PSMSL"; }
 
