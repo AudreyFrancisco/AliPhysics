@@ -35,6 +35,8 @@ include_directories(${ROOT_INCLUDE_DIRS}
                     ${AliPhysics_SOURCE_DIR}/EVENTMIX
                     ${AliPhysics_SOURCE_DIR}/OADB
                     ${AliPhysics_SOURCE_DIR}/OADB/COMMON/MULTIPLICITY
+                    ${AliPhysics_SOURCE_DIR}/PWGPP/EVCHAR/FlowVectorCorrections/QnCorrections
+                    ${AliPhysics_SOURCE_DIR}/PWGPP/EVCHAR/FlowVectorCorrections/QnCorrectionsInterface
   )
 
 # Sources - alphabetical order
@@ -46,6 +48,7 @@ set(SRCS
   AliAnalysisMuMuCutElement.cxx
   AliAnalysisMuMuCutRegistry.cxx
   AliAnalysisMuMuEventCutter.cxx
+  AliAnalysisMuMuFlow.cxx
   AliAnalysisMuMuGlobal.cxx
   AliAnalysisMuMuMCGene.cxx
   AliAnalysisMuMuMinv.cxx
