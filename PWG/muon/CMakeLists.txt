@@ -34,6 +34,8 @@ include_directories(${ROOT_INCLUDE_DIRS}
                     ${AliPhysics_SOURCE_DIR}/CORRFW
                     ${AliPhysics_SOURCE_DIR}/OADB
                     ${AliPhysics_SOURCE_DIR}/OADB/COMMON/MULTIPLICITY
+                    ${AliPhysics_SOURCE_DIR}/PWGPP/EVCHAR/FlowVectorCorrections/QnCorrections
+                    ${AliPhysics_SOURCE_DIR}/PWGPP/EVCHAR/FlowVectorCorrections/QnCorrectionsInterface
   )
 
 # Sources - alphabetical order
@@ -45,6 +47,7 @@ set(SRCS
   AliAnalysisMuMuCutElement.cxx
   AliAnalysisMuMuCutRegistry.cxx
   AliAnalysisMuMuEventCutter.cxx
+  AliAnalysisMuMuFlow.cxx
   AliAnalysisMuMuGlobal.cxx
   AliAnalysisMuMuMCGene.cxx
   AliAnalysisMuMuMinv.cxx
@@ -55,43 +58,43 @@ set(SRCS
   AliAnalysisNonPrimaryVertices.cxx
   AliAnalysisTaskAOD2MuonAOD.cxx
   AliAnalysisTaskAOD2MuonAOD.cxx
-  AliAnalysisTaskCreateMixedDimuons.cxx 
-  AliAnalysisTaskDimuonCFContainerBuilder.cxx 
-  AliAnalysisTaskESDMuonFilter.cxx 
-  AliAnalysisTaskFlowSingleMu.cxx 
+  AliAnalysisTaskCreateMixedDimuons.cxx
+  AliAnalysisTaskDimuonCFContainerBuilder.cxx
+  AliAnalysisTaskESDMuonFilter.cxx
+  AliAnalysisTaskFlowSingleMu.cxx
   AliAnalysisTaskFromStandardToMuonAOD.cxx
   AliAnalysisTaskGenTuner.cxx
-  AliAnalysisTaskLinkToMC.cxx 
+  AliAnalysisTaskLinkToMC.cxx
   AliAnalysisTaskLUT.cxx
   AliAnalysisTaskMTRResponse.cxx
   AliAnalysisTaskMuMu.cxx
-  AliAnalysisTaskMuMu.cxx 
-  AliAnalysisTaskMuonAODCreation.cxx 
-  AliAnalysisTaskMuonAODfromGeneral.cxx 
-  AliAnalysisTaskMuonCollisionMultiplicity.cxx 
-  AliAnalysisTaskMuonDistributions.cxx 
-  AliAnalysisTaskMuonTreeBuilder.cxx 
+  AliAnalysisTaskMuMu.cxx
+  AliAnalysisTaskMuonAODCreation.cxx
+  AliAnalysisTaskMuonAODfromGeneral.cxx
+  AliAnalysisTaskMuonCollisionMultiplicity.cxx
+  AliAnalysisTaskMuonDistributions.cxx
+  AliAnalysisTaskMuonTreeBuilder.cxx
   AliAnalysisTaskNorm.cxx
   AliAnalysisTaskOnTheFlyAliAODDimuon.cxx
   AliAnalysisTaskSEMuonsHF.cxx
-  AliAnalysisTaskSingleMu.cxx 
+  AliAnalysisTaskSingleMu.cxx
   AliAnalysisTaskSingleMuESD.cxx
   AliAODEventInfo.cxx
   AliAODMuonReplicator.cxx
-  AliCFMuonResTask1.cxx 
-  AliCFMuonResUpsilon.cxx 
-  AliCFMuonSingleTask1.cxx 
-  AliDimuInfoStoreMC.cxx 
-  AliDimuInfoStoreRD.cxx 
-  AliESDMuonTrackCuts.cxx 
-  AliEventPoolMuon.cxx 
+  AliCFMuonResTask1.cxx
+  AliCFMuonResUpsilon.cxx
+  AliCFMuonSingleTask1.cxx
+  AliDimuInfoStoreMC.cxx
+  AliDimuInfoStoreRD.cxx
+  AliESDMuonTrackCuts.cxx
+  AliEventPoolMuon.cxx
   AliHistogramCollection.cxx
   AliMTRParameterizedResponse.cxx
   AliMuonAnalysisOutput.cxx
   AliMuonEventCuts.cxx
-  AliMuonInfoStoreMC.cxx 
-  AliMuonInfoStoreRD.cxx 
-  AliMuonPairCuts.cxx 
+  AliMuonInfoStoreMC.cxx
+  AliMuonInfoStoreRD.cxx
+  AliMuonPairCuts.cxx
   AliMuonsHFHeader.cxx
   AliMuonTrackCuts.cxx
   AliMuonTrackSmearing.cxx
@@ -99,7 +102,7 @@ set(SRCS
   AliOADBMuonTrackCutsParam.cxx
   AliTaskMuonTrackSmearing.cxx
   AliUtilityMuonAncestor.cxx
-  AliVAnalysisMuon.cxx 
+  AliVAnalysisMuon.cxx
   AliAnalysisTaskLMREventFilter.cxx
   AliLMREvent.cxx
   AliLMRMuon.cxx
@@ -136,7 +139,7 @@ if(${CMAKE_SYSTEM} MATCHES Darwin)
 endif(${CMAKE_SYSTEM} MATCHES Darwin)
 
 # Installation
-install(TARGETS ${MODULE} 
+install(TARGETS ${MODULE}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib)
 install(FILES ${HDRS} DESTINATION include)
