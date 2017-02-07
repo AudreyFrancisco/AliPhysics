@@ -60,6 +60,9 @@ public:
   Bool_t IsPhysicsSelectedINT7inMUON(const AliInputEventHandler& eventHandler) const;
   void NameOfIsPhysicsSelectedINT7inMUON(TString& name) const { name="PSINT7inMUON"; }
 
+  Bool_t IsPhysicsSelectedMULorMLL(const AliInputEventHandler& eventHandler) const;
+  void NameOfIsPhysicsSelectedMULorMLL(TString& name) const { name="PSMULORMLL"; }
+
   Bool_t IsPhysicsSelectedMSL(const AliInputEventHandler& eventHandler) const;
   void NameOfIsPhysicsSelectedMSL(TString& name) const { name="PSMSL"; }
 
