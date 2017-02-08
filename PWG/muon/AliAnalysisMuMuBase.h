@@ -54,8 +54,7 @@ public:
   virtual void FillHistosForPair(const char* /*eventSelection*/,const char* /*triggerClassName*/,const char* /*centrality*/,
                                  const char* /*pairCutName*/,
                                  const AliVParticle& /*part1*/,
-                                 const AliVParticle& /*part2*/,
-                                 const Bool_t /*IsMixedHisto*/) {}
+                                 const AliVParticle& /*part2*/) {}
 
   virtual void Init(AliCounterCollection& cc,
                     AliMergeableCollection& hc,

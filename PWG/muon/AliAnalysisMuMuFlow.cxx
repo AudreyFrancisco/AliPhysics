@@ -90,7 +90,7 @@ AliAnalysisMuMuFlow::DefineHistogramCollection(const char* eventSelection,
 
   // no bins defined by the external steering macro, use our own defaults
   //if (!fBinsToFill) SetBinsToFill("psi","integrated,ptvsy,yvspt,pt,y,phi");
-  if (!fBinsToFill) SetBinsToFill("psi","phi,dphiSPD, dphiV0A, dphiV0C, dphivsptSPD,dphivsptV0A,dphivsptV0C");
+  if (!fBinsToFill) SetBinsToFill("psi","pt,y,dphiSPD, dphiV0A, dphiV0C, dphivsptSPD,dphivsptV0A,dphivsptV0C");
 
   // mass range
   Double_t minvMin = fMinvMin;
@@ -114,17 +114,24 @@ AliAnalysisMuMuFlow::DefineHistogramCollection(const char* eventSelection,
   Double_t multMax = 500.5;
   Int_t nbinsMult = GetNbins(multMin,multMax,1.);
 
-
-
-  CreatePairHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,"PHI","#mu+#mu- Phi distribution",
-                       600, -3.2, 3.2,-2);
-  for(Int_t i=0; i<3;i++){
+//alredy in mumuminv
+  // CreatePairHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,"PHI","#mu+#mu- Phi distribution",
+  //                      600, -3.2, 3.2,-2);
+  for(Int_t i=0; i<fNDetectors;i++){
     //VOA = default
-    CreatePairHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("EVENTPLANE_%s",fDetectors[i].Data()),"#mu+#mu- event plane distribution",
+    CreatePairHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("EVENTPLANE_%s",fDetectors[i].Data()),Form("#mu+#mu- event plane distributionwith %s",fDetectors[i].Data()),
                      600, -1.6, 1.6,-2);
-    CreatePairHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("DPHI_%s",fDetectors[i].Data()),"#mu+#mu- Dphi distribution",
-                     600, -1., 4.,-2);//dphi corrected to be in [O,pi]
+    CreatePairHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("DPHI_%s",fDetectors[i].Data()),Form("#mu+#mu- Dphi distribution with %s",fDetectors[i].Data()),
+                     600, -0.01, 3.2,-2);//dphi corrected to be in [O,pi]
+      //Dphi_A vs Dphi_B
+    for(Int_t j=i+1; j<fNDetectors;j++){
+        CreatePairHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("EP%svsEP%s",fDetectors[i].Data(),fDetectors[j].Data()),Form("#mu+#mu- event plane distribution : %s vs %s",fDetectors[i].Data(),fDetectors[j].Data()),
+                         600, -0.01, 3.2,600, -0.01, 3.2);//dphi corrected to be in [O,pi]
+        CreatePairHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("DPHI%svsDPHI%s",fDetectors[i].Data(),fDetectors[j].Data()),Form("#mu+#mu- Dphi distribution : %s vs %s",fDetectors[i].Data(),fDetectors[j].Data()),
+                         600, -0.01, 3.2,600, -0.01, 3.2);//dphi corrected to be in [O,pi]
+      }
   }
+
 
   TIter next(fBinsToFill);
   AliAnalysisMuMuBinning::Range* r;
@@ -307,7 +314,7 @@ void AliAnalysisMuMuFlow::FillHistosForPair(const char* eventSelection,
   else if(fWeightMuon)  inputWeight = WeightMuonDistribution(tracki.Pt()) * WeightMuonDistribution(trackj.Pt());
 
   // Fill some distribution histos
-  if ( !IsHistogramDisabled("PHI") ) proxy->Histo("PHI")->Fill(pair4Momentum.Phi());
+  // if ( !IsHistogramDisabled("PHI") ) proxy->Histo("PHI")->Fill(pair4Momentum.Phi());
   Double_t phiEP[3];//PHIEP from 2nd harmonic
   Double_t dphi[3];//relative angle for each EP detector (V0A, SPD, V0C)
 
@@ -321,6 +328,10 @@ void AliAnalysisMuMuFlow::FillHistosForPair(const char* eventSelection,
 
     if ( !IsHistogramDisabled(Form("DPHI_%s",fDetectors[i].Data())) ) proxy->Histo(Form("DPHI_%s",fDetectors[i].Data()))->Fill(dphi[i]);
     if ( !IsHistogramDisabled(Form("EVENTPLANE_%s",fDetectors[i].Data())) ) proxy->Histo(Form("EVENTPLANE_%s",fDetectors[i].Data()))->Fill(phiEP[i]);
+    for(Int_t j=i+1; j<fNDetectors;j++){
+      if ( !IsHistogramDisabled(Form("EP%svsEP%s",fDetectors[i].Data(),fDetectors[j].Data()) )) proxy->Histo(Form("EP%svsEP%s",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(phiEP[i],phiEP[j]);
+      if ( !IsHistogramDisabled(Form("DPHI%svsDPHI%s",fDetectors[i].Data(),fDetectors[j].Data())) ) proxy->Histo(Form("DPHI%svsDPHI%s",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(dphi[i],dphi[j]);
+    }
     // }
     // if ( !IsHistogramDisabled("MinvVSDPHI") && i==0 ) proxy->Histo("MinvVSDPHI")->Fill(dphi[0],pair4Momentum.M());
   }
@@ -392,10 +403,10 @@ void AliAnalysisMuMuFlow::FillHistosForPair(const char* eventSelection,
         ok                          = r->IsInRange(pair4Momentum.Rapidity());
         if ( pair4MomentumMC ) okMC = r->IsInRange(pair4MomentumMC->Rapidity());
       }
-      if ( r->Quantity() == "PHI" ){
-        ok                          = r->IsInRange(pair4Momentum.Phi());
-        if ( pair4MomentumMC ) okMC = r->IsInRange(pair4MomentumMC->Phi());
-      }
+      // if ( r->Quantity() == "PHI" ){
+      //   ok                          = r->IsInRange(pair4Momentum.Phi());
+      //   if ( pair4MomentumMC ) okMC = r->IsInRange(pair4MomentumMC->Phi());
+      // }
       else if ( r->Quantity() == "DPHISPD" )
       {
         ok = (r->IsInRange(dphi[0]));
