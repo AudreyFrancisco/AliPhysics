@@ -728,7 +728,7 @@ Double_t AliAnalysisMuMuMinv::GetAccxEff(Double_t pt,Double_t rapidity)
     AliError("ERROR: No AccxEff histo");
     return -1;
   }
-  Int_t bin        = fAccEffHisto->FindBin(pt,rapidity);
+  Int_t bin        = fAccEffHisto->FindBin(pt,-rapidity);
   Double_t accXeff = fAccEffHisto->GetBinContent(bin);
 
   return accXeff;
