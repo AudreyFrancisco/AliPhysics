@@ -47,7 +47,7 @@ public:
   void SetOriginYFunc(TString formula, const Double_t *param, Double_t xMin, Double_t xMax);
   // create the new function with its initial parameters to fit the generated/weighted y distribution
   void SetNewYFunc(TString formula, const Double_t *param, Double_t xMin, Double_t xMax);
-  
+
   void DefineMinvRange(Double_t minvMin, Double_t minvMax, Double_t minvBinSize);
 
 
