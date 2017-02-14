@@ -60,6 +60,8 @@ public:
   // Compute quantities linked to RAA
   TList* RAAasGraphic(Double_t MUL) const;
 
+  //Fit the DeltaPhiDistribution for each subresult
+  void FitDistvsDphi(Double_t ptMin, Double_t ptMax,const char* particle="PSI",const char* subresults="", Bool_t draw=kFALSE)const;
 
   // Return some data member. Double "const" on purpose to avoid leverage on data members
   const Double_t              * GetConstArray()     const {return fConstArray;};
@@ -76,6 +78,9 @@ private:
   // Equality operator
   AliAnalysisMuMuSpectraCapsulePbPb(const AliAnalysisMuMuSpectraCapsulePbPb& rhs);// not implemented on purpose
   AliAnalysisMuMuSpectraCapsulePbPb& operator=(const AliAnalysisMuMuSpectraCapsulePbPb& rhs);// not implemented on purpose
+  //V2 DeltaPhi
+  TGraphErrors* PlotFlow(const char* what, const char* subresult, Double_t ptBinMin, Double_t ptBinMax, Bool_t divideByBinWidth=kFALSE) const;//, Bool_t bck) const;
+  void DrawDnDphi(TGraphErrors* distribution, TF1* fit, const char* subresName, Double_t ptMin, Double_t ptMax, Double_t v2, Double_t v2Err) const;
 
 
 private:

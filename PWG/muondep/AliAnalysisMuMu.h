@@ -277,8 +277,18 @@ public:
     Int_t Jpsi(
       const char           * what="integrated",
       const char           * binningFlavour="",
-      Bool_t fitmPt        =kTRUE,
+      Bool_t fitmPt        =kFALSE,
+      Bool_t fitmV2        =kTRUE,
       Bool_t onlyCorrected =kTRUE);
+
+    void ComputeV2WithDndPhi(
+      const char              * binType="DPHIVSPT",
+      const Double_t          ptMin = 2.,
+      const Double_t          ptMax = 4.,
+      const char              * sResName="",
+      const char              * ColSys="PbPb",
+      Bool_t divideByBinWidth =kTRUE,
+      Bool_t AccEffCorr       =kFALSE);
 
     Bool_t IsSimulation() const;
 

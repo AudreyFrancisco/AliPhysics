@@ -1554,7 +1554,7 @@ AliAnalysisMuMu::FitParticle(const char* particle,
   }
   delete triggers;
 
-  //Check event list
+  //Check event list --> Comment if pb
   TObjArray* events = fCounterCollection->GetKeyWords("event").Tokenize(",");
   if ( !events->FindObject(eventType) ){
     AliError(Form("Did not find eventType %s",eventType));
@@ -1608,19 +1608,25 @@ AliAnalysisMuMu::FitParticle(const char* particle,
     spectraName += "AccEffCorr";
   }
 
+  //TODO
+  TString detector = "SPD";//{"VZEROA", "VZEROC","SPD"};
   //  Int_t binN(0);
 
   //MAIN PART : Loop on every binning range
   //==============================================================================
   while ( ( bin = static_cast<AliAnalysisMuMuBinning::Range*>(next())) )
   {
-
+    //TODO
+    if(bin->Xmin()!=2. && bin->Xmax()!=4.) continue;
     // Choose correct histo type with <spectraType> and set it in <hname>
     TString hname;
-    if (!sSpectraType.CompareTo("minv"))hname = corrected ? Form("MinvUS+%s_AccEffCorr",bin->AsString().Data()) : Form("MinvUS+%s",bin->AsString().Data());
-    else if (!sSpectraType.CompareTo("mpt"))hname = corrected ? Form("MeanPtVsMinvUS%s",bin->AsString().Data()) : Form("MeanPtVsMinvUS%s",bin->AsString().Data());
+    if (!sSpectraType.CompareTo("minv")) hname = corrected ? Form("MinvUS+%s_AccEffCorr",bin->AsString().Data()) : Form("MinvUS+%s",bin->AsString().Data());
+    else if (!sSpectraType.CompareTo("mpt")) hname = corrected ? Form("MeanPtVsMinvUS+%s",bin->AsString().Data()) : Form("MeanPtVsMinvUS+%s",bin->AsString().Data());
+    else if (!sSpectraType.CompareTo("mV2")) hname = corrected ? Form("MeanV2VsMinvUS+%s",bin->AsString().Data()) : Form("MeanV2VsMinvUS+%s_%s",bin->AsString().Data(),detector.Data());
+    // else if (!sSpectraType.CompareTo("mV2")) hname = corrected ? Form("MeanV2VsMinvUS+%s",bin->AsString().Data()) : Form("MeanV2VsMinvUS+%s_%s",bin->AsString().Data(),detector.Data());
     else {
-      AliError("Wrong spectra type choice: Posibilities are: 'minv' or 'mpt' ");
+
+      AliError("Wrong spectra type choice: Posibilities are: 'minv', 'mpt' or 'mV2'");
       return 0x0;
     }
 
@@ -1716,7 +1722,7 @@ AliAnalysisMuMu::FitParticle(const char* particle,
       }
 
       //Config. for mpt (see function type)
-      else if ( sFitType.Contains("mpt",TString::kIgnoreCase) && !sFitType.Contains("minv",TString::kIgnoreCase) )
+      else if ( sFitType.Contains("mpt",TString::kIgnoreCase)  && !sFitType.Contains("mV2",TString::kIgnoreCase) && !sFitType.Contains("minv",TString::kIgnoreCase) )
       {
         std::cout << "++The Minv parameters will be taken from " << spectraName.Data() << std::endl;
         std::cout << "" << std::endl;
@@ -1764,8 +1770,57 @@ AliAnalysisMuMu::FitParticle(const char* particle,
         }
       }
 
+      //Config. for mV2, similar to mpt (see function type)
+      else if ( sFitType.Contains("mV2",TString::kIgnoreCase) && !sFitType.Contains("minv",TString::kIgnoreCase) )
+      {
+        std::cout << "++The Minv parameters will be taken from " << spectraName.Data() << std::endl;
+        std::cout << "" << std::endl;
+
+        AliAnalysisMuMuSpectra* minvSpectra = dynamic_cast<AliAnalysisMuMuSpectra*>(OC()->GetObject(id.Data(),spectraName.Data()));
+
+        if ( !minvSpectra )
+        {
+          AliError(Form("Cannot fit mean V2: could not get the minv spectra for %s",id.Data()));
+          continue;//return 0x0;
+        }
+        AliAnalysisMuMuJpsiResult* minvResult = static_cast<AliAnalysisMuMuJpsiResult*>(minvSpectra->GetResultForBin(*bin));
+        if ( !minvResult )
+        {
+          AliError(Form("Cannot fit mean V2: could not get the minv result for bin %s in %s",bin->AsString().Data(),id.Data()));
+          continue; //return 0x0;
+        }
+
+        TObjArray* minvSubResults = minvResult->SubResults();
+        TIter nextSubResult(minvSubResults);
+        AliAnalysisMuMuJpsiResult* fitMinv;
+        TString subResultName;
+
+        Int_t nSubFit(0);
+        while ( ( fitMinv = static_cast<AliAnalysisMuMuJpsiResult*>(nextSubResult())) )
+        {
+          TString fitMinvName(fitMinv->GetName());
+          fitMinvName.Remove(fitMinvName.First("_"),fitMinvName.Sizeof()-fitMinvName.First("_"));
+
+          if ( !sFitType.Contains(fitMinvName) ) {
+            cout << "FitType :" << sFitType<< " does not contains fitMinvName" << fitMinvName << endl;
+            continue; //FIXME: Ambiguous, i.e. NA60NEWPOL2EXP & NA60NEWPOL2 (now its ok cause only VWG and POL2EXP are used, but care)
+          }
+          std::cout << "" << std::endl;
+          std::cout <<  "      /-- SubFit " << nSubFit + 1 << " --/ " << std::endl;
+          std::cout << "" << std::endl;
+
+          TString sMinvFitType(sFitType);
+
+          GetParametersFromResult(sMinvFitType,fitMinv);//FIXME: Think about if this is necessary
+
+          added += ( r->AddFit(sMinvFitType.Data()) == kTRUE );
+
+          nSubFit++;
+        }
+      }
+
       //Config. for mpt and minv (see function type)
-      else if ( sFitType.Contains("minv&mpt",TString::kIgnoreCase) ) AliWarning("Implement here the method to do the combined minv mpt fits");
+      else if ( sFitType.Contains("minv&mpt",TString::kIgnoreCase) || sFitType.Contains("minv&mV2",TString::kIgnoreCase) ) AliWarning("Implement here the method to do the combined minv mpt/mV2 fits");
       //FIXME: Shall we use the fitType or spectraType to choose to perform combined fits? Cause we have to check what kind of object is returned by the combined fit in order to decide if we put it in a different spectra(spectraType would be the flag,and here we should update the spectraName) or as a subresult(fitType in this case)
 
 
@@ -1806,13 +1861,16 @@ AliAnalysisMuMu::FitParticle(const char* particle,
         spectraSaveName += "-";
         spectraSaveName += "MeanPtVsMinvUS";
       }
-
+      else if ( !sSpectraType.CompareTo("mV2") ){
+        spectraSaveName += "-";
+        spectraSaveName += "MeanV2VsMinvUS";
+      }
       spectra = new AliAnalysisMuMuSpectra(spectraSaveName.Data());
     }
 
     Bool_t adoptOk = spectra->AdoptResult(*bin,r); // We adopt the Result for current bin into the spectra
 
-    if ( adoptOk ) std::cout << "Result " << r->GetName() << " adopted in spectra " << spectra->GetName() << std::endl;
+    if ( adoptOk ) std::cout << "Result " << r->GetName() <<" for bin " <<  bin->AsString().Data() << " adopted in spectra " << spectra->GetName() << std::endl;
     else AliError(Form("Error adopting result %s in spectra %s",r->GetName(),spectra->GetName()));
 
 
@@ -2039,6 +2097,28 @@ AliAnalysisMuMu::GetParametersFromResult(TString& fitType, AliAnalysisMuMuJpsiRe
             fitType += Form(":sVWG2=%f",minvResult->GetValue("sVWG2"));
 
             msg += " + VWG Bkg parameters";
+            }
+        else if ( fitType.Contains("VWG2_") || fitType.Contains("VWGINDEPTAILS") ) //FIXME: Check that cannot be misunderstood(like Exp x Pol2..). In fact it can be misunderstood since the meanpt function name has also the name of the function to fit the bkg (free parameters). Also add the rest of the BKG functions
+            {
+            fitType += Form(":kVWG2=%f",minvResult->GetValue("kVWG2"));
+            fitType += Form(":mVWG2=%f",minvResult->GetValue("mVWG2"));
+            fitType += Form(":s1VWG2=%f",minvResult->GetValue("s1VWG2"));
+            fitType += Form(":s2VWG2=%f",minvResult->GetValue("s2VWG2"));
+            fitType += Form(":gVWG2=%f",minvResult->GetValue("gVWG2"));
+
+            msg += " + VWG2 Bkg parameters";
+            }
+        else if ( fitType.Contains("POL2POL3") )
+            {
+            fitType += Form(":a=%f",minvResult->GetValue("a"));
+            fitType += Form(":b=%f",minvResult->GetValue("b"));
+            fitType += Form(":c=%f",minvResult->GetValue("c"));
+            fitType += Form(":a'=%f",minvResult->GetValue("a'"));
+            fitType += Form(":b'=%f",minvResult->GetValue("b'"));
+            fitType += Form(":c'=%f",minvResult->GetValue("c'"));
+            fitType += Form(":d'=%f",minvResult->GetValue("d'"));
+
+            msg += " + Pol2Pol3 Bkg parameters";
             }
         else if ( fitType.Contains("POL2EXP_") || fitType.Contains("POL2EXPINDEPTAILS") )
             {
@@ -2956,7 +3036,7 @@ Bool_t AliAnalysisMuMu::IsSimulation() const
 
 //_____________________________________________________________________________
 Int_t
-AliAnalysisMuMu::Jpsi(const char* what, const char* binningFlavour, Bool_t fitmPt, Bool_t onlyCorrected)
+AliAnalysisMuMu::Jpsi(const char* what, const char* binningFlavour, Bool_t fitmPt, Bool_t fitmV2, Bool_t onlyCorrected)
 {
     /// Fit the J/psi (and psiprime) peaks for the triggers in fDimuonTriggers list
     /// what="integrated" => fit only fully integrated MinvUS
@@ -3163,6 +3243,73 @@ AliAnalysisMuMu::Jpsi(const char* what, const char* binningFlavour, Bool_t fitmP
                     } else AliError("Error creating spectra");
                 } else std::cout << "Corrected mean pt fit failed: No corrected inv mass spectra for " << swhat->String().Data() << " " << "slices" << std::endl;
               }
+                            if (fitmV2) {
+                AliDebug(1,"----Fitting mean V2...");
+
+                std::cout << "" << std::endl;
+                std::cout << "" << std::endl;
+
+                if ( !onlyCorrected ){
+                  std::cout << "++++++++++++ Fitting mean V2 for " << swhat->String().Data() << " " << "slices" << std::endl; //Uncomment
+                  if ( spectra ) {
+                      AliAnalysisMuMuSpectra* spectraMeanV2 = FitParticle("psi",
+                                                                          trigger->String().Data(),
+                                                                          eventType->String().Data(),
+                                                                          pairCut->String().Data(),
+                                                                          centrality->String().Data(),
+                                                                          *binning,"mV2"/*,*spectra*/);
+                      AliDebug(1,Form("----fitting done spectra = %p",spectraMeanV2));
+                      o = 0x0;
+
+                      if ( spectraMeanV2 ){
+                        ++nfits; //Review this
+
+                        o = fMergeableCollection->GetObject(id.Data(),spectraMeanV2->GetName());
+                        AliDebug(1,Form("----nfits=%d id=%s o=%p",nfits,id.Data(),o));
+
+                        if (o) {
+                          AliWarning(Form("Replacing %s/%s",id.Data(),spectraMeanV2->GetName()));
+                          fMergeableCollection->Remove(Form("%s/%s",id.Data(),spectraMeanV2->GetName()));
+                        }
+
+                        Bool_t adoptOK = fMergeableCollection->Adopt(id.Data(),spectraMeanV2);
+
+                        if ( adoptOK ) std::cout << "+++Spectra " << spectraMeanV2->GetName() << " adopted" << std::endl;
+                        else AliError(Form("Could not adopt spectra %s",spectraMeanV2->GetName()));
+
+                      } else AliError("Error creating spectra");
+
+                  } else std::cout << "Mean V2 fit failed: No inv mass spectra for " << swhat->String().Data() << " " << "slices" << std::endl; //Uncomment
+                }
+                // std::cout << "++++++++++++ Fitting corrected mean V2 for" << " " << swhat->String().Data() << " " << "slices" << std::endl;
+                // never tested
+                if ( spectraCorr ){
+
+                  AliAnalysisMuMuSpectra* spectraMeanV2Corr = FitParticle("psi",trigger->String().Data(),eventType->String().Data(),pairCut->String().Data(),centrality->String().Data(),*binning,"mV2"/*,*spectraCorr*/,kTRUE);
+
+                  AliDebug(1,Form("----fitting done spectra = %p",spectraMeanV2Corr));
+
+                  o = 0x0;
+
+                  if ( spectraMeanV2Corr ) {
+                    ++nfits; //Review this
+
+                    o = fMergeableCollection->GetObject(id.Data(),spectraMeanV2Corr->GetName());
+
+                    AliDebug(1,Form("----nfits=%d id=%s o=%p",nfits,id.Data(),o));
+
+                    if (o) {
+                      AliWarning(Form("Replacing %s/%s",id.Data(),spectraMeanV2Corr->GetName()));
+                      fMergeableCollection->Remove(Form("%s/%s",id.Data(),spectraMeanV2Corr->GetName()));
+                    }
+
+                    Bool_t adoptOK = fMergeableCollection->Adopt(id.Data(),spectraMeanV2Corr);
+
+                    if ( adoptOK ) std::cout << "+++Spectra " << spectraMeanV2Corr->GetName() << " adopted" << std::endl;
+                    else AliError(Form("Could not adopt spectra %s",spectraMeanV2Corr->GetName()));
+                    } else AliError("Error creating spectra");
+                } else std::cout << "Corrected mean V2 fit failed: No corrected inv mass spectra for " << swhat->String().Data() << " " << "slices" << std::endl;
+              }
             }
           }
         }
@@ -3189,7 +3336,120 @@ AliAnalysisMuMu::Jpsi(const char* what, const char* binningFlavour, Bool_t fitmP
     return nfits;
 
 }
+//_____________________________________________________________________________
+void AliAnalysisMuMu::ComputeV2WithDndPhi(const char* binType, const Double_t ptMin, const Double_t ptMax, const char* sResName, const char* ColSys, Bool_t divideByBinWidth, Bool_t AccEffCorr)
+{
+    /// Compute what distribution as a function of DeltaPhi vs binType. Delegate procedure to AliAnalysisSpectra object. It can be compute for an specific subresult (fit with an specific background shape, signal, fitting range... combination) or from the mean of all the subresults.
+    ///
+    /// Parameters:
+    ///   -binType    : 2D bin DPHIVSANY, ex DPHIVSPTSPD, DPHIVSPTV0A, DPHIVSY
+    ///   -what       : The quantity (NofJPsi by default, but could be something else...)
+    ///   -AccEffCorr : Just a tag to select right histograms.
+    ///   -sResName   : subresult name to get the yield from. By default is "" (mean of all subresults)
 
+    if (!OC() || !CC())
+        {
+        AliError("No mergeable/counter collection. Consider Upgrade()");
+        return ;
+        }
+    else
+        {
+        cout <<      " ================================================================ " << endl;
+        cout <<      "                     V2 with DnDphi method                        " << endl;
+        cout <<      " ================================================================ " << endl;
+        }
+
+    // Get configuration settings
+    TObjArray* eventTypeArray   = Config()->GetListElements(Config()->EventSelectionKey(),IsSimulation());
+    TObjArray* triggerArray     = Config()->GetListElements(Config()->DimuonTriggerKey(),IsSimulation());
+    TObjArray* fitfunctionArray = Config()->GetListElements(Config()->FitTypeKey(),IsSimulation());// to add here an entry
+    TObjArray* pairCutArray     = Config()->GetListElements(Config()->PairSelectionKey(),IsSimulation());
+    TObjArray* centralityArray  = Config()->GetListElements(Config()->CentralitySelectionKey(),IsSimulation());
+    TObjArray* binTypeArray     = TString(binType).Tokenize(",");
+    TObjArray* bins;
+
+    // Iterator for loops
+    TIter nextTrigger(triggerArray);
+    TIter nextEventType(eventTypeArray);
+    TIter nextPairCut(pairCutArray);
+    TIter nextBinType(binTypeArray);
+    TIter nextCentrality(centralityArray);
+
+    // Strings
+    TObjString* striggerDimuon;
+    TObjString* seventType;
+    TObjString* spairCut;
+    TObjString* swhat;
+    TObjString* sbinType;
+    TObjString* scentrality;
+
+    TString striggerMB  = Config()->First(Config()->MinbiasTriggerKey(),IsSimulation());
+    const TString syear(ColSys);
+
+    // Pointers
+    TH1* h= 0x0;
+    AliAnalysisMuMuSpectra spectra=0x0;
+
+
+    nextEventType.Reset();
+    // Loop on each envenType (see MuMuConfig)
+    //==============================================================================
+    while ( ( seventType = static_cast<TObjString*>(nextEventType())) )
+        {
+        AliDebug(1,Form("EVENTTYPE %s",seventType->String().Data()));
+        nextTrigger.Reset();
+        // Loop on each trigger (see MuMuConfig)
+        //==============================================================================
+        while ( ( striggerDimuon = static_cast<TObjString*>(nextTrigger())) )
+            {
+            AliDebug(1,Form("-TRIGGER %s",striggerDimuon->String().Data()));
+            nextPairCut.Reset();
+            // Loop on each paircut (not the ones in MuMuConfig but the ones set)
+            //==============================================================================
+            while ( ( spairCut = static_cast<TObjString*>(nextPairCut())) )
+                {
+                AliDebug(1,Form("--PAIRCUT %s",spairCut->String().Data()));
+                nextBinType.Reset();
+                // Loop on each type (pt or y)
+                //==============================================================================
+                while ( ( sbinType = static_cast<TObjString*>(nextBinType()) ) )
+                    {
+                    AliDebug(1,Form("---TYPE %s",sbinType->String().Data()));
+
+
+                    nextCentrality.Reset();
+                    // Loop on each centrality (not the ones in MuMuConfig but the ones set)
+                    //==============================================================================
+                    while ( ( scentrality = static_cast<TObjString*>(nextCentrality()) ) )
+                        {
+                        AliDebug(1,Form("---CENTRALITY %s",scentrality->String().Data()));
+
+                        //________Get spectra
+                        TString spectraPath= Form("/%s/%s/%s/%s/%s-%s",seventType->String().Data(),striggerDimuon->String().Data(),scentrality->String().Data(),spairCut->String().Data(),"PSI",sbinType->String().Data());
+                        if (AccEffCorr)spectraPath+="-AccEffCorr";
+                        AliAnalysisMuMuSpectra * spectra = static_cast<AliAnalysisMuMuSpectra*>(OC()->GetObject(spectraPath.Data()));
+                        if(!spectra)
+                            {
+                            AliError(Form("Cannot find spectra with name %s",spectraPath.Data()));
+                            return;
+                            }
+                            if(syear.Contains("PbPb"))
+                            {
+                              AliAnalysisMuMuSpectraCapsulePbPb * capsule = new AliAnalysisMuMuSpectraCapsulePbPb(spectra,spectraPath);
+                              AliDebug(1,Form("Spectra = %p",spectra));
+                              //Compute the flow for each subresult
+                              capsule->FitDistvsDphi(ptMin, ptMax,"PSI","",kTRUE);
+                              delete capsule;
+                            }
+                            else AliError("No method implemented for this beam yet, but you're welcome to do it !");
+                        }
+                    }
+                }
+            }
+        }
+
+    return;
+}
 //_____________________________________________________________________________
 TGraph* AliAnalysisMuMu::PlotEventSelectionEvolution(const char* trigger1, const char* event1,
                                                      const char* trigger2, const char* event2,

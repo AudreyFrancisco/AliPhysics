@@ -75,6 +75,8 @@ public:
 
   Bool_t AddFit(const char* fitType);
 
+  AliAnalysisMuMuJpsiResult* CountJpsi(TH1& h);
+
   /** All the fit functions should have a prototype starting like :
 
    AliAnalysisMuMuJpsiResult* FitXXX();
@@ -90,6 +92,7 @@ public:
   void FitPSINA60NEW();
 
   // void FitPSICB2VWG();
+  void FitCB2VWG();
   void FitPSIPSIPRIMECB2VWG();
   void FitPSIPSIPRIMECB2VWG2();
   void FitPSIPSIPRIMECB2POL1POL2();
@@ -125,7 +128,37 @@ public:
   void FitMPTPSIPSIPRIMENA60NEWVWG_BKGMPTPOL2EXP();
   void FitMPTPSIPSIPRIMENA60NEWPOL2EXP_BKGMPTPOL2();
   void FitMPTPSIPSIPRIMENA60NEWPOL2EXP_BKGMPTPOL2EXP();
+  void FitMPTPSIPSIPRIMENA60NEWPOL4EXP_BKGMPTPOL2();
 
+  void FitPSIPSIPRIMECOMB_CB2VWG_MPTCB2VWG_BKGMPTPOL2();
+
+//  void FitMPT2NA60NEWVWG_BKGMPTPOL4();
+//  void FitMPT2NA60NEWPOL2EXP_BKGMPTPOL4();
+//  void FitMPT2NA60NEWPOL4EXP_BKGMPTPOL4();
+
+  //flow flow flow
+  void FitMV2PSIPSIPRIMECB2VWG_BKGMV2POL2();
+  void FitMV2PSIPSIPRIMECB2VWG_BKGMV2POL2EXP();
+  void FitMV2PSIPSIPRIMECB2VWG_BKGMV2POL3();
+  void FitMV2PSIPSIPRIMECB2VWG_BKGMV2POL4();
+
+  void FitMV2PSIPSIPRIMECB2VWG2_BKGMV2POLEXP();
+  void FitMV2PSIPSIPRIMECB2VWG2_BKGMV2POL2();
+  void FitMV2PSIPSIPRIMECB2VWG2_BKGMV2POL2EXP();
+  void FitMV2PSIPSIPRIMECB2VWG2_BKGMV2POL4();
+  void FitMV2PSIPSIPRIMECB2POL2POL3_BKGMV2POL2();
+  void FitMV2PSIPSIPRIMECB2POL2POL3_BKGMV2POLEXP();
+  void FitMV2PSIPSIPRIMECB2POL2POL3_BKGMV2POL2EXP();
+  void FitMV2PSIPSIPRIMECB2POL2POL3_BKGMV2POL4();
+
+  void FitMV2PSIPSIPRIMENA60NEWVWG2_BKGMV2POL2();
+  void FitMV2PSIPSIPRIMENA60NEWVWG2_BKGMV2POLEXP();
+  void FitMV2PSIPSIPRIMENA60NEWVWG2_BKGMV2POL2EXP();
+  void FitMV2PSIPSIPRIMENA60NEWVWG2_BKGMV2POL4();
+  void FitMV2PSIPSIPRIMENA60NEWPOL2POL3_BKGMV2POL2();
+  void FitMV2PSIPSIPRIMENA60NEWPOL2POL3_BKGMV2POLEXP();
+  void FitMV2PSIPSIPRIMENA60NEWPOL2POL3_BKGMV2POL2EXP();
+  void FitMV2PSIPSIPRIMENA60NEWPOL2POL3_BKGMV2POL4();
   Int_t NofRuns() const;
 
   void SetNofRuns(int n);
@@ -151,6 +184,10 @@ public:
   void ProcessMinvFit(TFitResultPtr& fitResult, TF1* fitTotal, TF1* bckInit, const char* fitOption, Int_t iParKPsip, Int_t iLastParBkg);
 
   void ProcessBkgFit(TFitResultPtr& fitResultInit, TF1* bckInit, const char* bkgFuncName, const char* fitOption);
+
+  void ProcessMv2Fit(TFitResultPtr& fitResult, TF1* fitTotal, TF1* bckInit, const char* fitOption, Int_t iParKPsip, Int_t iLastParBkg);
+
+  void ProcessmBkgFit(TFitResultPtr& fitResultInit, TF1* bckInit, const char* bkgFuncName, const char* fitOption);
 
   TString FitFunctionName() const { return fFitFunction; }
 
@@ -179,6 +216,8 @@ private:
   Double_t FitFunctionBackgroundPol2Pol3(Double_t *x, Double_t *par);
 
   Double_t FitFunctionBackgroundPol2Pol3V2(Double_t *x, Double_t *par);
+
+  Double_t FitFunctionBackgroundPolExp(Double_t* x, Double_t* par);
 
   Double_t FitFunctionBackgroundPol2Exp(Double_t* x, Double_t* par);
 
@@ -232,9 +271,17 @@ private:
 
   Double_t alphaCB2VWG(Double_t*x, Double_t* par);
 
+  Double_t alphaCB2POL2POL3(Double_t*x, Double_t* par);
+
+  Double_t alphaCB2VWG2(Double_t*x, Double_t* par);
+
   Double_t alphaCB2POL2EXP(Double_t*x, Double_t* par);
 
   Double_t alphaNA60NEWVWG(Double_t*x, Double_t* par);
+
+  Double_t alphaNA60NEWVWG2(Double_t*x, Double_t* par);
+
+  Double_t alphaNA60NEWPOL2POL3(Double_t*x, Double_t* par);
 
   Double_t alphaNA60NEWPOL2EXP(Double_t*x, Double_t* par);
 
@@ -250,9 +297,32 @@ private:
 
   Double_t FitFunctionMeanPtS2CB2VWGPOL2EXP(Double_t *x, Double_t *par);
 
+  Double_t FitFunctionMeanPtS2CB2VWG2POL2(Double_t *x, Double_t *par);
+
   Double_t FitFunctionMeanPtS2CB2POL2EXPPOL2(Double_t *x, Double_t *par);
 
   Double_t FitFunctionMeanPtS2CB2POL2EXPPOL2EXP(Double_t *x, Double_t *par);
+
+  Double_t FitFunctionMeanPtSCB2VWG2POL2(Double_t* x, Double_t* par);
+  Double_t FitFunctionMeanPtSCB2VWG2POLEXP(Double_t *x, Double_t *par);
+  Double_t FitFunctionMeanPtSCB2VWG2POL2EXP(Double_t *x, Double_t *par);
+  Double_t FitFunctionMeanPtSCB2VWG2POL4(Double_t *x, Double_t *par);
+
+  Double_t FitFunctionMeanPtSCB2POL2POL3POL2(Double_t* x, Double_t* par);
+  Double_t FitFunctionMeanPtSCB2POL2POL3_POLEXP(Double_t *x, Double_t *par);
+  Double_t FitFunctionMeanPtSCB2POL2POL3POL2EXP(Double_t *x, Double_t *par);
+  Double_t FitFunctionMeanPtSCB2POL2POL3POL4(Double_t *x, Double_t *par);
+
+
+  Double_t FitFunctionMeanPtSNA60NEWVWG2POL2(Double_t *x, Double_t *par);
+  Double_t FitFunctionMeanPtSNA60NEWVWG2POLEXP(Double_t *x, Double_t *par);
+  Double_t FitFunctionMeanPtSNA60NEWVWG2POL2EXP(Double_t *x, Double_t *par);
+  Double_t FitFunctionMeanPtSNA60NEWVWG2POL4(Double_t *x, Double_t *par);
+  Double_t FitFunctionMeanPtSNA60NEWPOL2POL3POL2(Double_t *x, Double_t *par);
+  Double_t FitFunctionMeanPtSNA60NEWPOL2POL3_POLEXP(Double_t *x, Double_t *par);
+  Double_t FitFunctionMeanPtSNA60NEWPOL2POL3POL2EXP(Double_t *x, Double_t *par);
+  Double_t FitFunctionMeanPtSNA60NEWPOL2POL3POL4(Double_t *x, Double_t *par);
+
 
   Double_t FitFunctionMeanPtS2NA60NEWVWGPOL2(Double_t *x, Double_t *par);
 
@@ -286,7 +356,8 @@ private:
 
   Bool_t StrongCorrelation(TFitResultPtr& fitResult, TF1* fitFunction, Int_t npar1, Int_t npar2, Double_t fixValueIfWrong);
 
-
+  Bool_t CheckFitStatus(TFitResultPtr &fitResult);
+  
 private:
   Int_t fNofRuns; // number of runs used to get this result
   Int_t fNofTriggers; // number of trigger analyzed
