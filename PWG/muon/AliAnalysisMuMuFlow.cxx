@@ -328,12 +328,17 @@ void AliAnalysisMuMuFlow::FillHistosForPair(const char* eventSelection,
 
     if ( !IsHistogramDisabled(Form("DPHI_%s",fDetectors[i].Data())) ) proxy->Histo(Form("DPHI_%s",fDetectors[i].Data()))->Fill(dphi[i]);
     if ( !IsHistogramDisabled(Form("EVENTPLANE_%s",fDetectors[i].Data())) ) proxy->Histo(Form("EVENTPLANE_%s",fDetectors[i].Data()))->Fill(phiEP[i]);
-    for(Int_t j=i+1; j<fNDetectors;j++){
-      if ( !IsHistogramDisabled(Form("EP%svsEP%s",fDetectors[i].Data(),fDetectors[j].Data()) )) proxy->Histo(Form("EP%svsEP%s",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(phiEP[i],phiEP[j]);
-      if ( !IsHistogramDisabled(Form("DPHI%svsDPHI%s",fDetectors[i].Data(),fDetectors[j].Data())) ) proxy->Histo(Form("DPHI%svsDPHI%s",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(dphi[i],dphi[j]);
-    }
     // }
     // if ( !IsHistogramDisabled("MinvVSDPHI") && i==0 ) proxy->Histo("MinvVSDPHI")->Fill(dphi[0],pair4Momentum.M());
+  }
+
+  for(Int_t i=0; i<3; i++){
+    for(Int_t j=i+1; j<fNDetectors;j++){
+      AliDebug(1,Form("Filling EP %s vs %s : %f, %f ",fDetectors[i].Data(),fDetectors[j].Data(), phiEP[j],phiEP[i]));
+      AliDebug(1,Form("Filling dphi %s vs %s : %f, %f ",fDetectors[i].Data(),fDetectors[j].Data(), dphi[j],dphi[i]));
+      if ( !IsHistogramDisabled(Form("EP%svsEP%s",fDetectors[i].Data(),fDetectors[j].Data()) )) proxy->Histo(Form("EP%svsEP%s",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(phiEP[j],phiEP[i]);
+      if ( !IsHistogramDisabled(Form("DPHI%svsDPHI%s",fDetectors[i].Data(),fDetectors[j].Data())) ) proxy->Histo(Form("DPHI%svsDPHI%s",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(dphi[j],dphi[i]);
+    }
   }
 
   // Fill histos with MC stack info
@@ -722,7 +727,7 @@ Double_t AliAnalysisMuMuFlow::GetAccxEff(Double_t pt,Double_t rapidity)
     AliError("ERROR: No AccxEff histo");
     return 0;
   }
-  Int_t bin        = fAccEffHisto->FindBin(pt,rapidity);
+  Int_t bin        = fAccEffHisto->FindBin(pt,-rapidity);
   Double_t accXeff = fAccEffHisto->GetBinContent(bin);
 
   return accXeff;

@@ -279,7 +279,7 @@ public:
       const char           * binningFlavour="",
       Bool_t fitmPt        =kFALSE,
       Bool_t fitmV2        =kTRUE,
-      Bool_t onlyCorrected =kTRUE);
+      Bool_t onlyCorrected =kFALSE);
 
     void ComputeV2WithDndPhi(
       const char              * binType="DPHIVSPT",

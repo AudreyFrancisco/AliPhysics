@@ -3125,6 +3125,7 @@ AliAnalysisMuMu::Jpsi(const char* what, const char* binningFlavour, Bool_t fitmP
               AliAnalysisMuMuSpectra* spectra(0x0);
 
               if ( !onlyCorrected ) {
+                AliDebug(1,Form("(not only corrected) Fitting spectra = %p",spectra));
                 spectra = FitParticle("psi",trigger->String().Data(),eventType->String().Data(),pairCut->String().Data(),centrality->String().Data(),*binning);
 
                 AliDebug(1,Form("----fitting done spectra = %p",spectra));

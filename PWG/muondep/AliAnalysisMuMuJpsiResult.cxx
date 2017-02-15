@@ -2421,8 +2421,8 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2VWG2()
 
   fHisto->GetListOfFunctions()->Delete();
 
-  const char* fitOption = "SERL"; //We can add NO to avoid plotting
-  const char* fitOptionBg = "SER"; //We can add NO to avoid plotting
+  const char* fitOption = "SERLM"; //We can add NO to avoid plotting
+  const char* fitOptionBg = "SERI"; //We can add NO to avoid plotting
 
 
   //__________ Get tails parameters, fitting range and SigmaPsiP
@@ -2966,8 +2966,8 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2POL2POL3()
 
   fHisto->GetListOfFunctions()->Delete();
 
-  const char* fitOption = "SERL"; //We can add NO to avoid plotting
-  const char* fitOptionBg = "SRL"; //We can add NO to avoid plotting
+  const char* fitOption = "SERLM"; //We can add NO to avoid plotting
+  const char* fitOptionBg = "SERI"; //We can add NO to avoid plotting
 
   //__________ Get tails parameters, fitting range and SigmaPsiP
   Double_t alphaLow     = GetValue("alJPsi");
@@ -4580,8 +4580,8 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWVWG2()
   /// Fit using 2 NA60(new) (signal) + variable width gaussian (background)
 
   fHisto->GetListOfFunctions()->Delete();
-  const char* fitOption = "SERL";
-  const char* fitOptionBg = "SR";
+  const char* fitOption = "SERLM";
+  const char* fitOptionBg = "SERI";
 
 
   //__________ Get tails parameters, fitting range and SigmaPsiP
@@ -5115,8 +5115,8 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWPOL2POL3()
 
   fHisto->GetListOfFunctions()->Delete();
 
-  const char* fitOption = "SERL";
-  const char* fitOptionBg = "SRL";
+  const char* fitOption = "SERLM";
+  const char* fitOptionBg = "SERI";
 
 
   //__________ Get tails parameters, fitting range and SigmaPsiP
