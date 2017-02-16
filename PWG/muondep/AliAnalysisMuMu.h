@@ -103,7 +103,8 @@ public:
       const char* binType="PT",
       const char* subresult="CB2VWG_2.4_4.5_SP1.2",
       const char* printDirectoryPath="",
-      Bool_t AccEffCorr =kFALSE
+      Bool_t AccEffCorr =kFALSE,
+      Bool_t MeanV2     =kFALSE
       )const;
 
     void ComputeDimuonRawCount(
@@ -209,13 +210,15 @@ public:
       const char        * particle="PSI",
       const char        * binType="INTEGRATED",
       const char        * subresults="",
-      Bool_t AccEffCorr =kFALSE)const;
+      Bool_t AccEffCorr =kFALSE,
+      Bool_t MeanV2     =kFALSE)const;
 
     void PrintNofParticle(
       const char        * particle="PSI",
       const char        * what="NofJPsi",
       const char        * binType="PT",
-      Bool_t AccEffCorr =kFALSE) const;
+      Bool_t AccEffCorr =kFALSE,
+      Bool_t MeanV2     =kFALSE) const;
 
     AliAnalysisMuMuSpectra* RABy(const char* type="", const char* direction="pPb");
 

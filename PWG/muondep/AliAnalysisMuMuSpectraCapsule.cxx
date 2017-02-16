@@ -143,7 +143,7 @@ void AliAnalysisMuMuSpectraCapsule::PrintNofWhat(const char* what) const
   AliAnalysisMuMuJpsiResult* subresult;
   AliAnalysisMuMuResult    * sr;
   AliAnalysisMuMuBinning   ::Range* r;
-
+  TString swhat(what);
   // Array to store bins for the while loop
   TObjArray * bins=GetSpectra()->Binning()->CreateBinObjArray();// (intrinseque 'new')
   if (!bins)
@@ -197,12 +197,15 @@ void AliAnalysisMuMuSpectraCapsule::PrintNofWhat(const char* what) const
 
       //Output messages
       cout << Form(" -------- ") << endl;
-      cout << Form(" -- subresult %s :  %.0f +/- %.0f ",sr->GetName(),NofJPsiSub,NofJPsiErrorStat) << endl;
+      if(swhat.Contains("v2"))cout << Form(" -- subresult %s :  %.4f +/- %.4f ",sr->GetName(),NofJPsiSub,NofJPsiErrorStat) << endl;
+      else cout << Form(" -- subresult %s :  %.0f +/- %.0f ",sr->GetName(),NofJPsiSub,NofJPsiErrorStat) << endl;
       nofSubResult++;
 
     }
     cout << Form(" -------- ") << endl;
-    cout << Form(" ------ Mean :  %.1f +/- %.1f (%.1f %%) +/- %.1f (%.1f %%) ------ ",
+    if(swhat.Contains("v2"))cout << Form(" ------ Mean :  %.4f +/- %.4f (%.1f %%) +/- %.4f (%.1f %%) ------ ",
+      result->GetValue(what),result->GetErrorStat(what),100*result->GetErrorStat(what)/result->GetValue(what),result->GetRMS(what),100*result->GetRMS(what)/result->GetValue(what)) << endl;
+    else cout << Form(" ------ Mean :  %.1f +/- %.1f (%.1f %%) +/- %.1f (%.1f %%) ------ ",
       result->GetValue(what),result->GetErrorStat(what),100*result->GetErrorStat(what)/result->GetValue(what),result->GetRMS(what),100*result->GetRMS(what)/result->GetValue(what)) << endl;
     cout << "" << endl;
     nofResult++;

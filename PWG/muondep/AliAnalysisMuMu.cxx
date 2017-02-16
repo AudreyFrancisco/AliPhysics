@@ -466,7 +466,8 @@ TGraph* AliAnalysisMuMu::CompareJpsiPerCMUUWithSimu(const char* realjpsiresults,
 void AliAnalysisMuMu::DrawFitResults(const char* particle,
                                      const char* binType,
                                      const char* subresults,
-                                     Bool_t AccEffCorr
+                                     Bool_t AccEffCorr,
+                                     Bool_t MeanV2
                                      )const
 {
     /// A function to use after JPsi()
@@ -553,6 +554,7 @@ void AliAnalysisMuMu::DrawFitResults(const char* particle,
                             //________Get spectra
                             TString spectraPath= Form("/%s/%s/%s/%s/%s-%s",seventType->String().Data(),strigger->String().Data(),scentrality->String().Data(),spairCut->String().Data(),sparticle->String().Data(),sbinType->String().Data());
                             if (AccEffCorr)spectraPath+="-AccEffCorr";
+                            if(MeanV2)spectraPath+="-MeanV2VsMinvUS-SPD";
 
                             AliAnalysisMuMuSpectra * spectra = static_cast<AliAnalysisMuMuSpectra*>(OC()->GetObject(spectraPath.Data()));
                             if(!spectra){
@@ -594,7 +596,8 @@ void AliAnalysisMuMu::PrintFitParam( const char* particle,
                                      const char* binType,
                                      const char* subresult,
                                      const char* printDirectoryPath,
-                                     Bool_t AccEffCorr
+                                     Bool_t AccEffCorr,
+                                     Bool_t MeanV2
                                      )const
 {
     /// Draw fit parameter versus bin
@@ -689,8 +692,10 @@ void AliAnalysisMuMu::PrintFitParam( const char* particle,
               // Get spectra
               TString spectraPath= Form("/%s/%s/%s/%s/%s-%s",seventType->String().Data(),strigger->String().Data(),scentrality->String().Data(),spairCut->String().Data(),particle,sbinType->String().Data());
               if (AccEffCorr)spectraPath+="-AccEffCorr";
+              if(MeanV2)spectraPath+="-MeanV2VsMinvUS-SPD";
 
               AliAnalysisMuMuSpectra * spectra = static_cast<AliAnalysisMuMuSpectra*>(OC()->GetObject(spectraPath.Data()));
+              AliDebug(1,Form("Getting spectra : %s",spectraPath.Data()));
               if(!spectra) {
                 AliError(Form("Cannot find spectra with name %s",spectraPath.Data()));
                 return;
@@ -1617,7 +1622,7 @@ AliAnalysisMuMu::FitParticle(const char* particle,
   while ( ( bin = static_cast<AliAnalysisMuMuBinning::Range*>(next())) )
   {
     //TODO
-    if(bin->Xmin()!=2. && bin->Xmax()!=4.) continue;
+    if(bin->Xmin()!=0. && bin->Xmax()!=2.) continue;
     // Choose correct histo type with <spectraType> and set it in <hname>
     TString hname;
     if (!sSpectraType.CompareTo("minv")) hname = corrected ? Form("MinvUS+%s_AccEffCorr",bin->AsString().Data()) : Form("MinvUS+%s",bin->AsString().Data());
@@ -1813,6 +1818,13 @@ AliAnalysisMuMu::FitParticle(const char* particle,
 
           GetParametersFromResult(sMinvFitType,fitMinv);//FIXME: Think about if this is necessary
 
+          AliDebug(1,Form("result for minv : %f",fitMinv->GetValue("FitStatus")));
+          if ( fitMinv->GetValue("FitStatus")!=0 )
+          {
+            AliError(Form("Not getting subr from this minv result (bad fitresult) for bin %s in %s",bin->AsString().Data(),id.Data()));
+            continue; //return 0x0;
+          }
+
           added += ( r->AddFit(sMinvFitType.Data()) == kTRUE );
 
           nSubFit++;
@@ -1862,11 +1874,15 @@ AliAnalysisMuMu::FitParticle(const char* particle,
         spectraSaveName += "MeanPtVsMinvUS";
       }
       else if ( !sSpectraType.CompareTo("mV2") ){
-        spectraSaveName += "-";
-        spectraSaveName += "MeanV2VsMinvUS";
+        spectraSaveName += "-MeanV2VsMinvUS";
+        if(hname.Contains("SPD")) spectraSaveName +="-SPD";
+        else if(hname.Contains("VZEROA")) spectraSaveName +="-V0A";
+        else if(hname.Contains("VZEROC")) spectraSaveName +="-V0C";
       }
       spectra = new AliAnalysisMuMuSpectra(spectraSaveName.Data());
     }
+
+// fitMinvName
 
     Bool_t adoptOk = spectra->AdoptResult(*bin,r); // We adopt the Result for current bin into the spectra
 
@@ -3158,22 +3174,22 @@ AliAnalysisMuMu::Jpsi(const char* what, const char* binningFlavour, Bool_t fitmP
               // save results in mergeable collection
               o = 0x0;
               if ( spectraCorr ) {
-              ++nfits;
+                ++nfits;
 
-              o = fMergeableCollection->GetObject(id.Data(),spectraCorr->GetName());
-              AliDebug(1,Form("----nfits=%d id=%s o=%p",nfits,id.Data(),o));
+                o = fMergeableCollection->GetObject(id.Data(),spectraCorr->GetName());
+                AliDebug(1,Form("----nfits=%d id=%s o=%p",nfits,id.Data(),o));
 
-              if (o) {
-                AliWarning(Form("Replacing %s/%s",id.Data(),spectraCorr->GetName()));
-                fMergeableCollection->Remove(Form("%s/%s",id.Data(),spectraCorr->GetName()));
-              }
+                if (o) {
+                  AliWarning(Form("Replacing %s/%s",id.Data(),spectraCorr->GetName()));
+                  fMergeableCollection->Remove(Form("%s/%s",id.Data(),spectraCorr->GetName()));
+                }
 
-              Bool_t adoptOK = fMergeableCollection->Adopt(id.Data(),spectraCorr);
+                Bool_t adoptOK = fMergeableCollection->Adopt(id.Data(),spectraCorr);
 
-              if ( adoptOK ) std::cout << "+++Spectra " << spectraCorr->GetName() << " adopted" << std::endl;
-              else AliError(Form("Could not adopt spectra %s",spectraCorr->GetName()));
+                if ( adoptOK ) std::cout << "+++Spectra " << spectraCorr->GetName() << " adopted" << std::endl;
+                else AliError(Form("Could not adopt spectra %s",spectraCorr->GetName()));
 
-              StdoutToAliDebug(1,spectraCorr->Print(););
+                StdoutToAliDebug(1,spectraCorr->Print(););
               } else AliError("Error creating spectra");
 
 
@@ -3244,7 +3260,8 @@ AliAnalysisMuMu::Jpsi(const char* what, const char* binningFlavour, Bool_t fitmP
                     } else AliError("Error creating spectra");
                 } else std::cout << "Corrected mean pt fit failed: No corrected inv mass spectra for " << swhat->String().Data() << " " << "slices" << std::endl;
               }
-                            if (fitmV2) {
+
+              if (fitmV2) {
                 AliDebug(1,"----Fitting mean V2...");
 
                 std::cout << "" << std::endl;
@@ -3652,7 +3669,7 @@ void AliAnalysisMuMu::Print(Option_t* opt) const
 }
 
 //_____________________________________________________________________________
-void AliAnalysisMuMu::PrintNofParticle(const char* particle, const char* what, const char* binType, Bool_t AccEffCorr) const
+void AliAnalysisMuMu::PrintNofParticle(const char* particle, const char* what, const char* binType, Bool_t AccEffCorr, Bool_t MeanV2) const
 {
     ///
     /// Function to use after JPsi(). It loops over all combination of centrality/enventype/ trigger (etc.) and
@@ -3746,6 +3763,7 @@ void AliAnalysisMuMu::PrintNofParticle(const char* particle, const char* what, c
                             //________Get spectra
                             TString spectraPath= Form("/%s/%s/%s/%s/%s-%s",seventType->String().Data(),strigger->String().Data(),scentrality->String().Data(),spairCut->String().Data(),sparticle->String().Data(),sbinType->String().Data());
                             if (AccEffCorr)spectraPath+="-AccEffCorr";
+                            if(MeanV2)spectraPath+="-MeanV2VsMinvUS-SPD";
 
                             AliAnalysisMuMuSpectra * spectra = static_cast<AliAnalysisMuMuSpectra*>(OC()->GetObject(spectraPath.Data()));
 
