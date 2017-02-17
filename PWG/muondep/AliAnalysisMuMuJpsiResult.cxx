@@ -139,6 +139,7 @@ fMinvRS("")
   AliDebug(1,Form("weight = %f\n",Weight()));
 
   TString name(fFitFunction);
+  // TString fitT(fitType);
   if ( !name.Contains("PSICB2") && !name.Contains("PSINA60NEW") && !name.Contains("PSICOUNT") ) //To avoid adding things to the name of simu results
   {
     Bool_t isMPt = kFALSE;
@@ -151,6 +152,9 @@ fMinvRS("")
     else if ( name.BeginsWith("MV2") ) {
       name.ReplaceAll("MV2PSIPSIPRIME","");
       isMPt = kTRUE;
+    }
+    if(( TString(fitType).Contains("AccEff") )){
+      name +="AccEff";
     }
 
     name += "_";

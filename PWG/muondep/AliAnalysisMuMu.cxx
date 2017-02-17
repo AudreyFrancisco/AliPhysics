@@ -1622,12 +1622,12 @@ AliAnalysisMuMu::FitParticle(const char* particle,
   while ( ( bin = static_cast<AliAnalysisMuMuBinning::Range*>(next())) )
   {
     //TODO
-    if(bin->Xmin()!=0. && bin->Xmax()!=2.) continue;
+    if(bin->Xmin()!=8. && bin->Xmax()!=12.) continue;
     // Choose correct histo type with <spectraType> and set it in <hname>
     TString hname;
-    if (!sSpectraType.CompareTo("minv")) hname = corrected ? Form("MinvUS+%s_AccEffCorr",bin->AsString().Data()) : Form("MinvUS+%s",bin->AsString().Data());
-    else if (!sSpectraType.CompareTo("mpt")) hname = corrected ? Form("MeanPtVsMinvUS+%s",bin->AsString().Data()) : Form("MeanPtVsMinvUS+%s",bin->AsString().Data());
-    else if (!sSpectraType.CompareTo("mV2")) hname = corrected ? Form("MeanV2VsMinvUS+%s",bin->AsString().Data()) : Form("MeanV2VsMinvUS+%s_%s",bin->AsString().Data(),detector.Data());
+    if (!sSpectraType.CompareTo("minv")) hname = corrected ? Form("MinvUS_AccEffCorr+%s",bin->AsString().Data()) : Form("MinvUS+%s",bin->AsString().Data());
+    else if (!sSpectraType.CompareTo("mpt")) hname = corrected ? Form("MeanPtVsMinvUS_AccEffCorr+%s",bin->AsString().Data()) : Form("MeanPtVsMinvUS+%s",bin->AsString().Data());
+    else if (!sSpectraType.CompareTo("mV2")) hname = corrected ? Form("MeanV2VsMinvUS_AccEffCorr+%s_%s",bin->AsString().Data(),detector.Data()) : Form("MeanV2VsMinvUS+%s_%s",bin->AsString().Data(),detector.Data());
     // else if (!sSpectraType.CompareTo("mV2")) hname = corrected ? Form("MeanV2VsMinvUS+%s",bin->AsString().Data()) : Form("MeanV2VsMinvUS+%s_%s",bin->AsString().Data(),detector.Data());
     else {
 
