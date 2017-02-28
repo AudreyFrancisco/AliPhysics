@@ -71,32 +71,33 @@ class AliAnalysisTaskEMCALPhotonIsolation: public AliAnalysisTaskEmcal {
   virtual ~AliAnalysisTaskEMCALPhotonIsolation();
   
   void                     UserCreateOutputObjects();
-  
-  void                     SetIsoConeRadius(Float_t r)                                     { fIsoConeRadius = r ; }
-  void                     SetEtIsoThreshold(Float_t r)                                    { fEtIsoThreshold = r ; }
-  void                     SetCTMdeltaEta (Float_t r)                                      { fdetacut = r ; }
-  void                     SetCTMdeltaPhi (Float_t r)                                      { fdphicut = r ; }
-  void                     SetCTMdeltaEtaIso (Float_t r)                                   { fdetacutIso = r ; }
-  void                     SetCTMdeltaPhiIso (Float_t r)                                   { fdphicutIso = r ; }
-  void                     SetIsoMethod (Int_t r )                                         { fIsoMethod = r ; }
-  void                     SetEtIsoMethod (Int_t r )                                       { fEtIsoMethod = r ; }
-  void                     SetUEMethod (Int_t UE)                                          { fUEMethod = UE; }
-  void                     SetOutputFormat (Int_t iOut)                                    { fWho = iOut; }
-  void                     SetQA (Bool_t QA)                                               { fQA = QA; }
-  void                     SetMC (Bool_t MC)                                               { fIsMC = MC; }
-  void                     SetUSEofTPC (Bool_t TPC)                                        { fTPC4Iso = TPC; }
-  void                     SetLCAnalysis (Bool_t LC)                                       { fisLCAnalysis = LC; }
-  void                     SetNLMCut (Bool_t isNLMCut, Int_t NLMCut, Int_t NLMmin)         { fIsNLMCut = isNLMCut; fNLMCut = NLMCut; fNLMmin = NLMmin; }
-  void                     SetSmearForClusters( Int_t whichNLM)                            { fWhich= whichNLM; }
-  void                     SetTMClusterRejection (Bool_t tm)                               { fTMClusterRejected = tm; }
-  void                     SetTMClusterRejectioninCone (Bool_t tm)                         { fTMClusterInConeRejected = tm; }
-  void                     SetRejectEventWithoutTracks(Bool_t revwotr)                     { fRejectionEventWithoutTracks = revwotr; }
-  void                     SetAnalysispPb(Bool_t ana)                                      { fAnalysispPb = ana; }
-  void                     SetTriggerLevel1(Int_t L)                                       { fTriggerLevel1 = L; }
-  void                     SetM02Smearing(Bool_t smear)                                    { fSSsmearing = smear; }
-  void                     SetWidth4Smear(Float_t width)                                   { fSSsmearwidth = width; }
-  void                     SetMean4Smear(Float_t mean)                                     { fSSsmear_mean = mean; }
-  void                     SetExtraIsoCuts(Bool_t bExtraIsoCuts)                           { fExtraIsoCuts = bExtraIsoCuts; }
+
+  void                     SetIsoConeRadius(Float_t r)                                     { fIsoConeRadius = r ;}
+  void                     SetEtIsoThreshold(Float_t r)                                     {fEtIsoThreshold = r ;}
+  void                     SetCTMdeltaEta (Float_t r)                                      { fdetacut = r ;}
+  void                     SetCTMdeltaPhi (Float_t r)                                      { fdphicut = r ;}
+  void                     SetCTMdeltaEtaIso (Float_t r)                                      { fdetacutIso = r ;}
+  void                     SetCTMdeltaPhiIso (Float_t r)                                      { fdphicutIso = r ;}
+  void                     SetIsoMethod (Int_t r )                                         { fIsoMethod = r ;}
+  void                     SetEtIsoMethod (Int_t r )                                       { fEtIsoMethod = r ;}
+  void                     SetUEMethod (Int_t UE)                                          { fUEMethod = UE;}
+  void                     SetOutputFormat (Int_t iOut)                                    { fWho = iOut;}
+  void                     SetQA (Bool_t bQA)                                              { fQA = bQA;}
+  void                     SetMC (Bool_t MC)                                               { fIsMC = MC;}
+  void                     SetUSEofTPC (Bool_t TPC)                                        { fTPC4Iso = TPC;}
+  void                     SetLCAnalysis (Bool_t LC)                                       { fisLCAnalysis = LC;}
+  void                     SetNLMCut (Bool_t isNLMCut, Int_t NLMCut, Int_t NLMmin)                       { fIsNLMCut = isNLMCut;
+    fNLMCut = NLMCut; fNLMmin = NLMmin;}
+  void                     SetSmearForClusters( Int_t whichNLM)                            { fWhich= whichNLM;}
+  void                     SetTMClusterRejection (Bool_t tm)                               { fTMClusterRejected = tm;}
+  void                     SetTMClusterRejectioninCone (Bool_t tm)                         { fTMClusterInConeRejected = tm;}
+  void                     SetRejectEventWithoutTracks(Bool_t revwotr)                     { fRejectionEventWithoutTracks = revwotr;}
+  void                     SetAnalysispPb(Bool_t ana)                                      { fAnalysispPb = ana;}
+  void                     SetTriggerLevel1(Int_t L)                                       { fTriggerLevel1 = L;}
+  void                     SetM02Smearing(Bool_t smear)                                    { fSSsmearing = smear;}
+  void                     SetWidth4Smear(Float_t width)                                   { fSSsmearwidth = width;}
+  void                     SetMean4Smear(Float_t mean)                                     { fSSsmear_mean = mean;}
+  void                     SetExtraIsoCuts(Bool_t bExtraIsoCuts)                           { fExtraIsoCuts = bExtraIsoCuts;}
   void			   SetPtBinning(vector<Double_t> binedges)			   { fBinsPt = binedges; }
   void			   SetM02Binning(vector<Double_t> binedges)			   { fBinsM02 = binedges; }
   void			   SetEtisoBinning(vector<Double_t> binedges)			   { fBinsEtiso = binedges; }
