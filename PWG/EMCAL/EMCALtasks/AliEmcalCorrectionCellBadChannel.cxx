@@ -134,3 +134,4 @@ Bool_t AliEmcalCorrectionCellBadChannel::CheckIfRunChanged()
   }
   return runChanged;
 }
+// this comment serves no purpose
