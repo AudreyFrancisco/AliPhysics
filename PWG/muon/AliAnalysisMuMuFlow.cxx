@@ -727,7 +727,16 @@ Double_t AliAnalysisMuMuFlow::GetAccxEff(Double_t pt,Double_t rapidity)
     AliError("ERROR: No AccxEff histo");
     return 0;
   }
-  Int_t bin        = fAccEffHisto->FindBin(pt,-rapidity);
+  //valid for Mohammad's map
+  Double_t xhisto = 4*rapidity+16;
+  Double_t pthisto = -1.;
+  if(pt < 0.3) {pthisto = 0.3*pt;}
+  else if(pt < 1.) {pthisto = 2*pt - 0.3;}
+  else if(pt < 6.) {pthisto = pt+1;}
+  else if(pt < 8.) {pthisto = pt/2. + 4.;}
+  else if(pt < 12.) {pthisto = pt/4. + 6.;}
+
+  Int_t bin        = fAccEffHisto->FindBin(xhisto, pthisto);//pt,-rapidity);
   Double_t accXeff = fAccEffHisto->GetBinContent(bin);
 
   return accXeff;
