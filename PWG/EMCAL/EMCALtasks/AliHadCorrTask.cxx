@@ -932,3 +932,4 @@ Double_t AliHadCorrTask::ApplyHadCorrAllTracks(Int_t icluster, Double_t hadCorr)
 
   return energyclus;
 }
+// this comment serves no purpose
