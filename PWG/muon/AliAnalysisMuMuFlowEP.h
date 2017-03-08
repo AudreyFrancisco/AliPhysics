@@ -1,5 +1,5 @@
-#ifndef ALIANALYSISMUMUFLOW_H
-#define ALIANALYSISMUMUFLOW_H
+#ifndef ALIANALYSISMUMUFLOWEP_H
+#define ALIANALYSISMUMUFLOWEP_H
 
 /**
  *
@@ -16,12 +16,12 @@
 class TH2F;
 class AliVParticle;
 
-class AliAnalysisMuMuFlow : public AliAnalysisMuMuBase
+class AliAnalysisMuMuFlowEP : public AliAnalysisMuMuBase
 {
 public:
 
-  AliAnalysisMuMuFlow(TH2* AccEffHisto=0x0, Int_t systLevel=0);
-  virtual ~AliAnalysisMuMuFlow();
+  AliAnalysisMuMuFlowEP(TH2* AccEffHisto=0x0, Int_t systLevel=0);
+  virtual ~AliAnalysisMuMuFlowEP();
 
   Bool_t IsPtInRange(const AliVParticle& t1, const AliVParticle& t2,
                            Double_t& ptmin, Double_t& ptmax) const;
@@ -82,6 +82,7 @@ private:
   Double_t TriggerLptApt(Double_t *x, Double_t *par);
 
   Double_t GetEventPlane(const char* detector, Int_t step = 3);
+
 private:
   Bool_t fcomputeMeanV2;
   Bool_t fWeightMuon;
@@ -102,7 +103,7 @@ private:
   TString fEqSteps  [5] = {"raw", "plain", "rec", "align","twist"};
   TString fDetectors[3] = {"SPD","VZEROA", "VZEROC"};
 
-  ClassDef(AliAnalysisMuMuFlow,1) // implementation of AliAnalysisMuMuBase for muon pairs
+  ClassDef(AliAnalysisMuMuFlowEP,1) // implementation of AliAnalysisMuMuBase for muon pairs
 };
 
 #endif

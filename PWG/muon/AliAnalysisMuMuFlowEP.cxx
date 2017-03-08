@@ -1,10 +1,10 @@
-#include "AliAnalysisMuMuFlow.h"
+#include "AliAnalysisMuMuFlowEP.h"
 
 /**
  *
  * \ingroup pwg-muon-mumu
  *
- * \class AliAnalysisMuMuFlow
+ * \class AliAnalysisMuMuFlowEP
  *
  * Analysis which fills a bunch of histograms for invariant mass analysis of J/psi
  *
@@ -33,10 +33,10 @@
 #include "AliAnalysisTaskFlowVectorCorrections.h"
 #include <cassert>
 
-ClassImp(AliAnalysisMuMuFlow)
+ClassImp(AliAnalysisMuMuFlowEP)
 
 //_____________________________________________________________________________
-AliAnalysisMuMuFlow::AliAnalysisMuMuFlow(TH2* accEffHisto, Int_t systLevel)
+AliAnalysisMuMuFlowEP::AliAnalysisMuMuFlowEP(TH2* accEffHisto, Int_t systLevel)
 : AliAnalysisMuMuBase(),
 fcomputeMeanV2(kTRUE),
 fWeightMuon(kFALSE),
@@ -65,7 +65,7 @@ fNDetectors(3)
 }
 
 //_____________________________________________________________________________
-AliAnalysisMuMuFlow::~AliAnalysisMuMuFlow()
+AliAnalysisMuMuFlowEP::~AliAnalysisMuMuFlowEP()
 {
   /// dtor
   delete fAccEffHisto;
@@ -74,7 +74,7 @@ AliAnalysisMuMuFlow::~AliAnalysisMuMuFlow()
 
 //_____________________________________________________________________________
 void
-AliAnalysisMuMuFlow::DefineHistogramCollection(const char* eventSelection,
+AliAnalysisMuMuFlowEP::DefineHistogramCollection(const char* eventSelection,
                                                const char* triggerClassName,
                                                const char* centrality)
 {
@@ -119,7 +119,7 @@ AliAnalysisMuMuFlow::DefineHistogramCollection(const char* eventSelection,
   //                      600, -3.2, 3.2,-2);
   for(Int_t i=0; i<fNDetectors;i++){
     //VOA = default
-    CreatePairHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("EVENTPLANE_%s",fDetectors[i].Data()),Form("#mu+#mu- event plane distributionwith %s",fDetectors[i].Data()),
+    CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("EVENTPLANE_%s",fDetectors[i].Data()),Form("#mu+#mu- event plane distributionwith %s",fDetectors[i].Data()),
                      600, -1.6, 1.6,-2);
     CreatePairHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("DPHI_%s",fDetectors[i].Data()),Form("#mu+#mu- Dphi distribution with %s",fDetectors[i].Data()),
                      600, -0.01, 3.2,-2);//dphi corrected to be in [O,pi]
@@ -159,7 +159,8 @@ AliAnalysisMuMuFlow::DefineHistogramCollection(const char* eventSelection,
 
       // Mean pt minv histo
 
-      if ( fcomputeMeanV2 ){
+      if ( fcomputeMeanV2 && !minvName.Contains("phi")){
+      //not the details of the results for each Deltaphi bins
         TString mPtName(Form("MeanPtVs%s",minvName.Data()));
         // Reconstructed pair histo
         CreatePairHistos(kHistoForData | kHistoForMCInput,eventSelection,triggerClassName,centrality,mPtName.Data(),
@@ -167,6 +168,7 @@ AliAnalysisMuMuFlow::DefineHistogramCollection(const char* eventSelection,
         TString mYName(Form("MeanYVs%s",minvName.Data()));
         CreatePairHistos(kHistoForData | kHistoForMCInput,eventSelection,triggerClassName,centrality,mYName.Data(),
                          Form("#mu+#mu- mean y %s;M_{#mu^{+}#mu^{-}} (GeV/c^{2});<y^{#mu^{+}#mu^{-} (GeV/c^{2})}>",r->AsString().Data()),nMinvBins,minvMin,minvMax,0);
+
         // Generated J/psi histo
         // CreateEventHistos(kHistoForMCInput,eventSelection,triggerClassName,centrality,mPtName.Data(),
                           // Form("#mu+#mu- mean p_{T} %s;M_{#mu^{+}#mu^{-}} (GeV/c^{2});<p_{T}^{#mu^{+}#mu^{-} (GeV/c^{2})}>",r->AsString().Data()),nMinvBins,minvMin,minvMax,0);
@@ -175,7 +177,7 @@ AliAnalysisMuMuFlow::DefineHistogramCollection(const char* eventSelection,
                           // Form("#mu+#mu- mean p_{T} %s;M_{#mu^{+}#mu^{-}} (GeV/c^{2});<p_{T}^{#mu^{+}#mu^{-} (GeV/c^{2})}>",r->AsString().Data()),nMinvBins,minvMin,minvMax,0);
         TString mV2Name[3];
         for(Int_t i=0; i<3;i++){
-          mV2Name[i] = Form("MeanV2Vs%s_%s",minvName.Data(),fDetectors[i].Data());
+          mV2Name[i] = Form("MeanV2Vs%s_EP_%s",minvName.Data(),fDetectors[i].Data());
         // Reconstructed pair histo
           CreatePairHistos(kHistoForData | kHistoForMCInput,eventSelection,triggerClassName,centrality,mV2Name[i].Data(),
                          Form("#mu+#mu- mean v_{2}^{obs} %s;M_{#mu^{+}#mu^{-}} (GeV/c^{2});v_{2}^{obs} =< cos {2(#varphi_{#mu^{+}#mu^{-}}- #Psi_{EP,2})} > with %s",r->AsString().Data(),fDetectors[i].Data()),nMinvBins,minvMin,minvMax,0);
@@ -201,7 +203,7 @@ AliAnalysisMuMuFlow::DefineHistogramCollection(const char* eventSelection,
         CreateEventHistos(kHistoForMCInput,eventSelection,triggerClassName,Form("%s/INYRANGE",centrality),minvName.Data(),
                           Form("#mu+#mu- inv. mass %s (Acc #times Eff Corrected);M_{#mu^{+}#mu^{-}} (GeV/c^{2});Counts",r->AsString().Data()),nMCMinvBins,minvMin,minvMax,-2);
         // Mean pt accxeff corrected
-        if ( fcomputeMeanV2 ){
+        if ( fcomputeMeanV2 && !minvName.Contains("phi") ){
           TString mPtName(Form("MeanPtVs%s",minvName.Data()));
           CreatePairHistos(kHistoForData | kHistoForMCInput,eventSelection,triggerClassName,centrality,mPtName.Data(),
                            Form("#mu+#mu- mean p_{T} %s (Acc #times Eff Corrected);M_{#mu^{+}#mu^{-}} (GeV/c^{2});<p_{T}^{#mu^{+}#mu^{-}}>",r->AsString().Data()),nMinvBins,minvMin,minvMax,0);
@@ -224,7 +226,7 @@ AliAnalysisMuMuFlow::DefineHistogramCollection(const char* eventSelection,
 }
 
 //_____________________________________________________________________________
-void AliAnalysisMuMuFlow::DefineMinvRange(Double_t minvMin, Double_t minvMax, Double_t minvBinSize)
+void AliAnalysisMuMuFlowEP::DefineMinvRange(Double_t minvMin, Double_t minvMax, Double_t minvBinSize)
 {
   /// Define the Minv histogram range
 
@@ -234,7 +236,7 @@ void AliAnalysisMuMuFlow::DefineMinvRange(Double_t minvMin, Double_t minvMax, Do
 }
 
 //_____________________________________________________________________________
-void AliAnalysisMuMuFlow::FillHistosForPair(const char* eventSelection,
+void AliAnalysisMuMuFlowEP::FillHistosForPair(const char* eventSelection,
                                             const char* triggerClassName,
                                             const char* centrality,
                                             const char* pairCutName,
@@ -372,7 +374,8 @@ void AliAnalysisMuMuFlow::FillHistosForPair(const char* eventSelection,
 
     //Fully integrated case
     if ( r->IsIntegrated() ){
-      AliWarning("AliMuMu does not deal with integrated binning, implement it !");
+      ok = kTRUE;
+      if ( pair4MomentumMC ) okMC = kTRUE;
     }
     // 2D Binning
     else if ( r->Is2D() ){
@@ -590,7 +593,7 @@ void AliAnalysisMuMuFlow::FillHistosForPair(const char* eventSelection,
 
 
 //_____________________________________________________________________________
-void AliAnalysisMuMuFlow::FillHistosForMCEvent(const char* eventSelection,const char* triggerClassName,const char* centrality)
+void AliAnalysisMuMuFlowEP::FillHistosForMCEvent(const char* eventSelection,const char* triggerClassName,const char* centrality)
 {
   ///
   /// Fill MC inputs histograms.
@@ -713,7 +716,7 @@ void AliAnalysisMuMuFlow::FillHistosForMCEvent(const char* eventSelection,const 
 }
 
 //_____________________________________________________________________________
-TString AliAnalysisMuMuFlow::GetMinvHistoName(const AliAnalysisMuMuBinning::Range& r, Bool_t accEffCorrected) const
+TString AliAnalysisMuMuFlowEP::GetMinvHistoName(const AliAnalysisMuMuBinning::Range& r, Bool_t accEffCorrected) const
 {
   return TString::Format("MinvUS%s%s%s",
                          accEffCorrected ? "_AccEffCorr" : "",fMinvBinSeparator.Data(),r.AsString().Data());
@@ -721,7 +724,7 @@ TString AliAnalysisMuMuFlow::GetMinvHistoName(const AliAnalysisMuMuBinning::Rang
 
 
 //_____________________________________________________________________________
-Double_t AliAnalysisMuMuFlow::GetAccxEff(Double_t pt,Double_t rapidity)
+Double_t AliAnalysisMuMuFlowEP::GetAccxEff(Double_t pt,Double_t rapidity)
 {
   if (!fAccEffHisto){
     AliError("ERROR: No AccxEff histo");
@@ -744,7 +747,7 @@ Double_t AliAnalysisMuMuFlow::GetAccxEff(Double_t pt,Double_t rapidity)
 
 
 //_____________________________________________________________________________
-Double_t AliAnalysisMuMuFlow::WeightMuonDistribution(Double_t pt)
+Double_t AliAnalysisMuMuFlowEP::WeightMuonDistribution(Double_t pt)
 {
   ///Return a weight for a single pt and y, which depend on the varied distributions.
   // FIXME: hard coded, find a clean way to fix the distribution parameters from outside
@@ -781,7 +784,7 @@ Double_t AliAnalysisMuMuFlow::WeightMuonDistribution(Double_t pt)
 }
 
 //_____________________________________________________________________________
-Double_t AliAnalysisMuMuFlow::WeightPairDistribution(Double_t pt,Double_t rapidity)
+Double_t AliAnalysisMuMuFlowEP::WeightPairDistribution(Double_t pt,Double_t rapidity)
 {
   //Return a weight for a dimuon pt and y, which depend on the varied distributions.
   // FIXME: hard coded, find a clean way to fix the distribution parameters from outside
@@ -798,7 +801,7 @@ Double_t AliAnalysisMuMuFlow::WeightPairDistribution(Double_t pt,Double_t rapidi
 }
 
 //______________________________________________
-Double_t AliAnalysisMuMuFlow::TriggerLptApt ( Double_t* xVal, Double_t* par )
+Double_t AliAnalysisMuMuFlowEP::TriggerLptApt ( Double_t* xVal, Double_t* par )
 {
   // trigger response function
   Double_t xx             = xVal[0];
@@ -811,7 +814,7 @@ Double_t AliAnalysisMuMuFlow::TriggerLptApt ( Double_t* xVal, Double_t* par )
 }
 
 //_____________________________________________________________________________
-Bool_t AliAnalysisMuMuFlow::IsPtInRange(const AliVParticle& t1, const AliVParticle& t2, Double_t& ptmin, Double_t& ptmax) const
+Bool_t AliAnalysisMuMuFlowEP::IsPtInRange(const AliVParticle& t1, const AliVParticle& t2, Double_t& ptmin, Double_t& ptmax) const
 {
   /// Whether the pair passes the pT cut
 
@@ -826,13 +829,13 @@ Bool_t AliAnalysisMuMuFlow::IsPtInRange(const AliVParticle& t1, const AliVPartic
 }
 
 //_____________________________________________________________________________
-void AliAnalysisMuMuFlow::NameOfIsPtInRange(TString& name, Double_t& ptmin, Double_t& ptmax) const
+void AliAnalysisMuMuFlowEP::NameOfIsPtInRange(TString& name, Double_t& ptmin, Double_t& ptmax) const
 {
   name.Form("PAIRPTIN-%2.1f_-%2.1f",ptmin,ptmax);
 }
 
 //_____________________________________________________________________________
-Bool_t AliAnalysisMuMuFlow::IsRapidityInRange(const AliVParticle& t1, const AliVParticle& t2, Double_t& yMin, Double_t& yMax) const
+Bool_t AliAnalysisMuMuFlowEP::IsRapidityInRange(const AliVParticle& t1, const AliVParticle& t2, Double_t& yMin, Double_t& yMax) const
 {
   /// Whether the pair passes the rapidity cut
   TLorentzVector total(t1.Px(),t1.Py(),t1.Pz(),TMath::Sqrt(AliAnalysisMuonUtility::MuonMass2()+t1.P()*t1.P()));
@@ -845,18 +848,18 @@ Bool_t AliAnalysisMuMuFlow::IsRapidityInRange(const AliVParticle& t1, const AliV
   return  ( y < yMax && y > yMin );
 }
 //_____________________________________________________________________________
-void AliAnalysisMuMuFlow::NameOfIsRapidityInRange(TString& name, Double_t& ymin, Double_t& ymax) const
+void AliAnalysisMuMuFlowEP::NameOfIsRapidityInRange(TString& name, Double_t& ymin, Double_t& ymax) const
 {
   name.Form("PAIRYIN%2.2f-%2.2f",-ymin,-ymax);
 }
 //_____________________________________________________________________________
-void AliAnalysisMuMuFlow::SetBinsToFill(const char* particle, const char* bins)
+void AliAnalysisMuMuFlowEP::SetBinsToFill(const char* particle, const char* bins)
 {
   delete fBinsToFill;
   fBinsToFill = Binning()->CreateBinObjArray(particle,bins,"");
 }
 //_____________________________________________________________________________
-Double_t AliAnalysisMuMuFlow::GetEventPlane(const char* detector, Int_t step)
+Double_t AliAnalysisMuMuFlowEP::GetEventPlane(const char* detector, Int_t step)
 {
   // The function access the corrected Qn vector from the Qn correction framework (PWGPP/EVCHAR/FlowVectorCorrections)
   // Check the documentation at https://twiki.cern.ch/twiki/bin/view/ALICE/StartUsingR2FlowVectorCorrections
@@ -898,7 +901,7 @@ Double_t AliAnalysisMuMuFlow::GetEventPlane(const char* detector, Int_t step)
 }
 
 //________________________________________________________________________
-void AliAnalysisMuMuFlow::SetOriginPtFunc(TString formula, const Double_t *param,Double_t xMin, Double_t xMax)
+void AliAnalysisMuMuFlowEP::SetOriginPtFunc(TString formula, const Double_t *param,Double_t xMin, Double_t xMax)
 {
   /// Create the original function with the parameters used in simulation to generate the pT distribution.
   /// It must be in the form [0]*(...) to allow for global normalization.
@@ -915,7 +918,7 @@ void AliAnalysisMuMuFlow::SetOriginPtFunc(TString formula, const Double_t *param
 }
 
 //________________________________________________________________________
-void AliAnalysisMuMuFlow::SetNewPtFunc(TString formula, const Double_t *param,Double_t xMin, Double_t xMax)
+void AliAnalysisMuMuFlowEP::SetNewPtFunc(TString formula, const Double_t *param,Double_t xMin, Double_t xMax)
 {
   /// Create the new function with its initial parameters to fit the generated/weighted pT distribution.
   /// It must be in the form [0]*(...) to allow for global normalization.
@@ -932,7 +935,7 @@ void AliAnalysisMuMuFlow::SetNewPtFunc(TString formula, const Double_t *param,Do
 }
 
 //________________________________________________________________________
-void AliAnalysisMuMuFlow::SetOriginYFunc(TString formula, const Double_t *param,Double_t xMin, Double_t xMax)
+void AliAnalysisMuMuFlowEP::SetOriginYFunc(TString formula, const Double_t *param,Double_t xMin, Double_t xMax)
 {
   /// Create the original function with the parameters used in simulation to generate the y distribution.
   /// It must be in the form [0]*(...) to allow for global normalization.
@@ -949,7 +952,7 @@ void AliAnalysisMuMuFlow::SetOriginYFunc(TString formula, const Double_t *param,
 }
 
 //________________________________________________________________________
-void AliAnalysisMuMuFlow::SetNewYFunc(TString formula, const Double_t *param, Double_t xMin, Double_t xMax)
+void AliAnalysisMuMuFlowEP::SetNewYFunc(TString formula, const Double_t *param, Double_t xMin, Double_t xMax)
 {
   /// Create the new function with its initial parameters to fit the generated/weighted y distribution.
   /// It must be in the form [0]*(...) to allow for global normalization.
@@ -966,7 +969,7 @@ void AliAnalysisMuMuFlow::SetNewYFunc(TString formula, const Double_t *param, Do
 }
 
 //________________________________________________________________________
-void AliAnalysisMuMuFlow::NormFunc(TF1 *f, Double_t min, Double_t max)
+void AliAnalysisMuMuFlowEP::NormFunc(TF1 *f, Double_t min, Double_t max)
 {
   /// normalize the function to its integral in the given range
    f->SetNpx(100.*(max-min));
