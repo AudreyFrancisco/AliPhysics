@@ -119,7 +119,7 @@ AliAnalysisMuMuFlowEP::DefineHistogramCollection(const char* eventSelection,
   //                      600, -3.2, 3.2,-2);
   for(Int_t i=0; i<fNDetectors;i++){
     //VOA = default
-    CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("EVENTPLANE_%s",fDetectors[i].Data()),Form("#mu+#mu- event plane distributionwith %s",fDetectors[i].Data()),
+    CreatePairHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("EVENTPLANE_%s",fDetectors[i].Data()),Form("#mu+#mu- event plane distributionwith %s",fDetectors[i].Data()),
                      600, -1.6, 1.6,-2);
     CreatePairHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("DPHI_%s",fDetectors[i].Data()),Form("#mu+#mu- Dphi distribution with %s",fDetectors[i].Data()),
                      600, -0.01, 3.2,-2);//dphi corrected to be in [O,pi]
