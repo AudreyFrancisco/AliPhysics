@@ -23,6 +23,7 @@ AliAnalysisTaskPhiFlow* AddTaskPhiFlow(Bool_t SP = kFALSE, // select flow analys
         Float_t centrMin = 20., // centrality selection
         Float_t centrMax = 40.,
         TString suffixName = "UniqueID", // unique id for output objects
+        
         Double_t ITSsigma = 3., // pid mode (see task implementation)
         Int_t harm = 2, // harmonic vn
         UInt_t poi_filter = 32, // aod filterbits
