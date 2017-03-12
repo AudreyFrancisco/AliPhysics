@@ -54,7 +54,7 @@ protected:
                                  const AliVParticle& part,
                                  const AliVParticle& part2);
 
-  // virtual void FillHistosForEvent(const char* eventSelection,const char* triggerClassName, const char* centrality);
+  virtual void FillHistosForEvent(const char* eventSelection,const char* triggerClassName, const char* centrality);
 
   void FillHistosForMCEvent(const char* eventSelection,const char* triggerClassName,const char* centrality);
 

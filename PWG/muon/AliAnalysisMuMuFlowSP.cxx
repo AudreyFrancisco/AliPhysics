@@ -124,7 +124,7 @@ AliAnalysisMuMuFlowSP::DefineHistogramCollection(const char* eventSelection,
   for(Int_t i=0; i<fNDetectors; i++){
     // CreatePairHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("SP_%s",fDetectors[i].Data()),Form("#mu+#mu- SP with %s",fDetectors[i].Data()),
     //                  600, -1.6, 1.6,-2);
-    CreatePairHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("Qn_%s",fDetectors[i].Data()),Form("Qn vector from %s; Qn_{x};Qn_{y}",fDetectors[i].Data()),
+    CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("Qn_%s",fDetectors[i].Data()),Form("Qn vector from %s; Qn_{x};Qn_{y}",fDetectors[i].Data()),
                      600, -1., 1., 600, -1., 1.);
   }
   // if( ShouldCorrectDimuonForAccEff())
@@ -305,7 +305,7 @@ void AliAnalysisMuMuFlowSP::FillHistosForPair(const char* eventSelection,
     SP[i] = U*Qn[i];
     // cout << "SP : U (" << U.X() << ", " <<U.Y() << ") QN(" << Qn[i].X() <<", " << Qn[i].Y() << ") = "<< SP[i] << endl;
 
-    if ( !IsHistogramDisabled(Form("Qn_%s",fDetectors[i].Data())) ) proxy->Histo(Form("Qn_%s",fDetectors[i].Data()))->Fill(Qn[i].X(),Qn[i].Y());
+    // if ( !IsHistogramDisabled(Form("Qn_%s",fDetectors[i].Data())) ) proxy->Histo(Form("Qn_%s",fDetectors[i].Data()))->Fill(Qn[i].X(),Qn[i].Y());
   }
 
 
@@ -326,7 +326,7 @@ void AliAnalysisMuMuFlowSP::FillHistosForPair(const char* eventSelection,
 
     for(Int_t i=0; i<fNDetectors; i++){
       SPMC[i] = UMC*Qn[i];
-      if ( !IsHistogramDisabled(Form("Qn_%s",fDetectors[i].Data())) ) mcProxy->Histo(Form("Qn_%s",fDetectors[i].Data()))->Fill(Qn[i].X(),Qn[i].Y());
+      // if ( !IsHistogramDisabled(Form("Qn_%s",fDetectors[i].Data())) ) mcProxy->Histo(Form("Qn_%s",fDetectors[i].Data()))->Fill(Qn[i].X(),Qn[i].Y());
     }
   }
 
@@ -480,9 +480,6 @@ void AliAnalysisMuMuFlowSP::FillHistosForPair(const char* eventSelection,
               if ( !hprofMC)AliError(Form("Could not get SP_%s_vs%s",fDetectors[i].Data(),minvName.Data()));
               else hprofMC->Fill(pair4Momentum.M(),SP[i],inputWeight/AccxEff);
             }
-
-            TString mUMCName(Form("UMC_%s",minvName.Data()));
-            if ( !IsHistogramDisabled(mUMCName.Data() )) proxy->Histo(mUMCName.Data())->Fill(U.X(),U.Y());
           }
         }
       }
@@ -493,25 +490,25 @@ void AliAnalysisMuMuFlowSP::FillHistosForPair(const char* eventSelection,
 }
 
 //_____________________________________________________________________________
-// void AliAnalysisMuMuFlowSP::FillHistosForEvent(const char* eventSelection,const char* triggerClassName,const char* centrality)
-// {
-//     // Create proxy in AliMergeableCollection
-//   AliMergeableCollectionProxy* proxyEv = HistogramCollection()->CreateProxy(BuildPath(eventSelection,triggerClassName,centrality));
+void AliAnalysisMuMuFlowSP::FillHistosForEvent(const char* eventSelection,const char* triggerClassName,const char* centrality)
+{
+    // Create proxy in AliMergeableCollection
+  AliMergeableCollectionProxy* proxyEv = HistogramCollection()->CreateProxy(BuildPath(eventSelection,triggerClassName,centrality));
 
-//   TVector2 Qn[3];//Q vectors (2nd harmonic) for each detector
-//   for(Int_t i=0; i<fNDetectors; i++){
-//     cout << "Qn:" << endl;
-//     if(i==0) Qn[i]= GetQn(fDetectors[i].Data(),4); //twist for SPD
-//     else Qn[i]= GetQn(fDetectors[i].Data(),3); //twist
+  TVector2 Qn[3];//Q vectors (2nd harmonic) for each detector
+  for(Int_t i=0; i<fNDetectors; i++){
+    cout << "Qn:" << endl;
+    if(i==0) Qn[i]= GetQn(fDetectors[i].Data(),4); //twist for SPD
+    else Qn[i]= GetQn(fDetectors[i].Data(),3); //twist
 
-//     cout << ":Qn " << endl;
+    cout << ":Qn " << endl;
 
-//     if ( !IsHistogramDisabled(Form("Qn_%s",fDetectors[i].Data())) ) proxyEv->Histo(Form("Qn_%s",fDetectors[i].Data()))->Fill(Qn[i].X(),Qn[i].Y());
-//     cout << "savd histo " << endl;
-//   }
+    if ( !IsHistogramDisabled(Form("Qn_%s",fDetectors[i].Data())) ) proxyEv->Histo(Form("Qn_%s",fDetectors[i].Data()))->Fill(Qn[i].X(),Qn[i].Y());
+    cout << "savd histo " << endl;
+  }
 
-//   delete proxyEv;
-// }
+  delete proxyEv;
+}
 //_____________________________________________________________________________
 void AliAnalysisMuMuFlowSP::FillHistosForMCEvent(const char* eventSelection,const char* triggerClassName,const char* centrality)
 {
@@ -520,7 +517,23 @@ void AliAnalysisMuMuFlowSP::FillHistosForMCEvent(const char* eventSelection,cons
   ///
 
   if ( !HasMC() ) return;
-  AliError("AliMuMuFlow doe not deal with MC event yet, implement it !");
+  AliError("AliMuMuFlow does not deal with MC event yet, implement it !");
+
+  AliMergeableCollectionProxy* proxyEvMC = HistogramCollection()->CreateProxy(BuildPath(eventSelection,triggerClassName,centrality));
+
+  TVector2 Qn[3];//Q vectors (2nd harmonic) for each detector
+  for(Int_t i=0; i<fNDetectors; i++){
+    cout << "Qn:" << endl;
+    if(i==0) Qn[i]= GetQn(fDetectors[i].Data(),4); //twist for SPD
+    else Qn[i]= GetQn(fDetectors[i].Data(),3); //twist
+
+    cout << ":Qn " << endl;
+
+    // if ( !IsHistogramDisabled(Form("QnMC_%s",fDetectors[i].Data())) ) proxyEvMC->Histo(Form("QnMC_%s",fDetectors[i].Data()))->Fill(Qn[i].X(),Qn[i].Y());
+    cout << "savd histo " << endl;
+  }
+
+  delete proxyEvMC;
   // // Create general proxies to the Histogram Collection
   // TString mcPath = BuildMCPath(eventSelection,triggerClassName,centrality);
   // AliMergeableCollectionProxy* mcProxy = HistogramCollection()->CreateProxy(mcPath);
