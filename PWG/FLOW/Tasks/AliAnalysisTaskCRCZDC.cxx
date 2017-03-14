@@ -859,6 +859,16 @@ void AliAnalysisTaskCRCZDC::UserCreateOutputObjects()
       //     fCRCQVecListRun[r]->Add(fPtPhiEtaRbRFB768[r][i]);
       //   }
     }
+    
+//    fhZNSpectraRbR[r] = new TH3D(Form("fhZNSpectraRbR[%d]",fRunList[r]),Form("fhZNSpectraRbR[%d]",fRunList[r]),50,0.,100.,8,0.,8.,100,0.,1.E5);
+//    fCRCQVecListRun[r]->Add(fhZNSpectraRbR[r]);
+    
+    //   for(Int_t i=0;i<fnCen;i++) {
+    //     fPtPhiEtaRbRFB128[r][i] = new TH3F(Form("fPtPhiEtaRbRFB128[%d][%d]",r,i),Form("fPtPhiEtaRbRFB128[%d][%d]",r,i),14, ptmin, 16, phimin, 16, etamin);
+    //     fCRCQVecListRun[r]->Add(fPtPhiEtaRbRFB128[r][i]);
+    //     fPtPhiEtaRbRFB768[r][i] = new TH3F(Form("fPtPhiEtaRbRFB768[%d][%d]",r,i),Form("fPtPhiEtaRbRFB768[%d][%d]",r,i),14, ptmin, 16, phimin, 16, etamin);
+    //     fCRCQVecListRun[r]->Add(fPtPhiEtaRbRFB768[r][i]);
+    //   }
   }
   
   PostData(2, fOutput);
@@ -1684,7 +1694,7 @@ void AliAnalysisTaskCRCZDC::UserExec(Option_t */*option*/)
             fhZNSpectraCor->Fill(centrperc,i+0.5,EZNC);
           }
           if(fUseZDCSpectraCorr && EZNC<=0.) fAllChONZNC=kFALSE;
-          
+
           SumEZNC += EZNC;
           
           // build centroid
