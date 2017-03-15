@@ -1536,7 +1536,6 @@ private:
   TArrayD fAvVtxPosZ;    // Run list
   TList *fCRCQVecList; //! Q Vectors list
   TList *fCRCQVecListTPC; //! Q Vectors list TPC
-  TList *fCRCQVecListVZ; //! Q Vectors list VZERO
   TList *fCRCQVecListRun[fCRCMaxnRun]; //! Q Vectors list per run
   TList *fCRCQVecWeightsList; //! Weights for Q Vectors
   TList *fCRCZDCCalibList; //! ZDC calibration
@@ -1806,10 +1805,8 @@ private:
   TProfile2D *fCRCTPCQVecCenVtxTime[fCRCMaxnRun][3][4]; //!
   TProfile2D *fCRCZDCQVecCenVtxTime[fCRCMaxnRun][3][4]; //!
 //  TProfile2D *fTPCEtaHist[fkNHistQVecCorrv1eta]; //!
-  TProfile3D *fCRCTPCQVecVtxPosCen[fCRCMaxnCen][fCRCZDCnEtaBin][6]; //!
-  TProfile2D *fTPCQVecProTemp[2][4]; //!
-  const static Int_t fkNv1evenCor = 6;
-  TProfile2D *fFlowSPZDCv1evenCorPro[fkNv1evenCor]; //!
+  TProfile3D *fCRCTPCQVecVtxPosCenRe[fCRCMaxnCen][fCRCZDCnEtaBin]; //!
+  TProfile3D *fCRCTPCQVecVtxPosCenIm[fCRCMaxnCen][fCRCZDCnEtaBin]; //!
   
   // Flow QC
   TList *fFlowQCList;    //! QC List

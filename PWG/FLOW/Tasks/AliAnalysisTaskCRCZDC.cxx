@@ -755,40 +755,11 @@ void AliAnalysisTaskCRCZDC::UserCreateOutputObjects()
   for (Int_t i=0; i<fCRCnRun; i++) {
     fVZEROMult->GetXaxis()->SetBinLabel(i+1,Form("%d",fRunList[i]));
   }
-  fVZEROStuffList->Add(fVZEROMult);
+  fOutput->Add(fVZEROMult);
   
-  if(fVZEROGainEqList) {
-    fVZEROGainEqHist = (TH2D*)fVZEROGainEqList->FindObject("VZEROEqGain");
-    fVZEROStuffList->Add(fVZEROGainEqHist);
-  }
-  if(fVZEROQVecRecList) {
-    for (Int_t k=0; k<fkVZEROnHar; k++) {
-      fVZEROQVectorRecQxStored[k] = (TProfile3D*)fVZEROQVecRecList->FindObject(Form("fVZEROQVectorRecQx[%d]",k));
-      fVZEROQVectorRecQxStored[k]->SetTitle(Form("fVZEROQVectorRecQxStored[%d]",k));
-      fVZEROQVectorRecQxStored[k]->SetName(Form("fVZEROQVectorRecQxStored[%d]",k));
-      fVZEROStuffList->Add(fVZEROQVectorRecQxStored[k]);
-      fVZEROQVectorRecQyStored[k] = (TProfile3D*)fVZEROQVecRecList->FindObject(Form("fVZEROQVectorRecQy[%d]",k));
-      fVZEROQVectorRecQyStored[k]->SetTitle(Form("fVZEROQVectorRecQyStored[%d]",k));
-      fVZEROQVectorRecQyStored[k]->SetName(Form("fVZEROQVectorRecQyStored[%d]",k));
-      fVZEROStuffList->Add(fVZEROQVectorRecQyStored[k]);
-      for (Int_t t=0; t<fkVZEROnQAplots; t++) {
-        fVZEROQVectorRecFinal[k][t] = new TProfile2D(Form("fVZEROQVectorRecFinal[%d][%d]",k,t),Form("fVZEROQVectorRecFinal[%d][%d]",k,t),fCRCnRun,0.,1.*fCRCnRun,100,0.,100.,"s");
-        fVZEROQVectorRecFinal[k][t]->Sumw2();
-        fVZEROStuffList->Add(fVZEROQVectorRecFinal[k][t]);
-      }
-    }
-  }
-  
-//  for (Int_t k=0; k<fkVZEROnHar; k++) {
-//    fVZEROQVectorRecQx[k] = new TProfile3D(Form("fVZEROQVectorRecQx[%d]",k),Form("fVZEROQVectorRecQx[%d]",k),fCRCnRun,0.,1.*fCRCnRun,100,0.,100.,8,0.,8.,"s");
-//    fVZEROQVectorRecQx[k]->Sumw2();
-//    fVZEROStuffList->Add(fVZEROQVectorRecQx[k]);
-//    fVZEROQVectorRecQy[k] = new TProfile3D(Form("fVZEROQVectorRecQy[%d]",k),Form("fVZEROQVectorRecQy[%d]",k),fCRCnRun,0.,1.*fCRCnRun,100,0.,100.,8,0.,8.,"s");
-//    fVZEROQVectorRecQy[k]->Sumw2();
-//    fVZEROStuffList->Add(fVZEROQVectorRecQy[k]);
-//  }
-  
-  // track QA
+  Double_t ptmin[] = {0.2,0.4,0.6,0.8,1.,1.2,1.4,1.8,2.2,3.,4.,6.,8.,12.,20.};
+  Double_t phimin[] = {0.,TMath::Pi()/8.,2*TMath::Pi()/8.,3*TMath::Pi()/8.,4*TMath::Pi()/8.,5*TMath::Pi()/8.,6*TMath::Pi()/8.,7*TMath::Pi()/8.,8*TMath::Pi()/8.,9*TMath::Pi()/8.,10*TMath::Pi()/8.,11*TMath::Pi()/8.,12*TMath::Pi()/8.,13*TMath::Pi()/8.,14*TMath::Pi()/8.,15*TMath::Pi()/8.,16*TMath::Pi()/8.};
+  Double_t etamin[] = {-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0.,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8};
   
   if(fAnalysisType == kTrackQA) {
     
@@ -1509,6 +1480,10 @@ void AliAnalysisTaskCRCZDC::UserExec(Option_t */*option*/)
       AliAODVZERO *vzeroAOD = aod->GetVZEROData();
       Double_t multV0A = vzeroAOD->GetMTotV0A();
       Double_t multV0C = vzeroAOD->GetMTotV0C();
+      for(Int_t i=0; i<64; i++) {
+        Double_t mult = vzeroAOD->GetMultiplicity(i);
+        fVZEROMult->Fill(RunBin+0.5,i+0.5,mult);
+      }
       
       // set VZERO Q-vectors
       if(fDataSet==k2015 || fDataSet==k2015v6) {
