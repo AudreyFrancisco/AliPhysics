@@ -5,38 +5,31 @@ AliAnalysisTaskSimpleTreeMaker *AddTaskSimpleTreeMaker(TString taskName = "MLtre
                                              Double_t ptMax = 10.0,
 					     ) {				
 
-    AliAnalysisManager *mgr = AliAnalysisManager::GetAnalysisManager();
-    if (!mgr) {
-        ::Error("AddTaskSimpleTreeMaker",  "No analysis manager to connect to.");
-        return NULL;
-    }
+  AliAnalysisManager *mgr = AliAnalysisManager::GetAnalysisManager();
+  if (!mgr) {
+    ::Error("AddTaskSimpleTreeMaker",  "No analysis manager to connect to.");
+    return NULL;
+  }
 
-    // Check the analysis type using the event handlers connected to the analysis manager.
-    //===========================================================================
-    if (!mgr->GetInputEventHandler()) {
-        ::Error("AddTaskSimpleTreeMaker",  "This task requires an input event handler");
-        return NULL;
-    }
+  // Check the analysis type using the event handlers connected to the analysis manager.
+  //===========================================================================
+  if (!mgr->GetInputEventHandler()) {
+    ::Error("AddTaskSimpleTreeMaker",  "This task requires an input event handler");
+    return NULL;
+  }
 
-    TString analysisType = mgr->GetInputEventHandler()->GetDataType(); // can be "ESD" or "AOD"
+  TString analysisType = mgr->GetInputEventHandler()->GetDataType(); // can be "ESD" or "AOD"
 
-    if (analysisType != "ESD" && analysisType != "AOD"){
-        ::Error("AddTaskSimpleTreeMaker",  "analysis type NOT AOD or ESD --> makes no sense!");
-        return NULL;
-    }
+  if (analysisType!="ESD"){
+    ::Error("AddTaskSimpleTreeMaker",  "analysis type NOT AOD --> makes no sense!");
+    return NULL;
+  }
 
-    AliAnalysisTaskSimpleTreeMaker *taskESD = new AliAnalysisTaskSimpleTreeMaker(taskName);
-    // ==========================================================================
-    // user customization part
+  AliAnalysisTaskSimpleTreeMaker *taskESD = new AliAnalysisTaskSimpleTreeMaker(taskName);
+  // ==========================================================================
+  // user customization part
 
-    //taskESD->SelectCollisionCandidates(AliVEvent::kINT7);
-    //taskESD->SetMC(kFALSE);
-    //taskESD->setSDDstatus(kFALSE);
-    //taskESD->createV0tree(kFALSE);
-    //taskESD->GRIDanalysis(kFALSE);
-    //taskESD->useAODs(kFALSE);
-    //taskESD->setFilterBitSelection(4);
-
+  taskESD->SelectCollisionCandidates(AliVEvent::kINT7);
   
     // ==========================================================================
     mgr->AddTask(taskESD);
