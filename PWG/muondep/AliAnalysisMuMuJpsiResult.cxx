@@ -2483,8 +2483,10 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2VWG2()
   Int_t bin = fHisto->FindBin(0.26);
 
   // bckInit->SetParameters(fHisto->GetBinContent(bin),1.6,.89,0.03,0.046);// 02
-  bckInit->SetParameters(fHisto->GetBinContent(bin),1.85,0.6,0.3,0.);
+  // bckInit->SetParameters(fHisto->GetBinContent(bin),1.85,0.6,0.3,0.);
   // bckInit->SetParameters(fHisto->GetBinContent(bin),2.,0.5,0.3,1.0); //24
+  // bckInit->SetParameters(fHisto->GetBinContent(bin),1.3,-0.5,-0.4,.03); //24
+  bckInit->SetParameters(fHisto->GetBinContent(bin),1.9,-0.4,-1.,.2); //46
   // bckInit->SetParameters(fHisto->GetBinContent(bin),1.9,.21,1.2,-0.16);//812
 
   SetFitRejectRange(2.2,3.8);
@@ -3038,7 +3040,9 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2POL2POL3()
 
   Int_t bin = fHisto->FindBin(0.7);
   // bckInit->SetParameters(0.,1.,bin,0.,0.,1.,1.);
-  bckInit->SetParameters(6.,-150.,bin,-.003,.04,-.1);
+  // bckInit->SetParameters(6.,-150.,bin,-.003,.04,-.1);
+  // bckInit->SetParameters(-130.,350.,bin,-.05,.5,-1.);//24
+  bckInit->SetParameters(300.,400.,bin,.05,.15,-.8);//46
   bckInit->FixParameter(6.,1);
 
   // bckInit->SetParLimits(0.,-30,30);
@@ -4692,9 +4696,11 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWVWG2()
 
   Int_t bin = fHisto->FindBin(0.26);
 
-  bckInit->SetParameters(fHisto->GetBinContent(bin),2.,0.5,0.3,0.);
+  // bckInit->SetParameters(fHisto->GetBinContent(bin),2.,0.5,0.3,0.);//2-4
+  bckInit->SetParameters(fHisto->GetBinContent(bin),1.9,-0.4,-1.,.2); //46
+  // bckInit->SetParameters(fHisto->GetBinContent(bin),1.5,0.5,0.5,-0.1);
 
-  SetFitRejectRange(2.6,4.0);
+  SetFitRejectRange(2.2,3.8);
 
   TFitResultPtr fitResultInit = fHisto->Fit(bckInit,fitOptionBg);
 
@@ -5236,7 +5242,9 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWPOL2POL3()
 
   Int_t bin = fHisto->FindBin(0.7);
 
-  bckInit->SetParameters(0.,0.,bin,0.,0.,1.,1.);
+  // bckInit->SetParameters(0.,0.,bin,0.,0.,1.,1.);
+  // bckInit->SetParameters(-130.,350.,bin,-.05,.5,-1.);//24
+  bckInit->SetParameters(300.,400.,bin,.05,.15,-.8);//46
   bckInit->FixParameter(6.,1);
 
   // bckInit->SetParLimits(0.,-30,30);
@@ -9684,8 +9692,8 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMECB2POL2POL3_BKGMV2POL2()
 {
   //Fit mean dimuon mean pt to get Jpsi mean pt using the CB2 signal parameters, VWG2 for the Bkg, Jpsi mpt = cte and Bkg mpt = pol4
 
-  const char* fitOption = "SERI"; //We can add NO to avoid plotting
-  const char* fitOptionBg = "SERI"; //We can add NO to avoid plotting
+  const char* fitOption = "SER"; //We can add NO to avoid plotting
+  const char* fitOptionBg = "SER"; //We can add NO to avoid plotting
 
   fHisto->GetListOfFunctions()->Delete();
 
