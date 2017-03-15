@@ -2992,7 +2992,7 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2POL2POL3()
   fHisto->GetListOfFunctions()->Delete();
 
   const char* fitOption = "SERLM"; //We can add NO to avoid plotting
-  const char* fitOptionBg = "SERI"; //We can add NO to avoid plotting
+  const char* fitOptionBg = "SER"; //We can add NO to avoid plotting
 
   //__________ Get tails parameters, fitting range and SigmaPsiP
   Double_t alphaLow     = GetValue("alJPsi");
@@ -3038,7 +3038,7 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2POL2POL3()
 
   Int_t bin = fHisto->FindBin(0.7);
   // bckInit->SetParameters(0.,1.,bin,0.,0.,1.,1.);
-  bckInit->SetParameters(-0.,250.,bin,-3.,18.,-2.8);
+  bckInit->SetParameters(6.,-150.,bin,-.003,.04,-.1);
   bckInit->FixParameter(6.,1);
 
   // bckInit->SetParLimits(0.,-30,30);
@@ -4795,8 +4795,8 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWVWG2()
   Set("FitChi2PerNDF",fitTotal->GetChisquare()/fitTotal->GetNDF(),0.0);
   Set("FitNDF",fitTotal->GetNDF(),0.0);
 
-  Set("kVWG",fitTotal->GetParameter(0),fitTotal->GetParError(0));
-  Set("mVWG",fitTotal->GetParameter(1),fitTotal->GetParError(1));
+  Set("kVWG2",fitTotal->GetParameter(0),fitTotal->GetParError(0));
+  Set("mVWG2",fitTotal->GetParameter(1),fitTotal->GetParError(1));
   Set("s1VWG2",fitTotal->GetParameter(2),fitTotal->GetParError(2));
   Set("s2VWG2",fitTotal->GetParameter(3),fitTotal->GetParError(3));
   Set("gVWG2",fitTotal->GetParameter(4),fitTotal->GetParError(4));
@@ -5169,7 +5169,7 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWPOL2POL3()
   fHisto->GetListOfFunctions()->Delete();
 
   const char* fitOption = "SERLM";
-  const char* fitOptionBg = "SERI";
+  const char* fitOptionBg = "SER";
 
 
   //__________ Get tails parameters, fitting range and SigmaPsiP
@@ -5354,7 +5354,7 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWPOL2POL3()
   Set("c",fitTotal->GetParameter(2),fitTotal->GetParError(2));
   Set("a'",fitTotal->GetParameter(3),fitTotal->GetParError(3));
   Set("b'",fitTotal->GetParameter(4),fitTotal->GetParError(4));
-  Set("c''",fitTotal->GetParameter(5),fitTotal->GetParError(5));
+  Set("c'",fitTotal->GetParameter(5),fitTotal->GetParError(5));
   Set("d'",fitTotal->GetParameter(6),fitTotal->GetParError(6));
 
   Set("kJPsi",fitTotal->GetParameter(7),fitTotal->GetParError(7));
@@ -10998,7 +10998,7 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMENA60NEWPOL2POL3_BKGMV2POL2()
 {
   //Fit mean dimuon mean pt to get Jpsi mean pt using the CB2 signal parameters, VWG2 for the Bkg, Jpsi mpt = cte and Bkg mpt = pol4
 
-  const char* fitOption = "SERI"; //We can add NO to avoid plotting
+  const char* fitOption = "SER"; //We can add NO to avoid plotting
   const char* fitOptionBg = "SERI"; //We can add NO to avoid plotting
 
   fHisto->GetListOfFunctions()->Delete();
@@ -11050,8 +11050,8 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMENA60NEWPOL2POL3_BKGMV2POL2()
 
   TF1* bck = new TF1("bck",this,&AliAnalysisMuMuJpsiResult::FitFunctionBackgroundPol2,fitRangeLow,fitRangeHigh,3,"AliAnalysisMuMuJpsiResult","FitFunctionBackgroundPol2");
 
-  bck->SetParameters(.4,-.2,.02);
-  SetFitRejectRange(2.6,3.4);
+  bck->SetParameters(.4,-.2,.03);
+  SetFitRejectRange(2.5,3.5);
 
   TFitResultPtr fitResultInit = p->Fit(bck,fitOptionBg,"");
   std::cout << "FitResultmBkgInit=" << static_cast<int>(fitResultInit) << std::endl;

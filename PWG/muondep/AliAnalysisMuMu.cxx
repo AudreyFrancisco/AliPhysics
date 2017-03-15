@@ -1622,7 +1622,7 @@ AliAnalysisMuMu::FitParticle(const char* particle,
   while ( ( bin = static_cast<AliAnalysisMuMuBinning::Range*>(next())) )
   {
     //TODO
-    if(bin->Xmin()!=8. && bin->Xmax()!=12.) continue;
+    if(bin->Xmin()!=4. && bin->Xmax()!=5.) continue; //CHANGE HERE
     // Choose correct histo type with <spectraType> and set it in <hname>
     TString hname;
     if (!sSpectraType.CompareTo("minv")) hname = corrected ? Form("MinvUS_AccEffCorr+%s",bin->AsString().Data()) : Form("MinvUS+%s",bin->AsString().Data());
