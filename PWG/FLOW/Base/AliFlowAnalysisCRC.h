@@ -1646,6 +1646,7 @@ private:
   TProfile2D *fCRCZDCQVecResvsEAsym; //!
   TProfile2D *fCRCZDCQVecResvsETot; //!
   TProfile2D *fCRCZDCQVecResvsESum; //!
+  TProfile3D *fCRCZDCQVecResvsETotvsVtx; //!
   
   // TProfile *fCRCVZvsZDCCov[fCRCMaxnRun][16]; //! ZDC vs VZ Q Vectors correlations
   
@@ -1807,6 +1808,8 @@ private:
 //  TProfile2D *fTPCEtaHist[fkNHistQVecCorrv1eta]; //!
   TProfile3D *fCRCTPCQVecVtxPosCenRe[fCRCMaxnCen][fCRCZDCnEtaBin]; //!
   TProfile3D *fCRCTPCQVecVtxPosCenIm[fCRCMaxnCen][fCRCZDCnEtaBin]; //!
+  TProfile3D *fTProTempRe[fCRCMaxnCen][fCRCZDCnEtaBin]; //!
+  TProfile3D *fTProTempIm[fCRCMaxnCen][fCRCZDCnEtaBin]; //!
   
   // Flow QC
   TList *fFlowQCList;    //! QC List

@@ -10,7 +10,7 @@ AliAnalysisTask * AddTaskCRC(Double_t ptMin=0.2,
                              Bool_t bUseZDC=kFALSE,
                              TString ZDCCalibFileName,
                              TString sCorrWeight="TPCmVZuZDCu",
-                             Int_t bCutTPCbound=0,
+                             Bool_t bCorrectForBadChannel=kFALSE,
                              Bool_t bUseCRCRecenter=kFALSE,
                              Float_t ZDCGainAlpha=0.395,
                              TString Label="",
@@ -730,17 +730,10 @@ AliAnalysisTask * AddTaskCRC(Double_t ptMin=0.2,
   
   if(bUseCRCRecenter) {
     TString QVecWeightsFileName = "alien:///alice/cern.ch/user/j/jmargutt/";
-    if(sDataSet=="2015" && sIntRuns=="high") {
-      if(bUsePtWeights) {
-        if(AODfilterBit==32)  QVecWeightsFileName += "15oHI_FB32_TPCQVecReCen.root";
-        if(AODfilterBit==96)  QVecWeightsFileName += "15oHI_FB96_TPCQVecReCen.root";
-        //        if(AODfilterBit==128) QVecWeightsFileName += "15oHI_FB128_TPCQVecReCen.root";
-        //        if(AODfilterBit==768 && !bPtDepDCAxyCut) QVecWeightsFileName += "15oHI_FB768_TPCQVecReCen.root";
-        //        if(AODfilterBit==768 &&  bPtDepDCAxyCut) QVecWeightsFileName += "15oHI_FB768_DCAcut_TPCQVecReCen.root";
-        if(AODfilterBit==128) QVecWeightsFileName += "15oHI_FB128_TPCQVecReCen_MagPolRefMul.root";
-        if(AODfilterBit==768) QVecWeightsFileName += "15oHI_FB768_TPCQVecReCen_MagPolRefMul.root";
-      }
-    }
+//    if(AODfilterBit==768) QVecWeightsFileName += "15oHI_QnVarCalib_FB768.root";
+//    if(AODfilterBit==96) QVecWeightsFileName += "15oHI_QnVarCalib_FB96.root";
+//    if(AODfilterBit==32) QVecWeightsFileName += "15oHI_QnVarCalib_FB32.root";
+    QVecWeightsFileName += "15oHI_Q1VtxCalib_FB768.root";
     TFile* QVecWeightsFile = TFile::Open(QVecWeightsFileName,"READ");
     if(!QVecWeightsFile) {
       cout << "ERROR: QVecWeightsFile not found!" << endl;
