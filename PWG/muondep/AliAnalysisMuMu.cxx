@@ -89,6 +89,8 @@ fCorrectionPerRun(0x0),
 fAssociatedSimulation(0x0),
 fAssociatedSimulation2(0x0),
 fParticleName(""),
+fXmin(2.),
+fXmax(4.),
 fConfig(new AliAnalysisMuMuConfig(config))
 {
   GetFileNameAndDirectory(filename);
@@ -114,6 +116,8 @@ fCorrectionPerRun(0x0),
 fAssociatedSimulation(0x0),
 fAssociatedSimulation2(0x0),
 fParticleName(""),
+fXmin(2.),
+fXmax(4.),
 fConfig(0x0)
 {
   // ctor
@@ -1622,7 +1626,7 @@ AliAnalysisMuMu::FitParticle(const char* particle,
   while ( ( bin = static_cast<AliAnalysisMuMuBinning::Range*>(next())) )
   {
     //TODO
-    if(bin->Xmin()!=6. && bin->Xmax()!=8.) continue; //CHANGE HERE
+    if(bin->Xmin()!=fXmin && bin->Xmax()!=fXmax) continue; //CHANGE HERE
     // Choose correct histo type with <spectraType> and set it in <hname>
     TString hname;
     if (!sSpectraType.CompareTo("minv")) hname = corrected ? Form("MinvUS_AccEffCorr+%s",bin->AsString().Data()) : Form("MinvUS+%s",bin->AsString().Data());
@@ -3166,31 +3170,31 @@ AliAnalysisMuMu::Jpsi(const char* what, const char* binningFlavour, Bool_t fitmP
                 } else AliError("Error creating spectra");
               }
 
-              AliDebug(1,"----Fitting corrected spectra...");
-              AliAnalysisMuMuSpectra* spectraCorr = FitParticle("psi",trigger->String().Data(),eventType->String().Data(),pairCut->String().Data(),centrality->String().Data(),*binning,"minv",kTRUE);
+              // AliDebug(1,"----Fitting corrected spectra...");
+              // AliAnalysisMuMuSpectra* spectraCorr = 0x0;//FitParticle("psi",trigger->String().Data(),eventType->String().Data(),pairCut->String().Data(),centrality->String().Data(),*binning,"minv",kTRUE);
 
-              AliDebug(1,Form("----fitting done corrected spectra = %p",spectraCorr));
+              // AliDebug(1,Form("----fitting done corrected spectra = %p",spectraCorr));
 
-              // save results in mergeable collection
-              o = 0x0;
-              if ( spectraCorr ) {
-                ++nfits;
+              // // save results in mergeable collection
+              // o = 0x0;
+              // if ( spectraCorr ) {
+              //   ++nfits;
 
-                o = fMergeableCollection->GetObject(id.Data(),spectraCorr->GetName());
-                AliDebug(1,Form("----nfits=%d id=%s o=%p",nfits,id.Data(),o));
+              //   o = fMergeableCollection->GetObject(id.Data(),spectraCorr->GetName());
+              //   AliDebug(1,Form("----nfits=%d id=%s o=%p",nfits,id.Data(),o));
 
-                if (o) {
-                  AliWarning(Form("Replacing %s/%s",id.Data(),spectraCorr->GetName()));
-                  fMergeableCollection->Remove(Form("%s/%s",id.Data(),spectraCorr->GetName()));
-                }
+              //   if (o) {
+              //     AliWarning(Form("Replacing %s/%s",id.Data(),spectraCorr->GetName()));
+              //     fMergeableCollection->Remove(Form("%s/%s",id.Data(),spectraCorr->GetName()));
+              //   }
 
-                Bool_t adoptOK = fMergeableCollection->Adopt(id.Data(),spectraCorr);
+              //   Bool_t adoptOK = fMergeableCollection->Adopt(id.Data(),spectraCorr);
 
-                if ( adoptOK ) std::cout << "+++Spectra " << spectraCorr->GetName() << " adopted" << std::endl;
-                else AliError(Form("Could not adopt spectra %s",spectraCorr->GetName()));
+              //   if ( adoptOK ) std::cout << "+++Spectra " << spectraCorr->GetName() << " adopted" << std::endl;
+              //   else AliError(Form("Could not adopt spectra %s",spectraCorr->GetName()));
 
-                StdoutToAliDebug(1,spectraCorr->Print(););
-              } else AliError("Error creating spectra");
+              //   StdoutToAliDebug(1,spectraCorr->Print(););
+              // } else AliError("Error creating spectra");
 
 
               if (fitmPt) {
@@ -3233,32 +3237,32 @@ AliAnalysisMuMu::Jpsi(const char* what, const char* binningFlavour, Bool_t fitmP
                 }
                 std::cout << "++++++++++++ Fitting corrected mean Pt for" << " " << swhat->String().Data() << " " << "slices" << std::endl;
 
-                if ( spectraCorr ){
+              //   if ( spectraCorr ){
 
-                  AliAnalysisMuMuSpectra* spectraMeanPtCorr = FitParticle("psi",trigger->String().Data(),eventType->String().Data(),pairCut->String().Data(),centrality->String().Data(),*binning,"mpt"/*,*spectraCorr*/,kTRUE);
+              //     AliAnalysisMuMuSpectra* spectraMeanPtCorr = FitParticle("psi",trigger->String().Data(),eventType->String().Data(),pairCut->String().Data(),centrality->String().Data(),*binning,"mpt"/*,*spectraCorr*/,kTRUE);
 
-                  AliDebug(1,Form("----fitting done spectra = %p",spectraMeanPtCorr));
+              //     AliDebug(1,Form("----fitting done spectra = %p",spectraMeanPtCorr));
 
-                  o = 0x0;
+              //     o = 0x0;
 
-                  if ( spectraMeanPtCorr ) {
-                    ++nfits; //Review this
+              //     if ( spectraMeanPtCorr ) {
+              //       ++nfits; //Review this
 
-                    o = fMergeableCollection->GetObject(id.Data(),spectraMeanPtCorr->GetName());
+              //       o = fMergeableCollection->GetObject(id.Data(),spectraMeanPtCorr->GetName());
 
-                    AliDebug(1,Form("----nfits=%d id=%s o=%p",nfits,id.Data(),o));
+              //       AliDebug(1,Form("----nfits=%d id=%s o=%p",nfits,id.Data(),o));
 
-                    if (o) {
-                      AliWarning(Form("Replacing %s/%s",id.Data(),spectraMeanPtCorr->GetName()));
-                      fMergeableCollection->Remove(Form("%s/%s",id.Data(),spectraMeanPtCorr->GetName()));
-                    }
+              //       if (o) {
+              //         AliWarning(Form("Replacing %s/%s",id.Data(),spectraMeanPtCorr->GetName()));
+              //         fMergeableCollection->Remove(Form("%s/%s",id.Data(),spectraMeanPtCorr->GetName()));
+              //       }
 
-                    Bool_t adoptOK = fMergeableCollection->Adopt(id.Data(),spectraMeanPtCorr);
+              //       Bool_t adoptOK = fMergeableCollection->Adopt(id.Data(),spectraMeanPtCorr);
 
-                    if ( adoptOK ) std::cout << "+++Spectra " << spectraMeanPtCorr->GetName() << " adopted" << std::endl;
-                    else AliError(Form("Could not adopt spectra %s",spectraMeanPtCorr->GetName()));
-                    } else AliError("Error creating spectra");
-                } else std::cout << "Corrected mean pt fit failed: No corrected inv mass spectra for " << swhat->String().Data() << " " << "slices" << std::endl;
+              //       if ( adoptOK ) std::cout << "+++Spectra " << spectraMeanPtCorr->GetName() << " adopted" << std::endl;
+              //       else AliError(Form("Could not adopt spectra %s",spectraMeanPtCorr->GetName()));
+              //       } else AliError("Error creating spectra");
+              //   } else std::cout << "Corrected mean pt fit failed: No corrected inv mass spectra for " << swhat->String().Data() << " " << "slices" << std::endl;
               }
 
               if (fitmV2) {
@@ -3301,32 +3305,32 @@ AliAnalysisMuMu::Jpsi(const char* what, const char* binningFlavour, Bool_t fitmP
                 }
                 // std::cout << "++++++++++++ Fitting corrected mean V2 for" << " " << swhat->String().Data() << " " << "slices" << std::endl;
                 // never tested
-                if ( spectraCorr ){
+                // if ( spectraCorr ){
 
-                  AliAnalysisMuMuSpectra* spectraMeanV2Corr = FitParticle("psi",trigger->String().Data(),eventType->String().Data(),pairCut->String().Data(),centrality->String().Data(),*binning,"mV2"/*,*spectraCorr*/,kTRUE);
+                //   AliAnalysisMuMuSpectra* spectraMeanV2Corr = FitParticle("psi",trigger->String().Data(),eventType->String().Data(),pairCut->String().Data(),centrality->String().Data(),*binning,"mV2"/*,*spectraCorr*/,kTRUE);
 
-                  AliDebug(1,Form("----fitting done spectra = %p",spectraMeanV2Corr));
+                //   AliDebug(1,Form("----fitting done spectra = %p",spectraMeanV2Corr));
 
-                  o = 0x0;
+                //   o = 0x0;
 
-                  if ( spectraMeanV2Corr ) {
-                    ++nfits; //Review this
+                //   if ( spectraMeanV2Corr ) {
+                //     ++nfits; //Review this
 
-                    o = fMergeableCollection->GetObject(id.Data(),spectraMeanV2Corr->GetName());
+                //     o = fMergeableCollection->GetObject(id.Data(),spectraMeanV2Corr->GetName());
 
-                    AliDebug(1,Form("----nfits=%d id=%s o=%p",nfits,id.Data(),o));
+                //     AliDebug(1,Form("----nfits=%d id=%s o=%p",nfits,id.Data(),o));
 
-                    if (o) {
-                      AliWarning(Form("Replacing %s/%s",id.Data(),spectraMeanV2Corr->GetName()));
-                      fMergeableCollection->Remove(Form("%s/%s",id.Data(),spectraMeanV2Corr->GetName()));
-                    }
+                //     if (o) {
+                //       AliWarning(Form("Replacing %s/%s",id.Data(),spectraMeanV2Corr->GetName()));
+                //       fMergeableCollection->Remove(Form("%s/%s",id.Data(),spectraMeanV2Corr->GetName()));
+                //     }
 
-                    Bool_t adoptOK = fMergeableCollection->Adopt(id.Data(),spectraMeanV2Corr);
+                //     Bool_t adoptOK = fMergeableCollection->Adopt(id.Data(),spectraMeanV2Corr);
 
-                    if ( adoptOK ) std::cout << "+++Spectra " << spectraMeanV2Corr->GetName() << " adopted" << std::endl;
-                    else AliError(Form("Could not adopt spectra %s",spectraMeanV2Corr->GetName()));
-                    } else AliError("Error creating spectra");
-                } else std::cout << "Corrected mean V2 fit failed: No corrected inv mass spectra for " << swhat->String().Data() << " " << "slices" << std::endl;
+                //     if ( adoptOK ) std::cout << "+++Spectra " << spectraMeanV2Corr->GetName() << " adopted" << std::endl;
+                //     else AliError(Form("Could not adopt spectra %s",spectraMeanV2Corr->GetName()));
+                //     } else AliError("Error creating spectra");
+                // } else std::cout << "Corrected mean V2 fit failed: No corrected inv mass spectra for " << swhat->String().Data() << " " << "slices" << std::endl;
               }
             }
           }
@@ -3695,7 +3699,8 @@ void AliAnalysisMuMu::PrintNofParticle(const char* particle, const char* what, c
     else
         {
         cout <<      " ================================================================ " << endl;
-        cout <<      "                       Number of "<< particle << endl;
+        if(MeanV2)    cout <<      "                       Mean v2" << endl;
+        else cout <<      "                       Number of "<< particle << endl;
         cout <<      " ================================================================ " << endl;
         }
 
@@ -3766,6 +3771,7 @@ void AliAnalysisMuMu::PrintNofParticle(const char* particle, const char* what, c
                             if(MeanV2)spectraPath+="-MeanV2VsMinvUS-SPD";
 
                             AliAnalysisMuMuSpectra * spectra = static_cast<AliAnalysisMuMuSpectra*>(OC()->GetObject(spectraPath.Data()));
+                            spectra->Print();
 
                             if(!spectra){
                               AliError(Form("Cannot find spectra with name %s",spectraPath.Data()));

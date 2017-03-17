@@ -343,6 +343,9 @@ public:
 
     void SetConfig(const AliAnalysisMuMuConfig& config);
 
+    void SetXmin(Double_t x){fXmin=x;}
+    void SetXmax(Double_t x){fXmax=x;}
+
 private:
     AliAnalysisMuMu(const AliAnalysisMuMu& rhs); // not implemented on purpose
     AliAnalysisMuMu& operator=(const AliAnalysisMuMu& rhs); // not implemented on purpose
@@ -368,6 +371,9 @@ private:
 
     void LoadStyles();
 
+    Double_t GetXmin(){return fXmin;}
+    Double_t GetXmax(){return fXmax;}
+
 private:
 
     void SetNofInputParticles(AliAnalysisMuMuJpsiResult& r);
@@ -390,6 +396,9 @@ private:
     AliAnalysisMuMu* fAssociatedSimulation2; // second associated simulations (if any)
 
     TString fParticleName; // Name of the simulated particle in the associated simulations
+
+    Double_t fXmin;
+    Double_t fXmax;
 
     AliAnalysisMuMuConfig* fConfig; // configuration
 

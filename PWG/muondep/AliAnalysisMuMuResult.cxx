@@ -319,6 +319,7 @@ void AliAnalysisMuMuResult::Exclude(const char* subResultList)
     while ( ( s = static_cast<TObjString*>(nextA())) )
     {
       TObject* o = fSubResultsToBeIncluded->FindObject(s->String());
+      if(!o) cout << "Could not find from the subresult list" <<s->String() << endl;
       fSubResultsToBeIncluded->Remove(o);
     }
 
@@ -382,7 +383,8 @@ Double_t AliAnalysisMuMuResult::GetErrorStat(const char* name, const char* subRe
         Double_t err = r->GetErrorStat(name);
 
         AliDebug(1,Form(" ----> Weight for subResults %s = %f \n", r->GetName(),w));
-        if ( !(err>0.0 ) ) continue; // If the error is not correct we skip the subresult
+        AliDebug(1,Form("FitStatus for subresult : %i",r->GetValue("FitStatus")));
+        if ( !(r->GetErrorStat(name)>0.0 )||(r->GetValue("FitStatus")!=0)) continue; // If the error is not correct we skip the subresult
 
         // stat and sum of weight
         werr += w*err;
@@ -483,7 +485,7 @@ Double_t AliAnalysisMuMuResult::GetRMS(const char* name, const char* subResultNa
       Double_t val = r->GetValue(name);
       Double_t err = r->GetErrorStat(name);
 
-      if ( !(err>0.0 ) ) continue; // If the error is not correct we skip the subresult
+      if ( !(r->GetErrorStat(name)>0.0 )||(r->GetValue("FitStatus")!=0)) continue; // If the error is not correct we skip the subresult
       // weight
       Double_t wstat = 1./val;
 
@@ -593,7 +595,7 @@ Double_t AliAnalysisMuMuResult::GetValue(const char* name, const char* subResult
         Double_t e = r->Weight();
         AliDebug(1,Form(" ----> Weight for subResults %s = %f \n", r->GetName(),e));
         // Double_t e2 = e*e;
-        if ( !(r->GetErrorStat(name)>0.0 ) ) continue; /*e2 = TMath::Sqrt(r->GetValue(name));*/ // If the error is not correct (fit not good) we skip the subresult
+        if ( !(r->GetErrorStat(name)>0.0 )||(r->GetValue("FitStatus")!=0)) continue; /*e2 = TMath::Sqrt(r->GetValue(name));*/ // If the error is not correct (fit not good) we skip the subresult
 
         mean += e*r->GetValue(name);
         Sum += e;

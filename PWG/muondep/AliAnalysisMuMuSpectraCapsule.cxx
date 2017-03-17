@@ -176,6 +176,7 @@ void AliAnalysisMuMuSpectraCapsule::PrintNofWhat(const char* what) const
 
     //Some variables
     TString  binAsString(r->AsString());// Usefull for the coming loop
+    TString srToExclude("");
 
     cout << Form(" -_-_-_-_- %s_%s -_-_-_-_- ",binAsString.Data(),GetSpectraName().Data()) << endl;
     // Loop on subresults
@@ -190,18 +191,24 @@ void AliAnalysisMuMuSpectraCapsule::PrintNofWhat(const char* what) const
         return;
       }
       AliDebug(1,Form("subresult(%s) = %p",sr->GetName(),subresult));
-
+      if ( sr->GetValue("FitStatus")!=0 ) continue;
       //Get quantities
       Double_t NofJPsiSub      = subresult->GetValue(what);
       Double_t NofJPsiErrorStat = subresult->GetErrorStat(what);
 
       //Output messages
       cout << Form(" -------- ") << endl;
-      if(swhat.Contains("v2"))cout << Form(" -- subresult %s :  %.4f +/- %.4f ",sr->GetName(),NofJPsiSub,NofJPsiErrorStat) << endl;
+
+      if(swhat.Contains("v2"))cout << Form(" -- subresult %s :  %.4f +/- %.4f, FitStatus :%.0f",sr->GetName(),NofJPsiSub,NofJPsiErrorStat,sr->GetValue("FitStatus")) << endl;
       else cout << Form(" -- subresult %s :  %.0f +/- %.0f ",sr->GetName(),NofJPsiSub,NofJPsiErrorStat) << endl;
       nofSubResult++;
-
+      if(sr->GetValue("FitStatus")!=0){
+        srToExclude += Form("%s,",sr->GetName());
+      }
     }
+    cout << "Excluded fits :"<< srToExclude << endl;
+
+    result->Exclude(srToExclude);
     cout << Form(" -------- ") << endl;
     if(swhat.Contains("v2"))cout << Form(" ------ Mean :  %.4f +/- %.4f (%.1f %%) +/- %.4f (%.1f %%) ------ ",
       result->GetValue(what),result->GetErrorStat(what),100*result->GetErrorStat(what)/result->GetValue(what),result->GetRMS(what),100*result->GetRMS(what)/result->GetValue(what)) << endl;

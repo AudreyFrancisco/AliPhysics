@@ -1647,8 +1647,8 @@ void AliAnalysisMuMuJpsiResult::FitPSICB2()
   signal->SetParameters(fitTotal->GetParameter(0),fitTotal->GetParameter(1),fitTotal->GetParameter(2),fitTotal->GetParameter(3),fitTotal->GetParameter(4),fitTotal->GetParameter(5),fitTotal->GetParameter(6));
 
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitTotal->GetChisquare()/fitTotal->GetNDF(),0.0);
   Set("FitNDF",fitTotal->GetNDF(),0.0);
 
@@ -1821,8 +1821,8 @@ void AliAnalysisMuMuJpsiResult::FitPSINA60NEW()
   signal->SetParameter(10,fitTotal->GetParameter(10));
 
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitTotal->GetChisquare()/fitTotal->GetNDF(),0.0);
   Set("FitNDF",fitTotal->GetNDF(),0.0);
 
@@ -2312,8 +2312,8 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2VWG()
 
   //___________Set parameters and fit functions to store in the result
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult)&&static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitTotal->GetChisquare()/fitTotal->GetNDF(),0.0);
   Set("FitNDF",fitTotal->GetNDF(),0.0);
 
@@ -2486,10 +2486,11 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2VWG2()
   // bckInit->SetParameters(fHisto->GetBinContent(bin),1.85,0.6,0.3,0.);
   // bckInit->SetParameters(fHisto->GetBinContent(bin),2.,0.5,0.3,1.0); //24
   // bckInit->SetParameters(fHisto->GetBinContent(bin),1.3,-0.5,-0.4,.03); //24
-  bckInit->SetParameters(fHisto->GetBinContent(bin),1.9,-0.4,-1.,.2); //46
+  // bckInit->SetParameters(fHisto->GetBinContent(bin),1.9,-0.4,-1.,.2); //46
+  bckInit->SetParameters(fHisto->GetBinContent(bin),1.6,-0.5,-.9,.15); //68
   // bckInit->SetParameters(fHisto->GetBinContent(bin),1.9,.21,1.2,-0.16);//812
 
-  SetFitRejectRange(2.2,3.8);
+  SetFitRejectRange(2.2,3.9);
   TFitResultPtr fitResultInit = fHisto->Fit(bckInit,fitOptionBg);
   std::cout << "FitResultBkgInit=" << static_cast<int>(fitResultInit) << std::endl;
 
@@ -2567,8 +2568,8 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2VWG2()
 
   //___________Set parameters and fit functions to store in the result
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitTotal->GetChisquare()/fitTotal->GetNDF(),0.0);
   Set("FitNDF",fitTotal->GetNDF(),0.0);
 
@@ -2867,8 +2868,8 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2POL1POL2()
 
   //___________Set parameters and fit functions to store in the result
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitTotal->GetChisquare()/fitTotal->GetNDF(),0.0);
   Set("FitNDF",fitTotal->GetNDF(),0.0);
 
@@ -3042,7 +3043,8 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2POL2POL3()
   // bckInit->SetParameters(0.,1.,bin,0.,0.,1.,1.);
   // bckInit->SetParameters(6.,-150.,bin,-.003,.04,-.1);
   // bckInit->SetParameters(-130.,350.,bin,-.05,.5,-1.);//24
-  bckInit->SetParameters(300.,400.,bin,.05,.15,-.8);//46
+  // bckInit->SetParameters(300.,400.,bin,.05,.15,-.8);//46
+  bckInit->SetParameters(300.,-200.,bin,.9,-5.,8.);//68
   bckInit->FixParameter(6.,1);
 
   // bckInit->SetParLimits(0.,-30,30);
@@ -3134,8 +3136,8 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2POL2POL3()
 
   //___________Set parameters and fit functions to store in the result
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitTotal->GetChisquare()/fitTotal->GetNDF(),0.0);
   Set("FitNDF",fitTotal->GetNDF(),0.0);
 
@@ -3366,8 +3368,8 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2POL2POL3V2()
 
   //___________Set parameters and fit functions to store in the result
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitTotal->GetChisquare()/fitTotal->GetNDF(),0.0);
   Set("FitNDF",fitTotal->GetNDF(),0.0);
 
@@ -3739,8 +3741,8 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2VWGINDEPTAILS()
   }
 
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitTotal->GetChisquare()/fitTotal->GetNDF(),0.0);
   Set("FitNDF",fitTotal->GetNDF(),0.0);
 
@@ -3968,8 +3970,8 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2POL2EXP()
 
   //___________Set parameters and fit functions to store in the result
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitTotal->GetChisquare()/fitTotal->GetNDF(),0.0);
   Set("FitNDF",fitTotal->GetNDF(),0.0);
 
@@ -4228,8 +4230,8 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2POL4EXP()
 
   //___________Set parameters and fit functions to store in the result
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitTotal->GetChisquare()/fitTotal->GetNDF(),0.0);
   Set("FitNDF",fitTotal->GetNDF(),0.0);
 
@@ -4531,8 +4533,8 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWVWG()
   bck->SetParameter(3,fitTotal->GetParameter(3));
 
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitTotal->GetChisquare()/fitTotal->GetNDF(),0.0);
   Set("FitNDF",fitTotal->GetNDF(),0.0);
 
@@ -4697,7 +4699,8 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWVWG2()
   Int_t bin = fHisto->FindBin(0.26);
 
   // bckInit->SetParameters(fHisto->GetBinContent(bin),2.,0.5,0.3,0.);//2-4
-  bckInit->SetParameters(fHisto->GetBinContent(bin),1.9,-0.4,-1.,.2); //46
+  // bckInit->SetParameters(fHisto->GetBinContent(bin),1.9,-0.4,-1.,.2); //46
+  bckInit->SetParameters(fHisto->GetBinContent(bin),2.2,-0.9,-.7,-.03); //68
   // bckInit->SetParameters(fHisto->GetBinContent(bin),1.5,0.5,0.5,-0.1);
 
   SetFitRejectRange(2.2,3.8);
@@ -4796,8 +4799,8 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWVWG2()
   bck->SetParameter(4,fitTotal->GetParameter(4));
 
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitTotal->GetChisquare()/fitTotal->GetNDF(),0.0);
   Set("FitNDF",fitTotal->GetNDF(),0.0);
 
@@ -5078,8 +5081,8 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWPOL1POL2()
   bck->SetParameter(4,fitTotal->GetParameter(4));
 
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitTotal->GetChisquare()/fitTotal->GetNDF(),0.0);
   Set("FitNDF",fitTotal->GetNDF(),0.0);
 
@@ -5244,7 +5247,8 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWPOL2POL3()
 
   // bckInit->SetParameters(0.,0.,bin,0.,0.,1.,1.);
   // bckInit->SetParameters(-130.,350.,bin,-.05,.5,-1.);//24
-  bckInit->SetParameters(300.,400.,bin,.05,.15,-.8);//46
+  // bckInit->SetParameters(300.,400.,bin,.05,.15,-.8);//46
+  bckInit->SetParameters(300.,400.,bin,.05,.15,-.8);//68
   bckInit->FixParameter(6.,1);
 
   // bckInit->SetParLimits(0.,-30,30);
@@ -5256,7 +5260,7 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWPOL2POL3()
 
 //  bckInit->SetParLimits(0,fHisto->GetBinContent(bin)*0.5,fHisto->GetBinContent(bin)*10);
 
-  SetFitRejectRange(2.2,3.7);
+  SetFitRejectRange(2.2,3.9);
 
   TFitResultPtr fitResultInit = fHisto->Fit(bckInit,fitOptionBg);
 
@@ -5352,8 +5356,8 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWPOL2POL3()
   bck->SetParameter(6,fitTotal->GetParameter(6));
 
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitTotal->GetChisquare()/fitTotal->GetNDF(),0.0);
   Set("FitNDF",fitTotal->GetNDF(),0.0);
 
@@ -5618,8 +5622,8 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWPOL2EXP()
 
 
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitTotal->GetChisquare()/fitTotal->GetNDF(),0.0);
   Set("FitNDF",fitTotal->GetNDF(),0.0);
 
@@ -5886,8 +5890,8 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWPOL4EXP()
 
 
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitTotal->GetChisquare()/fitTotal->GetNDF(),0.0);
   Set("FitNDF",fitTotal->GetNDF(),0.0);
 
@@ -8252,8 +8256,8 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMECB2VWG_BKGMV2POL2()
 
   //___________Set parameters and fit functions to store in the result
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitMeanv2->GetChisquare()/fitMeanv2->GetNDF(),0.0);
   Set("FitNDF",fitMeanv2->GetNDF(),0.0);
   Set("mJPsi",fitMeanv2->GetParameter(5),fitMeanv2->GetParError(5));
@@ -8479,8 +8483,8 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMECB2VWG_BKGMV2POL2EXP()
 
   //___________Set parameters and fit functions to store in the result
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitMeanv2->GetChisquare()/fitMeanv2->GetNDF(),0.0);
   Set("FitNDF",fitMeanv2->GetNDF(),0.0);
   Set("mJPsi",fitMeanv2->GetParameter(5),fitMeanv2->GetParError(5));
@@ -8665,8 +8669,8 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMECB2VWG_BKGMV2POL3()
 
   //___________Set parameters and fit functions to store in the result
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitMeanv2->GetChisquare()/fitMeanv2->GetNDF(),0.0);
   Set("FitNDF",fitMeanv2->GetNDF(),0.0);
   Set("mJPsi",fitMeanv2->GetParameter(5),fitMeanv2->GetParError(5));
@@ -8860,8 +8864,8 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMECB2VWG_BKGMV2POL4()
 
   //___________Set parameters and fit functions to store in the result
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitMeanv2->GetChisquare()/fitMeanv2->GetNDF(),0.0);
   Set("FitNDF",fitMeanv2->GetNDF(),0.0);
   Set("mJPsi",fitMeanv2->GetParameter(5),fitMeanv2->GetParError(5));
@@ -9059,8 +9063,8 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMECB2VWG2_BKGMV2POL2()
 
   //___________Set parameters and fit functions to store in the result
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitMeanv2->GetChisquare()/fitMeanv2->GetNDF(),0.0);
   Set("FitNDF",fitMeanv2->GetNDF(),0.0);
   Set("mJPsi",fitMeanv2->GetParameter(6),fitMeanv2->GetParError(6));
@@ -9083,8 +9087,8 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMECB2VWG2_BKGMV2POLEXP()
 {
   //Fit mean dimuon mean pt to get Jpsi mean pt using the CB2 signal parameters, VWG2 for the Bkg, Jpsi mpt = cte and Bkg mpt = pol4
 
-  const char* fitOption = "SERI"; //We can add NO to avoid plotting
-  const char* fitOptionBg = "SERI"; //We can add NO to avoid plotting
+  const char* fitOption = "SER"; //We can add NO to avoid plotting
+  const char* fitOptionBg = "SER"; //We can add NO to avoid plotting
 
   fHisto->GetListOfFunctions()->Delete();
 
@@ -9257,8 +9261,8 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMECB2VWG2_BKGMV2POLEXP()
 
   //___________Set parameters and fit functions to store in the result
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitMeanv2->GetChisquare()/fitMeanv2->GetNDF(),0.0);
   Set("FitNDF",fitMeanv2->GetNDF(),0.0);
   Set("mJPsi",fitMeanv2->GetParameter(6),fitMeanv2->GetParError(6));
@@ -9494,8 +9498,8 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMECB2VWG2_BKGMV2POL2EXP()
 
   //___________Set parameters and fit functions to store in the result
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitMeanv2->GetChisquare()/fitMeanv2->GetNDF(),0.0);
   Set("FitNDF",fitMeanv2->GetNDF(),0.0);
   Set("mJPsi",fitMeanv2->GetParameter(6),fitMeanv2->GetParError(6));
@@ -9667,8 +9671,8 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMECB2VWG2_BKGMV2POL4()
 
   //___________Set parameters and fit functions to store in the result
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitMeanv2->GetChisquare()/fitMeanv2->GetNDF(),0.0);
   Set("FitNDF",fitMeanv2->GetNDF(),0.0);
   Set("mJPsi",fitMeanv2->GetParameter(6),fitMeanv2->GetParError(6));
@@ -9826,8 +9830,8 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMECB2POL2POL3_BKGMV2POL2()
 
   //___________Set parameters and fit functions to store in the result
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitMeanv2->GetChisquare()/fitMeanv2->GetNDF(),0.0);
   Set("FitNDF",fitMeanv2->GetNDF(),0.0);
   Set("mJPsi",fitMeanv2->GetParameter(8),fitMeanv2->GetParError(8));
@@ -9850,8 +9854,8 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMECB2POL2POL3_BKGMV2POLEXP()
 {
   //Fit mean dimuon mean pt to get Jpsi mean pt using the CB2 signal parameters, VWG2 for the Bkg, Jpsi mpt = cte and Bkg mpt = pol4
 
-  const char* fitOption = "SERI"; //We can add NO to avoid plotting
-  const char* fitOptionBg = "SERI"; //We can add NO to avoid plotting
+  const char* fitOption = "SER"; //We can add NO to avoid plotting
+  const char* fitOptionBg = "SER"; //We can add NO to avoid plotting
 
   fHisto->GetListOfFunctions()->Delete();
 
@@ -9986,7 +9990,7 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMECB2POL2POL3_BKGMV2POLEXP()
 
   //___________Set parameters and fit functions to store in the result
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
   Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitMeanv2->GetChisquare()/fitMeanv2->GetNDF(),0.0);
   Set("FitNDF",fitMeanv2->GetNDF(),0.0);
@@ -10144,7 +10148,7 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMECB2POL2POL3_BKGMV2POL2EXP()
 
   //___________Set parameters and fit functions to store in the result
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
   Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitMeanv2->GetChisquare()/fitMeanv2->GetNDF(),0.0);
   Set("FitNDF",fitMeanv2->GetNDF(),0.0);
@@ -10304,8 +10308,8 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMECB2POL2POL3_BKGMV2POL4()
 
   //___________Set parameters and fit functions to store in the result
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitMeanv2->GetChisquare()/fitMeanv2->GetNDF(),0.0);
   Set("FitNDF",fitMeanv2->GetNDF(),0.0);
   Set("mJPsi",fitMeanv2->GetParameter(8),fitMeanv2->GetParError(8));
@@ -10477,8 +10481,8 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMENA60NEWVWG2_BKGMV2POL2()
 
   //___________Set parameters and fit functions to store in the result
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitMeanv2->GetChisquare()/fitMeanv2->GetNDF(),0.0);
   Set("FitNDF",fitMeanv2->GetNDF(),0.0);
   Set("mJPsi",fitMeanv2->GetParameter(6),fitMeanv2->GetParError(6));
@@ -10501,8 +10505,8 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMENA60NEWVWG2_BKGMV2POLEXP()
 {
   //Fit mean dimuon mean pt to get Jpsi mean pt using the CB2 signal parameters, VWG2 for the Bkg, Jpsi mpt = cte and Bkg mpt = pol4
 
-  const char* fitOption = "SERI"; //We can add NO to avoid plotting
-  const char* fitOptionBg = "SERI"; //We can add NO to avoid plotting
+  const char* fitOption = "SER"; //We can add NO to avoid plotting
+  const char* fitOptionBg = "SER"; //We can add NO to avoid plotting
 
   fHisto->GetListOfFunctions()->Delete();
 
@@ -10652,8 +10656,8 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMENA60NEWVWG2_BKGMV2POLEXP()
 
   //___________Set parameters and fit functions to store in the result
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitMeanv2->GetChisquare()/fitMeanv2->GetNDF(),0.0);
   Set("FitNDF",fitMeanv2->GetNDF(),0.0);
   Set("mJPsi",fitMeanv2->GetParameter(6),fitMeanv2->GetParError(6));
@@ -10816,8 +10820,8 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMENA60NEWVWG2_BKGMV2POL2EXP()
 
   //___________Set parameters and fit functions to store in the result
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitMeanv2->GetChisquare()/fitMeanv2->GetNDF(),0.0);
   Set("FitNDF",fitMeanv2->GetNDF(),0.0);
   Set("mJPsi",fitMeanv2->GetParameter(6),fitMeanv2->GetParError(6));
@@ -10982,8 +10986,8 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMENA60NEWVWG2_BKGMV2POL4()
 
   //___________Set parameters and fit functions to store in the result
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitMeanv2->GetChisquare()/fitMeanv2->GetNDF(),0.0);
   Set("FitNDF",fitMeanv2->GetNDF(),0.0);
   Set("mJPsi",fitMeanv2->GetParameter(6),fitMeanv2->GetParError(6));
@@ -11155,8 +11159,8 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMENA60NEWPOL2POL3_BKGMV2POL2()
 
   //___________Set parameters and fit functions to store in the result
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitMeanv2->GetChisquare()/fitMeanv2->GetNDF(),0.0);
   Set("FitNDF",fitMeanv2->GetNDF(),0.0);
   Set("mJPsi",fitMeanv2->GetParameter(8),fitMeanv2->GetParError(8));
@@ -11179,8 +11183,8 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMENA60NEWPOL2POL3_BKGMV2POLEXP()
 {
   //Fit mean dimuon mean pt to get Jpsi mean pt using the CB2 signal parameters, VWG2 for the Bkg, Jpsi mpt = cte and Bkg mpt = pol4
 
-  const char* fitOption = "SERI"; //We can add NO to avoid plotting
-  const char* fitOptionBg = "SERI"; //We can add NO to avoid plotting
+  const char* fitOption = "SER"; //We can add NO to avoid plotting
+  const char* fitOptionBg = "SER"; //We can add NO to avoid plotting
 
   fHisto->GetListOfFunctions()->Delete();
 
@@ -11332,8 +11336,8 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMENA60NEWPOL2POL3_BKGMV2POLEXP()
 
   //___________Set parameters and fit functions to store in the result
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitMeanv2->GetChisquare()/fitMeanv2->GetNDF(),0.0);
   Set("FitNDF",fitMeanv2->GetNDF(),0.0);
   Set("mJPsi",fitMeanv2->GetParameter(8),fitMeanv2->GetParError(8));
@@ -11507,8 +11511,8 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMENA60NEWPOL2POL3_BKGMV2POL2EXP()
 
   //___________Set parameters and fit functions to store in the result
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitMeanv2->GetChisquare()/fitMeanv2->GetNDF(),0.0);
   Set("FitNDF",fitMeanv2->GetNDF(),0.0);
   Set("mJPsi",fitMeanv2->GetParameter(8),fitMeanv2->GetParError(8));
@@ -11683,8 +11687,8 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMENA60NEWPOL2POL3_BKGMV2POL4()
 
   //___________Set parameters and fit functions to store in the result
   Int_t fitStatus = 0;
-  if((static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3) fitStatus =-1;
-  Set("FitStatus",fitStatus,0.);
+  if(!CheckFitStatus(fitResult)) fitStatus =-1;
+  else Set("FitStatus",fitStatus,0.);
   Set("FitChi2PerNDF",fitMeanv2->GetChisquare()/fitMeanv2->GetNDF(),0.0);
   Set("FitNDF",fitMeanv2->GetNDF(),0.0);
   Set("mJPsi",fitMeanv2->GetParameter(8),fitMeanv2->GetParError(8));
