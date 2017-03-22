@@ -191,30 +191,30 @@ void AliAnalysisMuMuSpectraCapsule::PrintNofWhat(const char* what) const
         return;
       }
       AliDebug(1,Form("subresult(%s) = %p",sr->GetName(),subresult));
-      if ( sr->GetValue("FitStatus")!=0 ) continue;
+      if(sr->GetValue("FitStatus")!=0){
+        srToExclude += Form("%s,",sr->GetName());
+        continue;
+      }
       //Get quantities
       Double_t NofJPsiSub      = subresult->GetValue(what);
       Double_t NofJPsiErrorStat = subresult->GetErrorStat(what);
 
       //Output messages
-      cout << Form(" -------- ") << endl;
+      AliDebug(0,Form(" -------- "));
 
-      if(swhat.Contains("v2"))cout << Form(" -- subresult %s :  %.4f +/- %.4f, FitStatus :%.0f",sr->GetName(),NofJPsiSub,NofJPsiErrorStat,sr->GetValue("FitStatus")) << endl;
-      else cout << Form(" -- subresult %s :  %.0f +/- %.0f ",sr->GetName(),NofJPsiSub,NofJPsiErrorStat) << endl;
+      if(swhat.Contains("v2"))AliInfo(Form(" -- subresult %s :  %.4f +/- %.4f, FitStatus :%.0f",sr->GetName(),NofJPsiSub,NofJPsiErrorStat,sr->GetValue("FitStatus")));
+      else AliInfo(Form(" -- subresult %s :  %.0f +/- %.0f, FitStatus :%.0f ",sr->GetName(),NofJPsiSub,NofJPsiErrorStat,sr->GetValue("FitStatus")));
       nofSubResult++;
-      if(sr->GetValue("FitStatus")!=0){
-        srToExclude += Form("%s,",sr->GetName());
-      }
     }
-    cout << "Excluded fits :"<< srToExclude << endl;
+    AliInfo(Form("Excluded fits : %s",srToExclude.Data()));
 
     result->Exclude(srToExclude);
-    cout << Form(" -------- ") << endl;
-    if(swhat.Contains("v2"))cout << Form(" ------ Mean :  %.4f +/- %.4f (%.1f %%) +/- %.4f (%.1f %%) ------ ",
-      result->GetValue(what),result->GetErrorStat(what),100*result->GetErrorStat(what)/result->GetValue(what),result->GetRMS(what),100*result->GetRMS(what)/result->GetValue(what)) << endl;
-    else cout << Form(" ------ Mean :  %.1f +/- %.1f (%.1f %%) +/- %.1f (%.1f %%) ------ ",
-      result->GetValue(what),result->GetErrorStat(what),100*result->GetErrorStat(what)/result->GetValue(what),result->GetRMS(what),100*result->GetRMS(what)/result->GetValue(what)) << endl;
-    cout << "" << endl;
+    AliInfo(Form(" -------- "));
+    if(swhat.Contains("v2")) AliInfo(Form(" ------ Mean :  %.4f +/- %.4f (%.1f %%) +/- %.4f (%.1f %%) ------ \n",
+      result->GetValue(what),result->GetErrorStat(what),100*result->GetErrorStat(what)/result->GetValue(what),result->GetRMS(what),100*result->GetRMS(what)/result->GetValue(what)));
+    else AliInfo(Form(" ------ Mean :  %.1f +/- %.1f (%.1f %%) +/- %.1f (%.1f %%) ------ \n",
+      result->GetValue(what),result->GetErrorStat(what),100*result->GetErrorStat(what)/result->GetValue(what),result->GetRMS(what),100*result->GetRMS(what)/result->GetValue(what)));
+    // AliDebug(0,"");
     nofResult++;
   }
 }

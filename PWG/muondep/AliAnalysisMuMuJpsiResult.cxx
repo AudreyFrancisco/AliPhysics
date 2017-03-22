@@ -2453,12 +2453,21 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2VWG2()
   Double_t binNormJPsi  = GetValue("binNormJPsi");
   Double_t binNormPsiP  = GetValue("binNormPsiP");
 
+  Double_t mVWG2_init    = IsValidValue(GetValue("mVWG2_init"))  ? GetValue("mVWG2_init")  : 2.;
+  Double_t s1VWG2_init   = IsValidValue(GetValue("s1VWG2_init")) ? GetValue("s1VWG2_init") : -0.5;
+  Double_t s2VWG2_init   = IsValidValue(GetValue("s2VWG2_init")) ? GetValue("s2VWG2_init") : -0.9;
+  Double_t gVWG2_init    = IsValidValue(GetValue("gVWG2_init"))  ? GetValue("gVWG2_init")  : 0.15;
+
   TString msg;
 
   if (IsValidValue(alphaLow)) msg += TString::Format("alphaLow=%e ",alphaLow);
   if (IsValidValue(nLow)) msg     += TString::Format("nLow=%e ",nLow);
   if (IsValidValue(alphaUp)) msg  += TString::Format("alphaUp=%e ",alphaUp);
   if (IsValidValue(nUp)) msg      += TString::Format("nUp=%e ",nUp);
+  msg += TString::Format("mVWG2init=%.2f ",mVWG2_init);
+  msg += TString::Format("s1VWG2init=%.2f ",s1VWG2_init);
+  msg += TString::Format("s2VWG2init=%.2f ",s2VWG2_init);
+  msg += TString::Format("gVWG2init=%.2f ",gVWG2_init);
   //__________
 
 
@@ -2482,12 +2491,14 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2VWG2()
   TF1* bckInit = new TF1("bckInit",this,&AliAnalysisMuMuJpsiResult::FitFunctionBackgroundVWG2,1.8,6.,5,"AliAnalysisMuMuJpsiResult","FitFunctionBackgroundVWG2");
   Int_t bin = fHisto->FindBin(0.26);
 
+
+  bckInit->SetParameters(fHisto->GetBinContent(bin),mVWG2_init,s1VWG2_init,s2VWG2_init,gVWG2_init);
   // bckInit->SetParameters(fHisto->GetBinContent(bin),1.6,.89,0.03,0.046);// 02
   // bckInit->SetParameters(fHisto->GetBinContent(bin),1.85,0.6,0.3,0.);
   // bckInit->SetParameters(fHisto->GetBinContent(bin),2.,0.5,0.3,1.0); //24
   // bckInit->SetParameters(fHisto->GetBinContent(bin),1.3,-0.5,-0.4,.03); //24
   // bckInit->SetParameters(fHisto->GetBinContent(bin),1.9,-0.4,-1.,.2); //46
-  bckInit->SetParameters(fHisto->GetBinContent(bin),1.6,-0.5,-.9,.15); //68
+  // bckInit->SetParameters(fHisto->GetBinContent(bin),1.6,-0.5,-.9,.15); //68
   // bckInit->SetParameters(fHisto->GetBinContent(bin),1.9,.21,1.2,-0.16);//812
 
   SetFitRejectRange(2.2,3.9);
@@ -3008,12 +3019,24 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2POL2POL3()
   Double_t meanJPsi     = GetValue("meanJPsi");
   Double_t sigmaJPsi    = GetValue("sigmaJPsi");
 
+  Double_t a_init    = IsValidValue(GetValue("a_init"))  ? GetValue("a_init")  : -130.;
+  Double_t b_init    = IsValidValue(GetValue("b_init"))  ? GetValue("b_init")  : 350.;
+  Double_t ap_init   = IsValidValue(GetValue("ap_init")) ? GetValue("ap_init") : -0.05;
+  Double_t bp_init   = IsValidValue(GetValue("bp_init")) ? GetValue("bp_init") : 0.5;
+  Double_t cp_init   = IsValidValue(GetValue("cp_init")) ? GetValue("cp_init") : -1.;
+
+
   TString msg;
 
   if (IsValidValue(alphaLow)) msg += TString::Format("alphaLow=%e ",alphaLow);
   if (IsValidValue(nLow))     msg += TString::Format("nLow=%e ",nLow);
   if (IsValidValue(alphaUp))  msg += TString::Format("alphaUp=%e ",alphaUp);
   if (IsValidValue(nUp))      msg += TString::Format("nUp=%e ",nUp);
+  msg += TString::Format("ainit=%.2f ",a_init);
+  msg += TString::Format("binit=%.2f ",b_init);
+  msg += TString::Format("a'init=%.2f ",ap_init);
+  msg += TString::Format("b'init=%.2f ",bp_init);
+  msg += TString::Format("c'init=%.2f ",cp_init);
   //__________
 
   AliDebug(1,Form("Fit with jpsi + psiprime POL2/POL3 %s",msg.Data()));
@@ -3040,11 +3063,13 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2POL2POL3()
   TF1* bckInit = new TF1("bckInit",this,&AliAnalysisMuMuJpsiResult::FitFunctionBackgroundPol2Pol3,1.9,6.,7,"AliAnalysisMuMuJpsiResult","FitFunctionBackgroundPol2Pol3");
 
   Int_t bin = fHisto->FindBin(0.7);
+
+  bckInit->SetParameters(a_init,b_init,bin,ap_init,bp_init,cp_init);
   // bckInit->SetParameters(0.,1.,bin,0.,0.,1.,1.);
   // bckInit->SetParameters(6.,-150.,bin,-.003,.04,-.1);
   // bckInit->SetParameters(-130.,350.,bin,-.05,.5,-1.);//24
   // bckInit->SetParameters(300.,400.,bin,.05,.15,-.8);//46
-  bckInit->SetParameters(300.,-200.,bin,.9,-5.,8.);//68
+  // bckInit->SetParameters(300.,-200.,bin,.9,-5.,8.);//68
   bckInit->FixParameter(6.,1);
 
   // bckInit->SetParLimits(0.,-30,30);
@@ -4656,6 +4681,11 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWVWG2()
   Double_t fitRangeLow  = GetValue(kFitRangeLow);
   Double_t fitRangeHigh = GetValue(kFitRangeHigh);
 
+  Double_t mVWG2_init    = IsValidValue(GetValue("mVWG2_init"))  ? GetValue("mVWG2_init")  : 2.;
+  Double_t s1VWG2_init   = IsValidValue(GetValue("s1VWG2_init")) ? GetValue("s1VWG2_init") : -0.5;
+  Double_t s2VWG2_init   = IsValidValue(GetValue("s2VWG2_init")) ? GetValue("s2VWG2_init") : -0.9;
+  Double_t gVWG2_init    = IsValidValue(GetValue("gVWG2_init"))  ? GetValue("gVWG2_init")  : 0.15;
+
   TString msg;
 
   if (IsValidValue(p1Left)) msg     += TString::Format("p1L=%e ",p1Left);
@@ -4667,6 +4697,11 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWVWG2()
 
   if (IsValidValue(alphaLeft)) msg  += TString::Format("aL=%e ",alphaLeft);
   if (IsValidValue(alphaRight)) msg += TString::Format("aR=%e ",alphaRight);
+
+  msg += TString::Format("mVWG2init=%.2f ",mVWG2_init);
+  msg += TString::Format("s1VWG2init=%.2f ",s1VWG2_init);
+  msg += TString::Format("s2VWG2init=%.2f ",s2VWG2_init);
+  msg += TString::Format("gVWG2init=%.2f ",gVWG2_init);
   //__________
 
   AliDebug(1,Form("Fit with jpsi + psiprime NA60 new and VWG %s",msg.Data()));
@@ -4698,12 +4733,13 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWVWG2()
 
   Int_t bin = fHisto->FindBin(0.26);
 
+  bckInit->SetParameters(fHisto->GetBinContent(bin),mVWG2_init,s1VWG2_init,s2VWG2_init,gVWG2_init);
   // bckInit->SetParameters(fHisto->GetBinContent(bin),2.,0.5,0.3,0.);//2-4
   // bckInit->SetParameters(fHisto->GetBinContent(bin),1.9,-0.4,-1.,.2); //46
-  bckInit->SetParameters(fHisto->GetBinContent(bin),2.2,-0.9,-.7,-.03); //68
+  // bckInit->SetParameters(fHisto->GetBinContent(bin),2.2,-0.9,-.7,-.03); //68
   // bckInit->SetParameters(fHisto->GetBinContent(bin),1.5,0.5,0.5,-0.1);
 
-  SetFitRejectRange(2.2,3.8);
+  SetFitRejectRange(2.2,3.9);
 
   TFitResultPtr fitResultInit = fHisto->Fit(bckInit,fitOptionBg);
 
@@ -5197,6 +5233,11 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWPOL2POL3()
   Double_t sigmaJPsi    = GetValue("sigmaJPsi");
   Double_t fitRangeLow = GetValue(kFitRangeLow);
   Double_t fitRangeHigh = GetValue(kFitRangeHigh);
+  Double_t a_init    = IsValidValue(GetValue("a_init"))  ? GetValue("a_init")  : -130.;
+  Double_t b_init    = IsValidValue(GetValue("b_init"))  ? GetValue("b_init")  : 350.;
+  Double_t ap_init   = IsValidValue(GetValue("ap_init")) ? GetValue("ap_init") : -0.05;
+  Double_t bp_init   = IsValidValue(GetValue("bp_init")) ? GetValue("bp_init") : 0.5;
+  Double_t cp_init   = IsValidValue(GetValue("cp_init")) ? GetValue("cp_init") : -1.;
 
   TString msg;
 
@@ -5209,6 +5250,11 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWPOL2POL3()
 
   if (IsValidValue(alphaLeft)) msg += TString::Format("aL=%e ",alphaLeft);
   if (IsValidValue(alphaRight)) msg += TString::Format("aR=%e ",alphaRight);
+  msg += TString::Format("ainit=%.2f",a_init);
+  msg += TString::Format("binit=%.2f",b_init);
+  msg += TString::Format("a'init=%.2f",ap_init);
+  msg += TString::Format("b'init=%.2f",bp_init);
+  msg += TString::Format("c'init=%.2f",cp_init);
   //__________
 
   AliDebug(1,Form("Fit with jpsi + psiprime NA60 new and pol2/pol3 %s",msg.Data()));
@@ -5245,10 +5291,11 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWPOL2POL3()
 
   Int_t bin = fHisto->FindBin(0.7);
 
+  bckInit->SetParameters(a_init,b_init,bin,ap_init,bp_init,cp_init);
   // bckInit->SetParameters(0.,0.,bin,0.,0.,1.,1.);
   // bckInit->SetParameters(-130.,350.,bin,-.05,.5,-1.);//24
   // bckInit->SetParameters(300.,400.,bin,.05,.15,-.8);//46
-  bckInit->SetParameters(300.,400.,bin,.05,.15,-.8);//68
+  // bckInit->SetParameters(300.,400.,bin,.05,.15,-.8);//68
   bckInit->FixParameter(6.,1);
 
   // bckInit->SetParLimits(0.,-30,30);
@@ -5260,7 +5307,7 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWPOL2POL3()
 
 //  bckInit->SetParLimits(0,fHisto->GetBinContent(bin)*0.5,fHisto->GetBinContent(bin)*10);
 
-  SetFitRejectRange(2.2,3.9);
+  SetFitRejectRange(2.2,4.0);
 
   TFitResultPtr fitResultInit = fHisto->Fit(bckInit,fitOptionBg);
 

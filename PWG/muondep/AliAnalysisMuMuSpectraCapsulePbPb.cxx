@@ -292,7 +292,140 @@ TGraphErrors* AliAnalysisMuMuSpectraCapsulePbPb::ComputeYield( const char* what,
  return graph ;
 
 }
+//_____________________________________________________________________________
+TList* AliAnalysisMuMuSpectraCapsulePbPb::V2asGraphic(const char* what) const
+{
+  /// Print whar number for each results on terminal.
 
+
+  //Check point
+  if(!GetSpectra() || strcmp(what,"")==1 )
+    {
+      AliError("No Spectra or no arguments given !");
+      return 0x0 ;
+    }
+
+  //Graphs with values
+  TGraphErrors* graph(0x0);
+  TGraphErrors* graph_sysUncorr(0x0);
+
+  // Pointers to handle results and subresults and binning
+  AliAnalysisMuMuResult    * result;
+  AliAnalysisMuMuJpsiResult* subresult;
+  AliAnalysisMuMuResult    * sr;
+  AliAnalysisMuMuBinning   ::Range* r;
+  TString swhat(what);
+  // Array to store bins for the while loop
+  TObjArray * bins=GetSpectra()->Binning()->CreateBinObjArray();// (intrinseque 'new')
+  if (!bins)
+  {
+    AliError(Form("Cannot find bins"));
+    return 0x0;
+  }
+
+  //Counters and Iterator for bin
+  Int_t nofResult = 0;
+  TIter nextBin(bins);
+  nextBin.Reset();
+  if(!fSpectraName.Contains("-PT")) AliError(Form("This method is implemented for pt spectra only (%s)",fSpectraName.Data()));
+
+  Double_t * binArray = GetSpectra()->Binning()->CreateBinArray();
+  Int_t      binsX    = GetSpectra()->Binning()->GetNBinsX();
+
+    if (!binArray){// Protection
+      AliError(Form("Cannot set binArray"));
+      return 0x0;
+    }
+    if (binsX==0){// Protection
+      AliError(Form("Cannot set binsX"));
+      return 0x0;
+    }
+    graph           = new TGraphErrors(binsX);
+    graph_sysUncorr = new TGraphErrors(binsX);
+    graph->SetTitle(fSpectraName.Data());
+    graph->SetMinimum(-0.1);
+    graph->SetMaximum(0.25);
+    graph_sysUncorr->SetFillColorAlpha(5,0.05);
+  // Loop on bins
+  //==============================================================================
+  while ((r = static_cast<AliAnalysisMuMuBinning::Range*>(nextBin())))
+  {
+    // Make bin a MuMuResult
+    result = GetSpectra()->GetResultForBin(*r);
+    if (!result)
+    {
+      AliError(Form("Cannot find result "));
+      return 0x0;
+    }
+    AliDebug(1, Form("result(%s) = %p ",result->GetName(),result));
+
+    Int_t nofSubResult = 0; // Counter for subresult
+    TIter nextSubResult(result->SubResults());// Iterator for subresults
+    nextSubResult.Reset();
+
+    //Some variables
+    TString binAsString(r->AsString());// Usefull for the coming loop
+    TString srToExclude("");
+
+    cout << Form(" -_-_-_-_- %s_%s -_-_-_-_- ",binAsString.Data(),GetSpectraName().Data()) << endl;
+
+
+    // Loop on subresults
+    //==============================================================================
+    while ((sr = static_cast<AliAnalysisMuMuResult*>(nextSubResult())))
+    {
+      // Get our final result
+      subresult = static_cast<AliAnalysisMuMuJpsiResult*>(result->SubResult(Form("%s",sr->GetName())));
+      if (!subresult)
+      {
+        AliError(Form("Cannot find subresult "));
+        return 0x0;
+      }
+      AliDebug(1,Form("subresult(%s) = %p",sr->GetName(),subresult));
+      if(sr->GetValue("FitStatus")!=0){
+        srToExclude += Form("%s,",sr->GetName());
+        continue;
+      }
+      //Get quantities
+      Double_t NofJPsiSub      = subresult->GetValue(what);
+      Double_t NofJPsiErrorStat = subresult->GetErrorStat(what);
+
+      //Output messages
+      AliDebug(0,Form(" -------- "));
+
+      if(swhat.Contains("v2"))AliInfo(Form(" -- subresult %s :  %.4f +/- %.4f, FitStatus :%.0f",sr->GetName(),NofJPsiSub,NofJPsiErrorStat,sr->GetValue("FitStatus")));
+      else AliInfo(Form(" -- subresult %s :  %.0f +/- %.0f, FitStatus :%.0f ",sr->GetName(),NofJPsiSub,NofJPsiErrorStat,sr->GetValue("FitStatus")));
+      nofSubResult++;
+    }
+    AliInfo(Form("Excluded fits : %s",srToExclude.Data()));
+
+    result->Exclude(srToExclude);
+    AliInfo(Form(" -------- "));
+    if(swhat.Contains("v2")) AliInfo(Form(" ------ Mean :  %.4f +/- %.4f (%.1f %%) +/- %.4f (%.1f %%) ------ \n",
+      result->GetValue(what),result->GetErrorStat(what),100*result->GetErrorStat(what)/result->GetValue(what),result->GetRMS(what),100*result->GetRMS(what)/result->GetValue(what)));
+    else AliInfo(Form(" ------ Mean :  %.1f +/- %.1f (%.1f %%) +/- %.1f (%.1f %%) ------ \n",
+      result->GetValue(what),result->GetErrorStat(what),100*result->GetErrorStat(what)/result->GetValue(what),result->GetRMS(what),100*result->GetRMS(what)/result->GetValue(what)));
+    // AliDebug(0,"");
+    nofResult++;
+
+      //Fill graph
+    Double_t binCenter = (binArray[nofResult]-binArray[nofResult-1])/2 + binArray[nofResult-1] ;
+    graph->SetPoint(nofResult-1,binCenter,result->GetValue(what));
+    graph->SetPointError(nofResult-1,r->WidthX()/5,result->GetErrorStat(what));
+    graph_sysUncorr->SetPoint(nofResult-1,binCenter,result->GetValue(what));
+    graph_sysUncorr->SetPointError(nofResult-1,r->WidthX()/5,result->GetRMS(what));
+  }
+
+  TList* l = new TList();
+  l->SetOwner(kTRUE);
+  l->Add(graph);
+  l->Add(graph_sysUncorr);
+
+  delete bins;
+  delete binArray;
+
+  return l ;
+}
 //_____________________________________________________________________________
 void AliAnalysisMuMuSpectraCapsulePbPb::DrawResults( const char* particle,const char* subresults) const
 {

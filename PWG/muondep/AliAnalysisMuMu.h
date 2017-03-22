@@ -8,13 +8,13 @@
 
 
 /**
- 
+
   @ingroup pwg_muondep_mumu
 
   @class AliAnalysisMuMu
 
   @brief Facade class of classes called to  digest/plot/massage results from AliAnalysisTaskMuMu
- 
+
   @author Laurent Aphecetche (Subatech)
   @author Javier Martin Blanco (Subatech)
   @author Benjamin Audurier (Subatech)
@@ -220,6 +220,12 @@ public:
       Bool_t AccEffCorr =kFALSE,
       Bool_t MeanV2     =kFALSE) const;
 
+    void V2asGraphic(
+      const char        * particle="PSI",
+      const char        * what="<v2>JPsi",
+      const char        * binType="PT",
+      Bool_t AccEffCorr =kFALSE) const;
+
     AliAnalysisMuMuSpectra* RABy(const char* type="", const char* direction="pPb");
 
     TGraph* PlotEventSelectionEvolution(
@@ -343,9 +349,6 @@ public:
 
     void SetConfig(const AliAnalysisMuMuConfig& config);
 
-    void SetXmin(Double_t x){fXmin=x;}
-    void SetXmax(Double_t x){fXmax=x;}
-
 private:
     AliAnalysisMuMu(const AliAnalysisMuMu& rhs); // not implemented on purpose
     AliAnalysisMuMu& operator=(const AliAnalysisMuMu& rhs); // not implemented on purpose
@@ -369,10 +372,7 @@ private:
 
     void GetFileNameAndDirectory(const char* filename);
 
-    void LoadStyles();
-
-    Double_t GetXmin(){return fXmin;}
-    Double_t GetXmax(){return fXmax;}
+    void LoadStyles() const;
 
 private:
 
@@ -397,12 +397,9 @@ private:
 
     TString fParticleName; // Name of the simulated particle in the associated simulations
 
-    Double_t fXmin;
-    Double_t fXmax;
-
     AliAnalysisMuMuConfig* fConfig; // configuration
 
-    ClassDef(AliAnalysisMuMu,12) // class to analysis results from AliAnalysisTaskMuMuXXX tasks
+    ClassDef(AliAnalysisMuMu,13) // class to analysis results from AliAnalysisTaskMuMuXXX tasks
 };
 
 #endif

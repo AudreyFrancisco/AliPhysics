@@ -59,7 +59,8 @@ public:
   void PrintConst() const;
   // Compute quantities linked to RAA
   TList* RAAasGraphic(Double_t MUL) const;
-
+  // V2 vs what
+  TList* V2asGraphic(const char* what="PT") const;
   //Fit the DeltaPhiDistribution for each subresult
   void FitDistvsDphi(Double_t ptMin, Double_t ptMax,const char* particle="PSI",const char* subresults="", Bool_t draw=kFALSE)const;
 

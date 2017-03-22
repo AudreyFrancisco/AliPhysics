@@ -43,6 +43,7 @@
 #include "TF1.h"
 #include "TFile.h"
 #include "TGraphErrors.h"
+#include "TMultigraph.h"
 #include "TGrid.h"
 #include "TH1.h"
 #include "TH2.h"
@@ -89,8 +90,6 @@ fCorrectionPerRun(0x0),
 fAssociatedSimulation(0x0),
 fAssociatedSimulation2(0x0),
 fParticleName(""),
-fXmin(2.),
-fXmax(4.),
 fConfig(new AliAnalysisMuMuConfig(config))
 {
   GetFileNameAndDirectory(filename);
@@ -116,8 +115,6 @@ fCorrectionPerRun(0x0),
 fAssociatedSimulation(0x0),
 fAssociatedSimulation2(0x0),
 fParticleName(""),
-fXmin(2.),
-fXmax(4.),
 fConfig(0x0)
 {
   // ctor
@@ -1371,6 +1368,211 @@ void AliAnalysisMuMu::RAAasGraphic(const char* particle,
 }
 
 //_____________________________________________________________________________
+void AliAnalysisMuMu::V2asGraphic(const char* particle, const char* what, const char* binType, Bool_t AccEffCorr) const
+{
+    ///
+    /// Function to use after JPsi(). It loops over all combination of centrality/enventype/ trigger (etc.) and
+    /// print RAA on terminal accordingly. Fnorm / <T_AA> / other constants are written in AliAnalysisMuMuSpectraCapsulePbPb.
+    /// <binType> can be either "PT" or "Y" for the moment. This method reads sigma_pp value
+    /// from extern file who's line must be written as :
+    ///
+    /// intervalLow  intervalHight  sigma_pp  dsigma_pp  dsigma_pp_Correl  dsigma_pp_Uncorrel  AccEff  dAccEff;
+    ///
+    /// WATCH OUT FOR UNITS !! Function is written for cross-section in microbarn in externFile
+    ///
+    /// note : For now, this method is set for a single centrality bin 0-90
+    /// TODO : Make it work with different centrality, i.e  need to read also an extra externfile with value who are function of centrality (<T_AA> for instance...)
+    ///
+    ///
+
+
+    if (!OC() || !CC())
+        {
+        AliError("No mergeable/counter collection. Consider Upgrade()");
+        return ;
+        }
+    else
+        {
+        AliInfo(" ================================================================ \n                             Printing V2 as Graphic                            \n ================================================================ ");
+        }
+
+    // Get configuration settings
+    TObjArray* eventTypeArray   = Config()->GetListElements(Config()->EventSelectionKey(),IsSimulation());
+    TObjArray* triggerArray     = Config()->GetListElements(Config()->DimuonTriggerKey(),IsSimulation());
+    TObjArray* fitfunctionArray = Config()->GetListElements(Config()->FitTypeKey(),IsSimulation());// to add here an entry
+    TObjArray* pairCutArray     = Config()->GetListElements(Config()->PairSelectionKey(),IsSimulation());
+    TObjArray* centralityArray  = Config()->GetListElements(Config()->CentralitySelectionKey(),IsSimulation());
+    TObjArray* particleArray    = TString(particle).Tokenize(",");
+    TObjArray* binTypeArray     = TString(binType).Tokenize(",");
+    TObjArray* bins;
+
+    // Iterator for loops
+    TIter nextTrigger(triggerArray);
+    TIter nextEventType(eventTypeArray);
+    TIter nextPairCut(pairCutArray);
+    TIter nextParticle(particleArray);
+    TIter nextbinType(binTypeArray);
+    TIter nextCentrality(centralityArray);
+
+    // Strings
+    TObjString* strigger;
+    TObjString* seventType;
+    TObjString* spairCut;
+    TObjString* sparticle;
+    TObjString* sbinType;
+    TObjString* scentrality;
+
+    //graphs
+    TGraphErrors* graph[2];
+    TList* list=0x0;
+    TMultiGraph *mg = new TMultiGraph();
+
+    //Loop on particle type
+    while ( ( sparticle = static_cast<TObjString*>(nextParticle()) ) )
+        {
+        AliDebug(1,Form("particle %s",sparticle->String().Data()));
+        nextEventType.Reset();
+        // Loop on each envenType (see MuMuConfig)
+        //==============================================================================
+        while ( ( seventType = static_cast<TObjString*>(nextEventType())) )
+            {
+            AliDebug(1,Form("EVENTTYPE %s",seventType->String().Data()));
+            nextTrigger.Reset();
+            // Loop on each trigger (see MuMuConfig)
+            //==============================================================================
+            while ( ( strigger = static_cast<TObjString*>(nextTrigger())) )
+                {
+                AliDebug(1,Form("-TRIGGER %s",strigger->String().Data()));
+                nextCentrality.Reset();
+                // Loop on each centrality (not the ones in MuMuConfig but the ones set)
+                //==============================================================================
+                while ( ( scentrality = static_cast<TObjString*>(nextCentrality()) ) )
+                    {
+                    AliDebug(1,Form("--CENTRALITY %s",scentrality->String().Data()));
+                    nextPairCut.Reset();
+                    // Loop on each paircut (not the ones in MuMuConfig but the ones set)
+                    //==============================================================================
+                    while ( ( spairCut = static_cast<TObjString*>(nextPairCut())) )
+                        {
+                        AliDebug(1,Form("---PAIRCUT %s",spairCut->String().Data()));
+                        nextbinType.Reset();
+                        // Loop on each type (pt or y)
+                        //==============================================================================
+                        while ( ( sbinType = static_cast<TObjString*>(nextbinType()) ) )
+                            {
+                            AliDebug(1,Form("----TYPE %s",sbinType->String().Data()));
+
+                            //________Get spectra
+                            TString spectraPath= Form("/%s/%s/%s/%s/%s-%s",seventType->String().Data(),strigger->String().Data(),scentrality->String().Data(),spairCut->String().Data(),sparticle->String().Data(),sbinType->String().Data());
+                            if (AccEffCorr)spectraPath+="-AccEffCorr";
+                            spectraPath+="-MeanV2VsMinvUS-SPD";
+
+                            AliAnalysisMuMuSpectra * spectra = static_cast<AliAnalysisMuMuSpectra*>(OC()->GetObject(spectraPath.Data()));
+                            // spectra->Print();
+
+                            if(!spectra){
+                              AliError(Form("Cannot find spectra with name %s",spectraPath.Data()));
+                              continue;
+                            }
+                            //________
+
+                            // Create pointer on fitted spectra
+                            AliAnalysisMuMuSpectraCapsulePbPb * capsule = new AliAnalysisMuMuSpectraCapsulePbPb(spectra,spectraPath,"","");
+
+                            if(!capsule){
+                              AliError("Could not find spetra !");
+                              continue;
+                            }
+
+                            AliDebug(1,Form("Spectra = %p",capsule));
+                            list = capsule->V2asGraphic(what);
+                            if(!list) continue;
+                            AliDebug(1,Form("list = %p",list));
+                            graph[0] = static_cast<TGraphErrors*>(list->At(0)->Clone());
+                            graph[1] = static_cast<TGraphErrors*>(list->At(1)->Clone());
+                            if (!graph[0] || ! graph[1]) {
+                                AliError("Did not find graph in the list");
+                                return;
+                            }
+                            Double_t err_emb=0.006/0.91031; //error from embedding, to change
+                            Double_t errY;
+                            // for(Int_t bin = 0; bin<graph[1]->GetN(); bin++){
+                            //   errY=graph[1]->GetErrorY(bin);
+                            //   graph[1]->SetPointError(bin,graph[1]->GetErrorX(bin),sqrt(errY*errY+err_emb*err_emb));
+                            // }
+
+                            LoadStyles();
+                            TCanvas *c = new TCanvas();//"mv2", "J/#psi v2 vs pT with SPD as EP detector",1200,800);
+                            //cosmetics
+                            Double_t lW = 2.8;
+                            graph[0]->SetMarkerSize(1.4);
+                            // graph[1]->SetFillStyle(0);
+                            graph[0]->SetLineWidth(lW);
+                            graph[1]->SetLineWidth(lW);
+                            graph[1]->SetFillStyle(1001);
+                            graph[0]->SetMarkerColor(kRed+1);
+                            graph[0]->SetLineColor(kRed+1);
+                            graph[1]->SetFillColorAlpha(kRed+1,0.45);
+                            graph[1]->SetLineColor(kRed+1);
+                            graph[0]->SetMarkerStyle(kFullCircle);
+
+                            mg->Add(graph[1],"e2");
+                            mg->Add(graph[0],"ep");
+
+                            mg->Draw("AP");
+                            mg->SetMinimum(-0.1);
+                            mg->SetMaximum(0.25);
+                            mg->GetYaxis()->SetTitle("#it{v}_{2} {EP}");
+                            mg->GetXaxis()->SetTitle("#it{p}_{T} (GeV/#it{c})");
+                            mg->GetXaxis()->SetLimits(0.,12.);//else mg->GetXaxis()->SetLimits(0.,10.);
+
+                            TLine *line = new TLine(0.,0.,12.,0.);
+                            TPaveText *gsys = new TPaveText(0.69,0.14,0.86,0.25,"nbNDC");
+                            gsys->SetBorderSize(0);
+                            gsys->SetFillStyle(0);
+                            gsys->SetTextFont(42);
+                            gsys->AddText("#bf{global syst : #pm 1%}");
+                            gsys->SetTextSize(gStyle->GetTextSize()*0.85);
+                            TPaveText *pt = new TPaveText(0.19,0.65,0.47,0.85,"nbNDC");
+                            pt->SetTextSize(gStyle->GetTextSize()*0.8);
+                            pt->SetBorderSize(0);
+                            pt->SetFillStyle(0);
+                            pt->SetTextColor(kGray+3);
+                            pt->SetTextFont(42);
+                            pt->AddText(Form("#bf{Pb-Pb #sqrt{s_{NN}} = 5.02 TeV, centrality: %s}",scentrality->String().Data()));
+                            pt->AddText("#bf{Inclusive J/#psi #rightarrow #mu^{#plus}#mu^{#minus}, 2.5 < #it{y} < 4 }");
+                            pt->AddText("#bf{Dimuon v_{2} technique with the SPD}");
+                            TLegend  *leg = new TLegend(0.22,0.165,0.34,0.35);
+                            leg->SetTextSize(gStyle->GetTextSize()*0.63);
+                            leg->AddEntry(graph[0],"Inclusive J/#psi #rightarrow #mu^{#plus}#mu^{#minus}, #it{v}_{2}{EP, #Delta#eta = 1.1}","ep");
+                            leg->AddEntry(graph[1],"Total uncorr. uncert.","f");
+
+                            gsys->Draw("same");
+                            pt->Draw("same");
+                            line->Draw("same");
+                            leg->Draw("same");
+
+                            delete capsule;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    delete eventTypeArray ;
+    delete triggerArray ;
+    delete fitfunctionArray ;
+    delete pairCutArray ;
+    delete centralityArray ;
+    delete particleArray ;
+    delete binTypeArray ;
+
+    return ;
+
+}
+
+//_____________________________________________________________________________
 TString
 AliAnalysisMuMu::ExpandPathName(const char* file)
 {
@@ -1625,8 +1827,6 @@ AliAnalysisMuMu::FitParticle(const char* particle,
   //==============================================================================
   while ( ( bin = static_cast<AliAnalysisMuMuBinning::Range*>(next())) )
   {
-    //TODO
-    if(bin->Xmin()!=fXmin && bin->Xmax()!=fXmax) continue; //CHANGE HERE
     // Choose correct histo type with <spectraType> and set it in <hname>
     TString hname;
     if (!sSpectraType.CompareTo("minv")) hname = corrected ? Form("MinvUS_AccEffCorr+%s",bin->AsString().Data()) : Form("MinvUS+%s",bin->AsString().Data());
@@ -1676,13 +1876,19 @@ AliAnalysisMuMu::FitParticle(const char* particle,
 
     Int_t added(0);
 
+
     // Loop on every fittype and create a subresult inside the spectra.
     while ( ( fitType = static_cast<TObjString*>(nextFitType())) )
     {
       // In this loop we create a Subresult for each fit inside the Result for current bin (AddFit will do)
       TString sFitType(fitType->String());// Get fitType as a string
 
-      if ( !sFitType.Contains(sSpectraType.Data()) ) continue;// Checkpoint
+      AliDebug(1,Form("FitType=%s bin=%s",sFitType.Data(),bin->Flavour().Data()));
+
+      if ( !sFitType.Contains(sSpectraType.Data()) ) {
+        AliDebug(1,Form(" %s do not contain bin=%s",sFitType.Data(),bin->Flavour().Data()));
+        continue;// Checkpoint
+      }
 
       AliDebug(1,Form("<<<<<< fitType=%s bin=%s",sFitType.Data(),bin->Flavour().Data()));
 
@@ -1691,13 +1897,48 @@ AliAnalysisMuMu::FitParticle(const char* particle,
       std::cout << "Fitting " << hname.Data() << " with " << sFitType.Data() << std::endl;
       std::cout << "" << std::endl;
 
-      // Hard coded until find a smart wayto do it
-      if (sFitType.Contains("PSIPSIPRIMENA60NEWVWG") && sFitType.Contains("range=2.0;4.4") && bin->AsString().Contains("PT_BENJ_03.00_04.00") ){
-        cout << "" << endl;
-        cout << " specific histo with specific parameters" << endl;
-        cout << "" << endl;
-        sFitType += ":binNormJPsi=3.15:binNormPsiP=3.67:sigmaJPsi:0.085";
+      // Look for specific fit param.
+      AliDebug(1,"****************************************************** \n ************Looking for eventual fitSingle************");
+      TObjArray* fitSingle = Config()->GetListElements(Config()->FitSingleKey(),IsSimulation());
+      TIter nextFitSingle(fitSingle);
+      TObjString* specifit;
+      while ( ( specifit = static_cast<TObjString*>(nextFitSingle())) ){
+        // must find a better way to do ...
+        // Here we tokenize the initial FitType string with ":" and see if function names and ranges match
+        AliDebug(1,Form("Checking if specifit=%s matches for bin=%s",specifit->String().Data(),bin->AsString().Data()));
+        if ( ! specifit->String().Contains(bin->AsString().Data()) ){
+          AliDebug(1,Form("Could no find the bin %s in the specifit function",bin->AsString().Data()));
+          continue; // Check binning
+        }
+
+        Bool_t funcOk  =kFALSE;
+        Bool_t rangeOk =kFALSE;
+        Bool_t okWeight=kTRUE;
+
+        TObjArray* oldFitParam = fitType->String().Tokenize(":");
+        TIter nextoldFitParam(oldFitParam);
+        nextoldFitParam.Reset();
+        TObjString* param;
+
+        while ( ( param = static_cast<TObjString*>(nextoldFitParam())) ){
+          AliDebug(1,Form("checking param %s vs specifit %s ",param->String().Data(),specifit->String().Data()));
+          if ( param->String().Contains("func") && specifit->String().Contains(param->String().Data()) ) funcOk  = kTRUE;
+          if ( param->String().Contains("range") && specifit->String().Contains(param->String().Data()) ) rangeOk = kTRUE;
+          if ( param->String().Contains("weight") && !specifit->String().Contains(param->String().Data()) ) okWeight = kFALSE;
+        }
+        AliDebug(1,Form("funcOk= %d, rangeOk= %d, okWeight= %d ",funcOk,okWeight,rangeOk));
+        if (!funcOk || !rangeOk || !okWeight ) {
+          AliDebug(1,Form("Specifit %s do not match general function : %s",specifit->String().Data(),sFitType.Data()));
+          continue; // Check binning
+        }
+        AliDebug(1,Form("FitType : %s ; SingleFit : %s\n", sFitType.Data(),specifit->String().Data()));
+        sFitType = specifit->String().Data();
+        AliDebug(1,Form("FitType after: %s\n", sFitType.Data()));
+
+        delete oldFitParam;
+
       }
+      delete fitSingle;
 
       // Conf. for MC Tails (see function type)
       if ( sFitType.Contains("mctails",TString::kIgnoreCase) ) //FIXME: Find a univoque way to determine the correctly the fit type
@@ -3771,7 +4012,7 @@ void AliAnalysisMuMu::PrintNofParticle(const char* particle, const char* what, c
                             if(MeanV2)spectraPath+="-MeanV2VsMinvUS-SPD";
 
                             AliAnalysisMuMuSpectra * spectra = static_cast<AliAnalysisMuMuSpectra*>(OC()->GetObject(spectraPath.Data()));
-                            spectra->Print();
+                            // spectra->Print();
 
                             if(!spectra){
                               AliError(Form("Cannot find spectra with name %s",spectraPath.Data()));
@@ -6100,7 +6341,7 @@ void AliAnalysisMuMu::GetFileNameAndDirectory(const char* filename)
   }
 }
 
-void  AliAnalysisMuMu::LoadStyles(){
+void  AliAnalysisMuMu::LoadStyles() const{
   int font = 42;
   gROOT->SetStyle("Plain");
   gStyle->SetFrameBorderMode(0);
