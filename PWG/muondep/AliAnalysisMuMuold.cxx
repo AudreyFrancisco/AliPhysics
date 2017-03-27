@@ -1426,7 +1426,6 @@ void AliAnalysisMuMu::V2asGraphic(const char* particle, const char* what, const 
     TGraphErrors* graph[centralityArray->GetEntries()][2];
     TList* list=0x0;
     TMultiGraph *mg[centralityArray->GetEntries()];
-    TMultiGraph *mgcent = new TMultiGraph();
     Int_t colors[]     = {kBlack, kRed+1 , kCyan+2, kMagenta+1, kOrange+1, kCyan+2};
     Int_t markers[]    = {kFullCircle, kFullSquare,kFullDiamond,kFullStar,kFullTriangleUp,kOpenCircle,kOpenSquare,kOpenTriangleUp};
     Int_t nx(1);
@@ -1438,8 +1437,8 @@ void AliAnalysisMuMu::V2asGraphic(const char* particle, const char* what, const 
       ny=0;
     }
     else {
-      ny = 1;//TMath::Nint(TMath::Sqrt(nofGraph));
-      nx = centralityArray->GetEntries();//TMath::Nint((nofGraph/ny) +0.6);
+      ny = TMath::Nint(TMath::Sqrt(nofGraph));
+      nx = TMath::Nint((nofGraph/ny) +0.6);
       cout << "several plots graph "<< nx <<", " <<ny<< endl;
     }
     LoadStyles();
@@ -1473,21 +1472,19 @@ void AliAnalysisMuMu::V2asGraphic(const char* particle, const char* what, const 
                     mg[cent] = new TMultiGraph();
                     cent++;
                     cout << " ///////////////////// centrality ++ : " <<cent << endl;
-                    Int_t binType=0;
-                    TLegend  *leg = new TLegend(0.22,0.165,0.34,0.35);
-                    leg->SetTextSize(gStyle->GetTextSize()*0.63);
                     // Loop on each paircut (not the ones in MuMuConfig but the ones set)
                     //==============================================================================
                     while ( ( spairCut = static_cast<TObjString*>(nextPairCut())) )
                         {
                         AliDebug(1,Form("---PAIRCUT %s",spairCut->String().Data()));
                         nextbinType.Reset();
-                        binType++;
+                        Int_t binType=0
                         // Loop on each type (pt or y)
                         //==============================================================================
                         while ( ( sbinType = static_cast<TObjString*>(nextbinType()) ) )
                             {
                             AliDebug(1,Form("----TYPE %s",sbinType->String().Data()));
+
                             //________Get spectra
                             TString spectraPath= Form("/%s/%s/%s/%s/%s-%s",seventType->String().Data(),strigger->String().Data(),scentrality->String().Data(),spairCut->String().Data(),sparticle->String().Data(),sbinType->String().Data());
                             if (AccEffCorr)spectraPath+="-AccEffCorr";
@@ -1521,8 +1518,8 @@ void AliAnalysisMuMu::V2asGraphic(const char* particle, const char* what, const 
                                 return;
                             }
                             Double_t reso = 0.91031;
-                            if (scentrality->String().Contains("05.00_20.00"))reso=0.87297;
-                            else if(scentrality->String().Contains("40.00_60.00")) reso = 0.83192;
+                            if (scentrality->String().Contains("05_20"))reso=0.87297;
+                            else if(scentrality->String().Contains("40_60")) reso = 0.83192;
                             AliInfo(Form("Using resolution factor of %f",reso));
                             Double_t err_emb=0.006/reso; //error from embedding, to change
                             Double_t errY;
@@ -1534,22 +1531,19 @@ void AliAnalysisMuMu::V2asGraphic(const char* particle, const char* what, const 
                             cout << " ///////////////////// centrality :" <<cent << endl;
                             //cosmetics
                             Double_t lW = 2.8;
-                            if(markers[binType-1]==kFullDiamond)graph[cent-1][0]->SetMarkerSize(1.4);
-                            else graph[cent-1][0]->SetMarkerSize(0.9);
+                            graph[cent-1][0]->SetMarkerSize(1.4);
                             // graph[cent-1][1]->SetFillStyle(0);
                             graph[cent-1][0]->SetLineWidth(lW);
                             graph[cent-1][1]->SetLineWidth(lW);
                             graph[cent-1][1]->SetFillStyle(1001);
-                            graph[cent-1][0]->SetMarkerColor(colors[binType-1]);
-                            graph[cent-1][0]->SetLineColor(colors[binType-1]);
-                            graph[cent-1][1]->SetFillColorAlpha(colors[binType-1],0.45);
-                            graph[cent-1][1]->SetLineColor(colors[binType-1]);
-                            graph[cent-1][0]->SetMarkerStyle(markers[binType-1]);
+                            graph[cent-1][0]->SetMarkerColor(colors[cent-1]);
+                            graph[cent-1][0]->SetLineColor(colors[cent-1]);
+                            graph[cent-1][1]->SetFillColorAlpha(colors[cent-1],0.45);
+                            graph[cent-1][1]->SetLineColor(colors[cent-1]);
+                            graph[cent-1][0]->SetMarkerStyle(markers[cent-1]);
 
                             mg[cent-1]->Add(graph[cent-1][1],"e2");
                             mg[cent-1]->Add(graph[cent-1][0],"ep");
-                            mgcent->Add(graph[cent-1][1],"e2");
-                            mgcent->Add(graph[cent-1][0],"ep");
 
                             mg[cent-1]->Draw("AP");
                             mg[cent-1]->SetMinimum(-0.1);
@@ -1557,7 +1551,6 @@ void AliAnalysisMuMu::V2asGraphic(const char* particle, const char* what, const 
                             mg[cent-1]->GetYaxis()->SetTitle("#it{v}_{2} {EP}");
                             mg[cent-1]->GetXaxis()->SetTitle("#it{p}_{T} (GeV/#it{c})");
                             mg[cent-1]->GetXaxis()->SetLimits(0.,12.);//else mg->GetXaxis()->SetLimits(0.,10.);
-
 
                             TLine *line = new TLine(0.,0.,12.,0.);
                             TPaveText *gsys = new TPaveText(0.69,0.14,0.86,0.25,"nbNDC");
@@ -1573,14 +1566,12 @@ void AliAnalysisMuMu::V2asGraphic(const char* particle, const char* what, const 
                             pt->SetTextColor(kGray+3);
                             pt->SetTextFont(42);
                             pt->AddText(Form("#bf{Pb-Pb #sqrt{s_{NN}} = 5.02 TeV, centrality: %s}",scentrality->String().Data()));
-                            pt->AddText("#bf{Inclusive J/#psi #rightarrow #mu^{#plus}#mu^{#minus}}");
+                            pt->AddText("#bf{Inclusive J/#psi #rightarrow #mu^{#plus}#mu^{#minus}, 2.5 < #it{y} < 4 }");
                             pt->AddText("#bf{Dimuon v_{2} technique with the SPD}");
-
-                            TString pairName(spairCut->String());
-                            if(pairName.Contains("3.25-2.50"))leg->AddEntry(graph[cent-1][0],"2.5 < #it{y} < 3.25","ep");
-                            else if(pairName.Contains("4.00-3.25"))leg->AddEntry(graph[cent-1][0],"3.25 < #it{y} < 4","ep");
-                            else leg->AddEntry(graph[cent-1][0],"2.5 < #it{y} < 4","ep");
-                            // leg->AddEntry(graph[cent-1][1],"Total uncorr. uncert.","f");
+                            TLegend  *leg = new TLegend(0.22,0.165,0.34,0.35);
+                            leg->SetTextSize(gStyle->GetTextSize()*0.63);
+                            leg->AddEntry(graph[cent-1][0],"Inclusive J/#psi #rightarrow #mu^{#plus}#mu^{#minus}, #it{v}_{2}{EP, #Delta#eta = 1.1}","ep");
+                            leg->AddEntry(graph[cent-1][1],"Total uncorr. uncert.","f");
 
                             gsys->Draw("same");
                             pt->Draw("same");
@@ -1594,41 +1585,6 @@ void AliAnalysisMuMu::V2asGraphic(const char* particle, const char* what, const 
                 }
             }
         }
-    if(centralityArray->GetEntries()>1){
-        TCanvas *callcent = new TCanvas("mv2 all cent", "J/#psi v2 vs pT for all centralities",1200,800);
-        mgcent->Draw("AP");
-        mgcent->SetMinimum(-0.1);
-        mgcent->SetMaximum(0.25);
-        mgcent->GetYaxis()->SetTitle("#it{v}_{2} {EP}");
-        mgcent->GetXaxis()->SetTitle("#it{p}_{T} (GeV/#it{c})");
-        mgcent->GetXaxis()->SetLimits(0.,12.);//else mg->GetXaxis()->SetLimits(0.,10.);
-    
-        TLine *line = new TLine(0.,0.,12.,0.);
-        TPaveText *gsys = new TPaveText(0.69,0.14,0.86,0.25,"nbNDC");
-        gsys->SetBorderSize(0);
-        gsys->SetFillStyle(0);
-        gsys->SetTextFont(42);
-        gsys->AddText("#bf{global syst : #pm 1%}");
-        gsys->SetTextSize(gStyle->GetTextSize()*0.85);
-        TPaveText *pt = new TPaveText(0.19,0.65,0.47,0.85,"nbNDC");
-        pt->SetTextSize(gStyle->GetTextSize()*0.8);
-        pt->SetBorderSize(0);
-        pt->SetFillStyle(0);
-        pt->SetTextColor(kGray+3);
-        pt->SetTextFont(42);
-        // pt->AddText(Form("#bf{Pb-Pb #sqrt{s_{NN}} = 5.02 TeV, centrality: %s}",scentrality->String().Data()));
-        pt->AddText("#bf{Inclusive J/#psi #rightarrow #mu^{#plus}#mu^{#minus}, 2.5 < #it{y} < 4 }");
-        pt->AddText("#bf{Dimuon v_{2} technique with the SPD}");
-        // TLegend  *leg = new TLegend(0.22,0.165,0.34,0.35);
-        // leg->SetTextSize(gStyle->GetTextSize()*0.63);
-        // leg->AddEntry(graph[cent-1][0],"Inclusive J/#psi #rightarrow #mu^{#plus}#mu^{#minus}, #it{v}_{2}{EP, #Delta#eta = 1.1}","ep");
-        // leg->AddEntry(graph[cent-1][1],"Total uncorr. uncert.","f");
-    
-        gsys->Draw("same");
-        pt->Draw("same");
-        line->Draw("same");
-        // leg->Draw("same");
-      }
 
     delete eventTypeArray ;
     delete triggerArray ;
@@ -2134,7 +2090,7 @@ AliAnalysisMuMu::FitParticle(const char* particle,
           GetParametersFromResult(sMinvFitType,fitMinv);//FIXME: Think about if this is necessary
 
           AliDebug(1,Form("result for minv : %f",fitMinv->GetValue("FitStatus")));
-          if ( fitMinv->GetValue("FitStatus")!=0 && fitMinv->GetValue("NofJPsi")>0)//protection against failed minv fits
+          if ( fitMinv->GetValue("FitStatus")!=0 )
           {
             AliError(Form("Not getting subr from this minv result (bad fitresult) for bin %s in %s",bin->AsString().Data(),id.Data()));
             continue; //return 0x0;

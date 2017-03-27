@@ -191,7 +191,7 @@ void AliAnalysisMuMuSpectraCapsule::PrintNofWhat(const char* what) const
         return;
       }
       AliDebug(1,Form("subresult(%s) = %p",sr->GetName(),subresult));
-      if(sr->GetValue("FitStatus")!=0){
+      if(sr->GetValue("FitStatus")!=0 || sr->GetValue("<v2>JPsi")>0.1|| sr->GetValue("<v2>JPsi") < -0.1){
         srToExclude += Form("%s,",sr->GetName());
         continue;
       }

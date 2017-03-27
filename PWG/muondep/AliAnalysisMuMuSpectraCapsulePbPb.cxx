@@ -393,8 +393,8 @@ TList* AliAnalysisMuMuSpectraCapsulePbPb::V2asGraphic(const char* what) const
       //Output messages
       AliDebug(0,Form(" -------- "));
 
-      if(swhat.Contains("v2"))AliInfo(Form(" -- subresult %s :  %.4f +/- %.4f, FitStatus :%.0f",sr->GetName(),NofJPsiSub,NofJPsiErrorStat,sr->GetValue("FitStatus")));
-      else AliInfo(Form(" -- subresult %s :  %.0f +/- %.0f, FitStatus :%.0f ",sr->GetName(),NofJPsiSub,NofJPsiErrorStat,sr->GetValue("FitStatus")));
+      if(swhat.Contains("v2"))AliDebug(1,Form(" -- subresult %s :  %.4f +/- %.4f, FitStatus :%.0f",sr->GetName(),NofJPsiSub,NofJPsiErrorStat,sr->GetValue("FitStatus")));
+      else AliDebug(1,Form(" -- subresult %s :  %.0f +/- %.0f, FitStatus :%.0f ",sr->GetName(),NofJPsiSub,NofJPsiErrorStat,sr->GetValue("FitStatus")));
       nofSubResult++;
     }
     AliInfo(Form("Excluded fits : %s",srToExclude.Data()));
