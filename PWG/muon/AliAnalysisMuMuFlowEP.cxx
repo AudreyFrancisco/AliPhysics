@@ -90,7 +90,7 @@ AliAnalysisMuMuFlowEP::DefineHistogramCollection(const char* eventSelection,
 
   // no bins defined by the external steering macro, use our own defaults
   //if (!fBinsToFill) SetBinsToFill("psi","integrated,ptvsy,yvspt,pt,y,phi");
-  if (!fBinsToFill) SetBinsToFill("psi","pt,y,dphiSPD, dphiV0A, dphiV0C, dphivsptSPD,dphivsptV0A,dphivsptV0C");
+  if (!fBinsToFill) SetBinsToFill("psi","integrated,pt,y,dphiSPD, dphiV0A, dphiV0C, dphivsptSPD,dphivsptV0A,dphivsptV0C");
 
   // mass range
   Double_t minvMin = fMinvMin;
@@ -220,6 +220,7 @@ AliAnalysisMuMuFlowEP::DefineHistogramCollection(const char* eventSelection,
           TString mV2Name[3];
           for(Int_t i=0; i<fNDetectors;i++){
             mV2Name[i] = Form("MeanV2Vs%s_%s",minvName.Data(),fDetectors[i].Data());
+            cout << "creating " << mV2Name[i]  << endl;
           // Reconstructed pair histo
             CreatePairHistos(kHistoForData | kHistoForMCInput,eventSelection,triggerClassName,centrality,mV2Name[i].Data(),
                            Form("#mu+#mu- mean v_{2}^{obs} %s;M_{#mu^{+}#mu^{-}} (GeV/c^{2});v_{2}^{obs} =< cos {2(#varphi_{#mu^{+}#mu^{-}}- #Psi_{EP,2})} > with %s",r->AsString().Data(),fDetectors[i].Data()),nMinvBins,minvMin,minvMax,0);
@@ -379,6 +380,7 @@ void AliAnalysisMuMuFlowEP::FillHistosForPair(const char* eventSelection,
 
     //Fully integrated case
     if ( r->IsIntegrated() ){
+      cout << "ok integrated" << endl;
       ok = kTRUE;
       if ( pair4MomentumMC ) okMC = kTRUE;
     }
@@ -479,6 +481,7 @@ void AliAnalysisMuMuFlowEP::FillHistosForPair(const char* eventSelection,
             // Costheta
             for(Int_t i=0; i<fNDetectors;i++){
               hprofmV2Name= Form("MeanV2Vs%s_%s",minvName.Data(),fDetectors[i].Data());
+              cout << "Filling " << hprofmV2Name << endl;
               TProfile* hprofmV2 = Prof(eventSelection,triggerClassName,centrality,pairCutName,hprofmV2Name.Data());
               if ( !hprofmV2)AliError(Form("Could not get %s",hprofmV2Name.Data()));
               else hprofmV2->Fill(pair4Momentum.M(),cos(2*dphi[i]),inputWeight);
