@@ -2437,7 +2437,7 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2VWG2()
   fHisto->GetListOfFunctions()->Delete();
 
   const char* fitOption = "SERLM"; //We can add NO to avoid plotting
-  const char* fitOptionBg = "SERI"; //We can add NO to avoid plotting
+  const char* fitOptionBg = "SER"; //We can add NO to avoid plotting
 
 
   //__________ Get tails parameters, fitting range and SigmaPsiP
@@ -2457,6 +2457,9 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2VWG2()
   Double_t s1VWG2_init   = IsValidValue(GetValue("s1VWG2_init")) ? GetValue("s1VWG2_init") : -0.5;
   Double_t s2VWG2_init   = IsValidValue(GetValue("s2VWG2_init")) ? GetValue("s2VWG2_init") : -0.9;
   Double_t gVWG2_init    = IsValidValue(GetValue("gVWG2_init"))  ? GetValue("gVWG2_init")  : 0.15;
+
+  Double_t rejRl    = IsValidValue(GetValue("rejRl"))  ? GetValue("rejRl")  : 2.2;
+  Double_t rejRh    = IsValidValue(GetValue("rejRh"))  ? GetValue("rejRh")  : 3.9;
 
   TString msg;
 
@@ -2501,7 +2504,8 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2VWG2()
   // bckInit->SetParameters(fHisto->GetBinContent(bin),1.6,-0.5,-.9,.15); //68
   // bckInit->SetParameters(fHisto->GetBinContent(bin),1.9,.21,1.2,-0.16);//812
 
-  SetFitRejectRange(2.2,3.9);
+  SetFitRejectRange(rejRl,rejRh);
+
   TFitResultPtr fitResultInit = fHisto->Fit(bckInit,fitOptionBg);
   std::cout << "FitResultBkgInit=" << static_cast<int>(fitResultInit) << std::endl;
 
@@ -3025,6 +3029,8 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2POL2POL3()
   Double_t bp_init   = IsValidValue(GetValue("bp_init")) ? GetValue("bp_init") : 0.5;
   Double_t cp_init   = IsValidValue(GetValue("cp_init")) ? GetValue("cp_init") : -1.;
 
+  Double_t rejRl    = IsValidValue(GetValue("rejRl"))  ? GetValue("rejRl")  : 2.2;
+  Double_t rejRh    = IsValidValue(GetValue("rejRh"))  ? GetValue("rejRh")  : 3.9;
 
   TString msg;
 
@@ -3086,7 +3092,7 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2POL2POL3()
 
   bckInit->SetParLimits(5.,-300.,100.);
 
-  SetFitRejectRange(2.2,3.9);
+  SetFitRejectRange(rejRl,rejRh);
 
   TFitResultPtr fitResultInit = fHisto->Fit(bckInit,fitOptionBg);
   if ( static_cast<int>(fitResultInit) ) ProcessBkgFit(fitResultInit,bckInit,"FitFunctionBackgroundPol2Pol3",fitOptionBg); // Further attempts to fit bkg if the first one fails
@@ -4661,7 +4667,7 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWVWG2()
 
   fHisto->GetListOfFunctions()->Delete();
   const char* fitOption = "SERLM";
-  const char* fitOptionBg = "SERI";
+  const char* fitOptionBg = "SER";
 
 
   //__________ Get tails parameters, fitting range and SigmaPsiP
@@ -4685,6 +4691,9 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWVWG2()
   Double_t s1VWG2_init   = IsValidValue(GetValue("s1VWG2_init")) ? GetValue("s1VWG2_init") : -0.5;
   Double_t s2VWG2_init   = IsValidValue(GetValue("s2VWG2_init")) ? GetValue("s2VWG2_init") : -0.9;
   Double_t gVWG2_init    = IsValidValue(GetValue("gVWG2_init"))  ? GetValue("gVWG2_init")  : 0.15;
+
+  Double_t rejRl    = IsValidValue(GetValue("rejRl"))  ? GetValue("rejRl")  : 2.2;
+  Double_t rejRh    = IsValidValue(GetValue("rejRh"))  ? GetValue("rejRh")  : 3.9;
 
   TString msg;
 
@@ -4739,7 +4748,7 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWVWG2()
   // bckInit->SetParameters(fHisto->GetBinContent(bin),2.2,-0.9,-.7,-.03); //68
   // bckInit->SetParameters(fHisto->GetBinContent(bin),1.5,0.5,0.5,-0.1);
 
-  SetFitRejectRange(2.2,3.9);
+  SetFitRejectRange(rejRl,rejRh);
 
   TFitResultPtr fitResultInit = fHisto->Fit(bckInit,fitOptionBg);
 
@@ -5239,6 +5248,9 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWPOL2POL3()
   Double_t bp_init   = IsValidValue(GetValue("bp_init")) ? GetValue("bp_init") : 0.5;
   Double_t cp_init   = IsValidValue(GetValue("cp_init")) ? GetValue("cp_init") : -1.;
 
+  Double_t rejRl    = IsValidValue(GetValue("rejRl"))  ? GetValue("rejRl")  : 2.2;
+  Double_t rejRh    = IsValidValue(GetValue("rejRh"))  ? GetValue("rejRh")  : 3.9;
+
   TString msg;
 
   if (IsValidValue(p1Left)) msg += TString::Format("p1L=%e ",p1Left);
@@ -5307,7 +5319,8 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWPOL2POL3()
 
 //  bckInit->SetParLimits(0,fHisto->GetBinContent(bin)*0.5,fHisto->GetBinContent(bin)*10);
 
-  SetFitRejectRange(2.2,4.0);
+
+  SetFitRejectRange(rejRl,rejRh);
 
   TFitResultPtr fitResultInit = fHisto->Fit(bckInit,fitOptionBg);
 
@@ -8320,7 +8333,7 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMECB2VWG_BKGMV2POL2()
 
   Set("NofJPsi",NofJPsi,ErrStatNofJPsi);
   Set("<v2>JPsi",fitMeanv2->GetParameter(12),fitMeanv2->GetParError(12));
-  Set(">v2>PsiP",fitMeanv2->GetParameter(16),fitMeanv2->GetParError(16));
+  Set("<v2>PsiP",fitMeanv2->GetParameter(16),fitMeanv2->GetParError(16));
 
 }
 //_____________________________________________________________________________
@@ -8958,13 +8971,20 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMECB2VWG2_BKGMV2POL2()
   Double_t NofJPsi = GetValue("NofJPsi");
   Double_t ErrStatNofJPsi = GetValue("ErrStatNofJPsi");
 
+  Double_t BG0_init    = IsValidValue(GetValue("BG0_init"))  ? GetValue("BG0_init")  : .4;
+  Double_t BG1_init    = IsValidValue(GetValue("BG1_init"))  ? GetValue("BG1_init")  : -.2;
+  Double_t BG2_init    = IsValidValue(GetValue("BG2_init"))  ? GetValue("BG2_init")  : .02;
+  Double_t rejRl    = IsValidValue(GetValue("rejRl"))  ? GetValue("rejRl")  : 2.6;
+  Double_t rejRh    = IsValidValue(GetValue("rejRh"))  ? GetValue("rejRh")  : 4.;
+
   Double_t fitRangeLow = GetValue(kFitRangeLow);
   Double_t fitRangeHigh = GetValue(kFitRangeHigh);
 
   AliDebug(1,Form("values : alJPsi = %f nlJPsi = %f auJPsi = %f nuJPsi = %f",alphaLow,nLow,alphaUp,nUp));
   AliDebug(1,Form("values : kVWG2 = %f mVG2 = %f s1VWG2 = %f s2VWG2 = %f gVWG2 = %f",kVWG2, mVWG2, s1VWG2,s2VWG2,gVWG2));
   AliDebug(1,Form("values : kJPsi = %f mJPsi = %f sJPsi = %f kPsiP = %f NofJPsi= %f ErrStatNofJPsi = %f",kJPsi,mJPsi,sJPsi,kPsiP,NofJPsi,ErrStatNofJPsi));
-
+  if(IsValidValue(GetValue("BG0_init"))) AliInfo(Form("Bckg initialised using parameters : %f,%f,%f",BG0_init,BG1_init,BG2_init));
+  if(IsValidValue(GetValue("rejRl"))) AliInfo(Form("Bckg initialised using reject range: %f - %f",rejRl,rejRh));
   //  TString msg;
   //
   //  if (IsValidValue(alphaLow)) msg += TString::Format("alphaLow=%e ",alphaLow);
@@ -9023,13 +9043,13 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMECB2VWG2_BKGMV2POL2()
 
   // bck->SetParameters(.3,-0.5,0.5,1.5,-0.01);
   // bck->SetParameters(-5.,-90.,90.,-30,3.);
-  bck->SetParameters(.4,-.2,.02);
+  bck->SetParameters(BG0_init,BG1_init,BG2_init);
 
   // bck->SetParLimits(0, -1.,1.0);
  // bck->SetParLimits(0, 1.,8.0);
   // SetFitRejectRange(2.3,4.0);
   // SetFitRejectRange(2.6,3.7);
-  SetFitRejectRange(2.6,4.0);
+  SetFitRejectRange(rejRl,rejRh);
 
   TFitResultPtr fitResultInit = p->Fit(bck,fitOptionBg,"");
   std::cout << "FitResultmBkgInit=" << static_cast<int>(fitResultInit) << std::endl;
@@ -9155,13 +9175,22 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMECB2VWG2_BKGMV2POLEXP()
   Double_t NofJPsi = GetValue("NofJPsi");
   Double_t ErrStatNofJPsi = GetValue("ErrStatNofJPsi");
 
+
+
+  Double_t BG0_init    = IsValidValue(GetValue("BG0_init"))  ? GetValue("BG0_init")  : .4;
+  Double_t BG1_init    = IsValidValue(GetValue("BG1_init"))  ? GetValue("BG1_init")  : -.2;
+  Double_t BGexp_init    = IsValidValue(GetValue("BGexp_init"))  ? GetValue("BGexp_init")  : -.2;
+  Double_t rejRl    = IsValidValue(GetValue("rejRl"))  ? GetValue("rejRl")  : 2.6;
+  Double_t rejRh    = IsValidValue(GetValue("rejRh"))  ? GetValue("rejRh")  : 4.;
+
   Double_t fitRangeLow = GetValue(kFitRangeLow);
   Double_t fitRangeHigh = GetValue(kFitRangeHigh);
 
   AliDebug(1,Form("values : alJPsi = %f nlJPsi = %f auJPsi = %f nuJPsi = %f",alphaLow,nLow,alphaUp,nUp));
   AliDebug(1,Form("values : kVWG2 = %f mVG2 = %f s1VWG2 = %f s2VWG2 = %f gVWG2 = %f",kVWG2, mVWG2, s1VWG2,s2VWG2,gVWG2));
   AliDebug(1,Form("values : kJPsi = %f mJPsi = %f sJPsi = %f kPsiP = %f NofJPsi= %f ErrStatNofJPsi = %f",kJPsi,mJPsi,sJPsi,kPsiP,NofJPsi,ErrStatNofJPsi));
-
+  if(IsValidValue(GetValue("BG0_init"))) AliInfo(Form("Bckg initialised using parameters : %f,%f,%f",BG0_init,BG1_init,BGexp_init));
+  if(IsValidValue(GetValue("rejRl"))) AliInfo(Form("Bckg initialised using reject range: %f - %f",rejRl,rejRh));
   //  TString msg;
   //
   //  if (IsValidValue(alphaLow)) msg += TString::Format("alphaLow=%e ",alphaLow);
@@ -9222,12 +9251,12 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMECB2VWG2_BKGMV2POLEXP()
   // bck->SetParameters(-5.,-90.,90.,-30,3.);
   // bck->SetParameters(2.,-1.,-0.2);
    // bck->SetParameters(4.,-2.,-.2);
-   bck->SetParameters(10.,-5.,-2.);
+   bck->SetParameters(BG0_init,BG1_init,BGexp_init);
   // bck->SetParLimits(0, -1.,1.0);
  // bck->SetParLimits(0, 1.,8.0);
   // SetFitRejectRange(2.3,4.0);
   // SetFitRejectRange(2.6,3.7);
-  SetFitRejectRange(2.6,3.8);
+  SetFitRejectRange(rejRl,rejRh);
 
   TFitResultPtr fitResultInit = p->Fit(bck,fitOptionBg,"");
   std::cout << "FitResultmBkgInit=" << static_cast<int>(fitResultInit) << std::endl;
@@ -9768,12 +9797,20 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMECB2POL2POL3_BKGMV2POL2()
   Double_t NofJPsi = GetValue("NofJPsi");
   Double_t ErrStatNofJPsi = GetValue("ErrStatNofJPsi");
 
+  Double_t BG0_init    = IsValidValue(GetValue("BG0_init"))  ? GetValue("BG0_init")  : -0.15;
+  Double_t BG1_init    = IsValidValue(GetValue("BG1_init"))  ? GetValue("BG1_init")  : .2;
+  Double_t BG2_init    = IsValidValue(GetValue("BG2_init"))  ? GetValue("BG2_init")  : -.004;
+  Double_t rejRl    = IsValidValue(GetValue("rejRl"))  ? GetValue("rejRl")  : 2.6;
+  Double_t rejRh    = IsValidValue(GetValue("rejRh"))  ? GetValue("rejRh")  : 3.6;
+
   Double_t fitRangeLow = GetValue(kFitRangeLow);
   Double_t fitRangeHigh = GetValue(kFitRangeHigh);
 
   AliDebug(1,Form("values : alJPsi = %f nlJPsi = %f auJPsi = %f nuJPsi = %f",alphaLow,nLow,alphaUp,nUp));
   AliDebug(1,Form("values : a = %f b = %f c = %f a' = %f b' = %f c' = %f d' = %f ",a,b,c,ap,bp,cp,dp));
   AliDebug(1,Form("values : kJPsi = %f mJPsi = %f sJPsi = %f kPsiP = %f NofJPsi= %f ErrStatNofJPsi = %f",kJPsi,mJPsi,sJPsi,kPsiP,NofJPsi,ErrStatNofJPsi));
+  if(IsValidValue(GetValue("BG0_init"))) AliInfo(Form("Bckg initialised using parameters : %f,%f,%f",BG0_init,BG1_init,BG2_init));
+  if(IsValidValue(GetValue("rejRl"))) AliInfo(Form("Bckg initialised using reject range: %f - %f",rejRl,rejRh));
 
   TProfile* p(0x0);
   if ( fHisto->IsA() == TProfile::Class() ) p = static_cast<TProfile*>(fHisto);
@@ -9790,9 +9827,9 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMECB2POL2POL3_BKGMV2POL2()
 
   TF1* bck = new TF1("bck",this,&AliAnalysisMuMuJpsiResult::FitFunctionBackgroundPol2,fitRangeLow,fitRangeHigh,3,"AliAnalysisMuMuJpsiResult","FitFunctionBackgroundPol2");
 
-  bck->SetParameters(-.15,.2,-.004);
+  bck->SetParameters(BG0_init,BG1_init,BG2_init);
 
-  SetFitRejectRange(2.6,3.6);
+  SetFitRejectRange(rejRl,rejRh);
 
   TFitResultPtr fitResultInit = p->Fit(bck,fitOptionBg,"");
   std::cout << "FitResultmBkgInit=" << static_cast<int>(fitResultInit) << std::endl;
@@ -9926,13 +9963,21 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMECB2POL2POL3_BKGMV2POLEXP()
   Double_t NofJPsi = GetValue("NofJPsi");
   Double_t ErrStatNofJPsi = GetValue("ErrStatNofJPsi");
 
+
+  Double_t BG0_init    = IsValidValue(GetValue("BG0_init"))  ? GetValue("BG0_init")  : .3;
+  Double_t BG1_init    = IsValidValue(GetValue("BG1_init"))  ? GetValue("BG1_init")  : -.08;
+  Double_t BGexp_init    = IsValidValue(GetValue("BGexp_init"))  ? GetValue("BGexp_init")  : 0.;
+  Double_t rejRl    = IsValidValue(GetValue("rejRl"))  ? GetValue("rejRl")  : 2.6;
+  Double_t rejRh    = IsValidValue(GetValue("rejRh"))  ? GetValue("rejRh")  : 4.;
+
   Double_t fitRangeLow = GetValue(kFitRangeLow);
   Double_t fitRangeHigh = GetValue(kFitRangeHigh);
 
   AliDebug(1,Form("values : alJPsi = %f nlJPsi = %f auJPsi = %f nuJPsi = %f",alphaLow,nLow,alphaUp,nUp));
   AliDebug(1,Form("values : a = %f b = %f c = %f a' = %f b' = %f c' = %f d' = %f ",a,b,c,ap,bp,cp,dp));
   AliDebug(1,Form("values : kJPsi = %f mJPsi = %f sJPsi = %f kPsiP = %f NofJPsi= %f ErrStatNofJPsi = %f",kJPsi,mJPsi,sJPsi,kPsiP,NofJPsi,ErrStatNofJPsi));
-
+  if(IsValidValue(GetValue("BG0_init"))) AliInfo(Form("Bckg initialised using parameters : %f,%f,%f",BG0_init,BG1_init,BGexp_init));
+  if(IsValidValue(GetValue("rejRl"))) AliInfo(Form("Bckg initialised using reject range: %f - %f",rejRl,rejRh));
   TProfile* p(0x0);
   if ( fHisto->IsA() == TProfile::Class() ) p = static_cast<TProfile*>(fHisto);
   else
@@ -9950,9 +9995,9 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMECB2POL2POL3_BKGMV2POLEXP()
 
   // bck->SetParameters(-.15,.2,-.004);
   // bck->SetParameters(0.3,-.08,-.5);
-  bck->SetParameters(0.3,-.08,0.);
+  bck->SetParameters(BG0_init,BG1_init,BGexp_init);
 
-  SetFitRejectRange(2.5,3.8);
+  SetFitRejectRange(rejRl,rejRh);
 
   TFitResultPtr fitResultInit = p->Fit(bck,fitOptionBg,"");
   std::cout << "FitResultmBkgInit=" << static_cast<int>(fitResultInit) << std::endl;
@@ -10405,6 +10450,13 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMENA60NEWVWG2_BKGMV2POL2()
   Double_t NofJPsi = GetValue("NofJPsi");
   Double_t ErrStatNofJPsi = GetValue("ErrStatNofJPsi");
 
+
+  Double_t BG0_init    = IsValidValue(GetValue("BG0_init"))  ? GetValue("BG0_init")  : 0.4;
+  Double_t BG1_init    = IsValidValue(GetValue("BG1_init"))  ? GetValue("BG1_init")  : -.2;
+  Double_t BG2_init    = IsValidValue(GetValue("BG2_init"))  ? GetValue("BG2_init")  : .02;
+  Double_t rejRl    = IsValidValue(GetValue("rejRl"))  ? GetValue("rejRl")  : 2.6;
+  Double_t rejRh    = IsValidValue(GetValue("rejRh"))  ? GetValue("rejRh")  : 3.6;
+
   Double_t fitRangeLow = GetValue(kFitRangeLow);
   Double_t fitRangeHigh = GetValue(kFitRangeHigh);
 
@@ -10413,6 +10465,8 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMENA60NEWVWG2_BKGMV2POL2()
   AliDebug(1,Form("values : p1JPsi = %f p2LJPsi = %f p3LJPsi = %f p1RJPsi = %f p2RJPsi = %f p3RJPsi = %f  aLJPsi= %f  aRJPsi= %f",p1Left,p2Left,p3Left,p1Right,p2Right,p3Right,alphaLeft,alphaRight));
   AliDebug(1,Form("values : kVWG2 = %f mVG2 = %f s1VWG2 = %f s2VWG2 = %f gVWG2 = %f",kVWG2, mVWG2, s1VWG2,s2VWG2,gVWG2));
   AliDebug(1,Form("values : kJPsi = %f mJPsi = %f sJPsi = %f kPsiP = %f NofJPsi= %f ErrStatNofJPsi = %f",kJPsi,mJPsi,sJPsi,kPsiP,NofJPsi,ErrStatNofJPsi));
+  if(IsValidValue(GetValue("BG0_init"))) AliInfo(Form("Bckg initialised using parameters : %f,%f,%f",BG0_init,BG1_init,BG2_init));
+  if(IsValidValue(GetValue("rejRl"))) AliInfo(Form("Bckg initialised using reject range: %f - %f",rejRl,rejRh));
 
   //  TString resultName(Form("MEANV2FIT_%salphalow=%5.2fnlow=%5.2falphaup=%5.2fnup=%5.2f",fitName.Data(),par[7],par[8],par[9],par[10]));
   TProfile* p(0x0);
@@ -10432,11 +10486,11 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMENA60NEWVWG2_BKGMV2POL2()
 
   // bck->SetParameters(.3,-0.5,0.5,1.5,-0.01);
   // bck->SetParameters(-5.,-90.,90.,-30,3.);
-  bck->SetParameters(.4,-.2,.02);
+  bck->SetParameters(BG0_init,BG1_init,BG2_init);
   // bck->SetParLimits(0, -1.,1.0);
  // bck->SetParLimits(0, 1.,8.0);
   // SetFitRejectRange(2.3,4.0);
-  SetFitRejectRange(2.6,3.5);
+  SetFitRejectRange(rejRl,rejRh);
   // SetFitRejectRange(2.6,4.0);
 
   TFitResultPtr fitResultInit = p->Fit(bck,fitOptionBg,"");
@@ -10578,6 +10632,13 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMENA60NEWVWG2_BKGMV2POLEXP()
   Double_t NofJPsi = GetValue("NofJPsi");
   Double_t ErrStatNofJPsi = GetValue("ErrStatNofJPsi");
 
+  Double_t BG0_init    = IsValidValue(GetValue("BG0_init"))  ? GetValue("BG0_init")  : .2;
+  Double_t BG1_init    = IsValidValue(GetValue("BG1_init"))  ? GetValue("BG1_init")  : -.05;
+  Double_t BGexp_init    = IsValidValue(GetValue("BGexp_init"))  ? GetValue("BGexp_init")  : -0.4;
+  Double_t rejRl    = IsValidValue(GetValue("rejRl"))  ? GetValue("rejRl")  : 2.6;
+  Double_t rejRh    = IsValidValue(GetValue("rejRh"))  ? GetValue("rejRh")  : 4.;
+
+
   Double_t fitRangeLow = GetValue(kFitRangeLow);
   Double_t fitRangeHigh = GetValue(kFitRangeHigh);
 
@@ -10586,7 +10647,8 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMENA60NEWVWG2_BKGMV2POLEXP()
   AliDebug(1,Form("values : p1JPsi = %f p2LJPsi = %f p3LJPsi = %f p1RJPsi = %f p2RJPsi = %f p3RJPsi = %f  aLJPsi= %f  aRJPsi= %f",p1Left,p2Left,p3Left,p1Right,p2Right,p3Right,alphaLeft,alphaRight));
   AliDebug(1,Form("values : kVWG2 = %f mVG2 = %f s1VWG2 = %f s2VWG2 = %f gVWG2 = %f",kVWG2, mVWG2, s1VWG2,s2VWG2,gVWG2));
   AliDebug(1,Form("values : kJPsi = %f mJPsi = %f sJPsi = %f kPsiP = %f NofJPsi= %f ErrStatNofJPsi = %f",kJPsi,mJPsi,sJPsi,kPsiP,NofJPsi,ErrStatNofJPsi));
-
+  if(IsValidValue(GetValue("BG0_init"))) AliInfo(Form("Bckg initialised using parameters : %f,%f,%f",BG0_init,BG1_init,BGexp_init));
+  if(IsValidValue(GetValue("rejRl"))) AliInfo(Form("Bckg initialised using reject range: %f - %f",rejRl,rejRh));
   //  TString resultName(Form("MEANV2FIT_%salphalow=%5.2fnlow=%5.2falphaup=%5.2fnup=%5.2f",fitName.Data(),par[7],par[8],par[9],par[10]));
   TProfile* p(0x0);
   if ( fHisto->IsA() == TProfile::Class() ) p = static_cast<TProfile*>(fHisto);
@@ -10606,12 +10668,12 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMENA60NEWVWG2_BKGMV2POLEXP()
   // bck->SetParameters(.3,-0.5,0.5,1.5,-0.01);
   // bck->SetParameters(-5.,-90.,90.,-30,3.);
   // bck->SetParameters(4.,-2.,-.2);
-  bck->SetParameters(.2,-.05,-.4);
+  bck->SetParameters(BG0_init,BG1_init,BGexp_init);
   // bck->SetParameters(6.,-3.,-2.7);
   // bck->SetParLimits(0, -1.,1.0);
  // bck->SetParLimits(0, 1.,8.0);
   // SetFitRejectRange(2.3,4.0);
-  SetFitRejectRange(2.6,3.4);
+  SetFitRejectRange(rejRl,rejRh);
   // SetFitRejectRange(2.6,4.0);
 
   TFitResultPtr fitResultInit = p->Fit(bck,fitOptionBg,"");
@@ -11087,13 +11149,20 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMENA60NEWPOL2POL3_BKGMV2POL2()
   Double_t NofJPsi = GetValue("NofJPsi");
   Double_t ErrStatNofJPsi = GetValue("ErrStatNofJPsi");
 
+  Double_t BG0_init    = IsValidValue(GetValue("BG0_init"))  ? GetValue("BG0_init")  : 0.4;
+  Double_t BG1_init    = IsValidValue(GetValue("BG1_init"))  ? GetValue("BG1_init")  : -.2;
+  Double_t BG2_init    = IsValidValue(GetValue("BG2_init"))  ? GetValue("BG2_init")  : .03;
+  Double_t rejRl       = IsValidValue(GetValue("rejRl"))  ? GetValue("rejRl")  : 2.6;
+  Double_t rejRh       = IsValidValue(GetValue("rejRh"))  ? GetValue("rejRh")  : 3.6;
+
   Double_t fitRangeLow = GetValue(kFitRangeLow);
   Double_t fitRangeHigh = GetValue(kFitRangeHigh);
 
   AliDebug(1,Form("values : p1JPsi = %f p2LJPsi = %f p3LJPsi = %f p1RJPsi = %f p2RJPsi = %f p3RJPsi = %f  aLJPsi= %f  aRJPsi= %f",p1Left,p2Left,p3Left,p1Right,p2Right,p3Right,alphaLeft,alphaRight));
   AliDebug(1,Form("values : a = %f b = %f c = %f a' = %f b' = %f c' = %f d' = %f ",a,b,c,ap,bp,cp,dp));
   AliDebug(1,Form("values : kJPsi = %f mJPsi = %f sJPsi = %f kPsiP = %f NofJPsi= %f ErrStatNofJPsi = %f",kJPsi,mJPsi,sJPsi,kPsiP,NofJPsi,ErrStatNofJPsi));
-
+  if(IsValidValue(GetValue("BG0_init"))) AliInfo(Form("Bckg initialised using parameters : %f,%f,%f",BG0_init,BG1_init,BG2_init));
+  if(IsValidValue(GetValue("rejRl"))) AliInfo(Form("Bckg initialised using reject range: %f - %f",rejRl,rejRh));
   TProfile* p(0x0);
   if ( fHisto->IsA() == TProfile::Class() ) p = static_cast<TProfile*>(fHisto);
   else
@@ -11109,8 +11178,8 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMENA60NEWPOL2POL3_BKGMV2POL2()
 
   TF1* bck = new TF1("bck",this,&AliAnalysisMuMuJpsiResult::FitFunctionBackgroundPol2,fitRangeLow,fitRangeHigh,3,"AliAnalysisMuMuJpsiResult","FitFunctionBackgroundPol2");
 
-  bck->SetParameters(.4,-.2,.03);
-  SetFitRejectRange(2.5,3.5);
+  bck->SetParameters(BG0_init,BG1_init,BG2_init);
+  SetFitRejectRange(rejRl,rejRh);
 
   TFitResultPtr fitResultInit = p->Fit(bck,fitOptionBg,"");
   std::cout << "FitResultmBkgInit=" << static_cast<int>(fitResultInit) << std::endl;
@@ -11260,13 +11329,20 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMENA60NEWPOL2POL3_BKGMV2POLEXP()
   Double_t NofJPsi = GetValue("NofJPsi");
   Double_t ErrStatNofJPsi = GetValue("ErrStatNofJPsi");
 
+  Double_t BG0_init    = IsValidValue(GetValue("BG0_init"))  ? GetValue("BG0_init")  : 1.;
+  Double_t BG1_init    = IsValidValue(GetValue("BG1_init"))  ? GetValue("BG1_init")  : -3.;
+  Double_t BGexp_init    = IsValidValue(GetValue("BGexp_init"))  ? GetValue("BGexp_init")  : -1.7;
+  Double_t rejRl    = IsValidValue(GetValue("rejRl"))  ? GetValue("rejRl")  : 2.6;
+  Double_t rejRh    = IsValidValue(GetValue("rejRh"))  ? GetValue("rejRh")  : 4.;
+
   Double_t fitRangeLow = GetValue(kFitRangeLow);
   Double_t fitRangeHigh = GetValue(kFitRangeHigh);
 
   AliDebug(1,Form("values : p1JPsi = %f p2LJPsi = %f p3LJPsi = %f p1RJPsi = %f p2RJPsi = %f p3RJPsi = %f  aLJPsi= %f  aRJPsi= %f",p1Left,p2Left,p3Left,p1Right,p2Right,p3Right,alphaLeft,alphaRight));
   AliDebug(1,Form("values : a = %f b = %f c = %f a' = %f b' = %f c' = %f d' = %f ",a,b,c,ap,bp,cp,dp));
   AliDebug(1,Form("values : kJPsi = %f mJPsi = %f sJPsi = %f kPsiP = %f NofJPsi= %f ErrStatNofJPsi = %f",kJPsi,mJPsi,sJPsi,kPsiP,NofJPsi,ErrStatNofJPsi));
-
+  if(IsValidValue(GetValue("BG0_init"))) AliInfo(Form("Bckg initialised using parameters : %f,%f,%f",BG0_init,BG1_init,BGexp_init));
+  if(IsValidValue(GetValue("rejRl"))) AliInfo(Form("Bckg initialised using reject range: %f - %f",rejRl,rejRh));
   TProfile* p(0x0);
   if ( fHisto->IsA() == TProfile::Class() ) p = static_cast<TProfile*>(fHisto);
   else
@@ -11283,11 +11359,11 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMENA60NEWPOL2POL3_BKGMV2POLEXP()
   TF1* bck = new TF1("bck",this,&AliAnalysisMuMuJpsiResult::FitFunctionBackgroundPolExp,fitRangeLow,fitRangeHigh,3,"AliAnalysisMuMuJpsiResult","FitFunctionBackgroundPolExp");
 
   // bck->SetParameters(1.2,-.3,-1.);
-  bck->SetParameters(1.,-3.,-1.7);
+  bck->SetParameters(BG0_init,BG1_init,BGexp_init);
 
    // bck->SetParameters(-.15,.2,-.004);
 
-  SetFitRejectRange(2.5,3.8);
+  SetFitRejectRange(rejRl,rejRh);
 
   TFitResultPtr fitResultInit = p->Fit(bck,fitOptionBg,"");
   std::cout << "FitResultmBkgInit=" << static_cast<int>(fitResultInit) << std::endl;
@@ -12903,7 +12979,7 @@ Bool_t AliAnalysisMuMuJpsiResult::CheckFitStatus(TFitResultPtr &fitResult)
     AliDebug(1,Form("Fit rejected because of covariant matrix : %d",fitResult->CovMatrixStatus()));
   }
   TString minuitStatus = gMinuit->fCstatu;
-  if(!minuitStatus.Contains("SUCCESSFUL") && !minuitStatus.Contains("OK")){
+  if(!minuitStatus.Contains("SUCCESSFUL") && !minuitStatus.Contains("OK") && !minuitStatus.Contains("PROBLEMS")){
     isok =kFALSE;
     AliDebug(1,"Minuit status is not ok !");
   }

@@ -27,7 +27,17 @@ ClassImp(AliAnalysisMuMuSpectraCapsule)
 #include "AliAnalysisMuMuJpsiResult.h"
 #include "AliAnalysisMuMuBinning.h"
 #include "TObjArray.h"
+#include "TStyle.h"
+#include "TH1F.h"
+#include "TLine.h"
+#include "TCanvas.h"
+#include "TLegend.h"
+#include "TPaveText.h"
 #include "TString.h"
+#include "TPaveText.h"
+#include "TPaveStats.h"
+#include "TLatex.h"
+#include "TList.h"
 #include <fstream>
 #include <string>
 
@@ -143,6 +153,7 @@ void AliAnalysisMuMuSpectraCapsule::PrintNofWhat(const char* what) const
   AliAnalysisMuMuJpsiResult* subresult;
   AliAnalysisMuMuResult    * sr;
   AliAnalysisMuMuBinning   ::Range* r;
+
   TString swhat(what);
   // Array to store bins for the while loop
   TObjArray * bins=GetSpectra()->Binning()->CreateBinObjArray();// (intrinseque 'new')
@@ -151,11 +162,25 @@ void AliAnalysisMuMuSpectraCapsule::PrintNofWhat(const char* what) const
     AliError(Form("Cannot find bins"));
     return;
   }
-
+  TCanvas *se = new TCanvas;
+  se->Divide(1,bins->GetEntries());
   //Counters and Iterator for bin
   Int_t nofResult = 0;
   TIter nextBin(bins);
   nextBin.Reset();
+
+  //Draw syst
+  // TGraphErrors *gr[bins->GetEntries()];
+  // TCanvas *cmult[bins->GetEntries()];
+  // TCanvas *sysDis =new TCanvas("Systematics", Form("Systematics for %s",what),1200,800);
+  // Int_t nx = 1;
+  // Int_t ny = 1;
+  // // if(bins->GetEntries()>1) {
+  // //   ny = (bins->GetEntries()-1)/3+1;
+  // //   nx = bins->GetEntries()/ny+1;
+  // // }
+  // AliInfo(Form("Dividing canvas into %d x %d (%d entries)",nx,ny,bins->GetEntries()));
+  // sysDis->Divide(bins->GetEntries(),1);
 
   // Loop on bins
   //==============================================================================
@@ -170,13 +195,23 @@ void AliAnalysisMuMuSpectraCapsule::PrintNofWhat(const char* what) const
     }
     AliDebug(1, Form("result(%s) = %p ",result->GetName(),result));
 
+    //plotting
+    // gr[nofResult] = new TGraphErrors(result->SubResults()->GetEntries());
+
+
     Int_t nofSubResult = 0; // Counter for subresult
     TIter nextSubResult(result->SubResults());// Iterator for subresults
     nextSubResult.Reset();
 
     //Some variables
     TString  binAsString(r->AsString());// Usefull for the coming loop
+     // To store subresults values
+    Double_t subNofWhat[result->SubResults()->GetEntries()];
+    Double_t subNofWhatStatError[result->SubResults()->GetEntries()];
+    const char * srName[result->SubResults()->GetEntries()];
+
     TString srToExclude("");
+    Int_t nofExcludedSr=0;
 
     cout << Form(" -_-_-_-_- %s_%s -_-_-_-_- ",binAsString.Data(),GetSpectraName().Data()) << endl;
     // Loop on subresults
@@ -191,22 +226,31 @@ void AliAnalysisMuMuSpectraCapsule::PrintNofWhat(const char* what) const
         return;
       }
       AliDebug(1,Form("subresult(%s) = %p",sr->GetName(),subresult));
-      if(sr->GetValue("FitStatus")!=0 || sr->GetValue("<v2>JPsi")>0.1|| sr->GetValue("<v2>JPsi") < -0.1){
+
+      //Get quantities
+      Double_t NofWhat      = subresult->GetValue(what);
+      Double_t NofWhatErrorStat = subresult->GetErrorStat(what);
+      subNofWhat[nofSubResult]          = NofWhat;
+      subNofWhatStatError[nofSubResult] = NofWhatErrorStat;
+      srName[nofSubResult] =sr->GetName();
+      if(!TString(srName[nofSubResult]).Contains("_2.2_4.5")) srName[nofSubResult] = "";
+
+      if(sr->GetValue("FitStatus")!=0){
+      // || (swhat.Contains("v2") && (sr->GetValue("<v2>JPsi")>0.1|| sr->GetValue("<v2>JPsi") < -0.1))){
         srToExclude += Form("%s,",sr->GetName());
+        nofExcludedSr++;
+        nofSubResult++;
         continue;
       }
-      //Get quantities
-      Double_t NofJPsiSub      = subresult->GetValue(what);
-      Double_t NofJPsiErrorStat = subresult->GetErrorStat(what);
 
       //Output messages
       AliDebug(0,Form(" -------- "));
 
-      if(swhat.Contains("v2"))AliInfo(Form(" -- subresult %s :  %.4f +/- %.4f, FitStatus :%.0f",sr->GetName(),NofJPsiSub,NofJPsiErrorStat,sr->GetValue("FitStatus")));
-      else AliInfo(Form(" -- subresult %s :  %.0f +/- %.0f, FitStatus :%.0f ",sr->GetName(),NofJPsiSub,NofJPsiErrorStat,sr->GetValue("FitStatus")));
+      if(swhat.Contains("v2"))AliInfo(Form(" -- subresult %s :  %.4f +/- %.4f, FitStatus :%.0f",sr->GetName(),NofWhat,NofWhatErrorStat,sr->GetValue("FitStatus")));
+      else AliInfo(Form(" -- subresult %s :  %.0f +/- %.0f, FitStatus :%.0f ",sr->GetName(),NofWhat,NofWhatErrorStat,sr->GetValue("FitStatus")));
       nofSubResult++;
     }
-    AliInfo(Form("Excluded fits : %s",srToExclude.Data()));
+    AliInfo(Form("%d excluded fits : %s",nofExcludedSr,srToExclude.Data()));
 
     result->Exclude(srToExclude);
     AliInfo(Form(" -------- "));
@@ -215,6 +259,74 @@ void AliAnalysisMuMuSpectraCapsule::PrintNofWhat(const char* what) const
     else AliInfo(Form(" ------ Mean :  %.1f +/- %.1f (%.1f %%) +/- %.1f (%.1f %%) ------ \n",
       result->GetValue(what),result->GetErrorStat(what),100*result->GetErrorStat(what)/result->GetValue(what),result->GetRMS(what),100*result->GetRMS(what)/result->GetValue(what)));
     // AliDebug(0,"");
+
+    // Plot the histograms
+    TH1F * h_test = new TH1F(Form("%s_%s",what,r->AsString().Data()),Form("%s_%s",what,r->AsString().Data()),result->SubResults()->GetEntries(),0,result->SubResults()->GetEntries());
+    if(swhat.Contains("v2"))
+    {
+      h_test->SetMarkerColor(kAzure-2);
+      h_test->SetLineColor(kAzure-2);
+    }
+    else {
+      h_test->SetMarkerColor(kRed+1);
+      h_test->SetLineColor(kRed+1);
+    }
+    for (int i = 0; i < result->SubResults()->GetEntries(); ++i)
+    {
+        // the histo we plot
+        h_test->SetBinContent(i+1,subNofWhat[i]);
+        h_test->SetBinError(i+1,subNofWhatStatError[i]);
+
+        // Here we change the label names
+        // if(nofResult==(bins->GetEntries()-1))
+        h_test->GetXaxis()->SetBinLabel(i+1,Form("%s",srName[i]));
+    }
+
+    // --- Here we draw ---
+    se->cd(nofResult+1);
+    se->SetBottomMargin(4.);
+    h_test->GetYaxis()->SetTitle(what);
+    h_test->SetStats(0);
+    h_test->DrawCopy();
+
+    TLine *line1 = new TLine(0,result->GetValue(what),result->SubResults()->GetEntries(),result->GetValue(what));
+    line1->SetLineColor(kGray+3);
+    line1->SetLineWidth(3);
+
+    TLine *line2 = new TLine(0,result->GetValue(what)-result->GetRMS(what),result->SubResults()->GetEntries(),result->GetValue(what)-result->GetRMS(what));
+    line2->SetLineColor(kGray+3);
+    line2->SetLineWidth(3);
+    line2->SetLineStyle(8);
+
+    TLine *line3 = new TLine(0,result->GetValue(what)+result->GetRMS(what),result->SubResults()->GetEntries(),result->GetValue(what)+result->GetRMS(what));
+    line3->SetLineColor(kGray+3);
+    line3->SetLineWidth(3);
+    line3->SetLineStyle(8);
+    line1->Draw("same");
+    line2->Draw("same");
+    line3->Draw("same");
+
+    TPaveText* pt = new TPaveText(0.16,0.8,0.47,0.85,"nbNDC");
+    pt->AddText(Form(" [%0.f < #it{p}_{T} < %0.f GeV/#it{c}] Excluded fits : %d / %d",r->Xmin(), r->Xmax(), nofExcludedSr,nofSubResult));
+    pt->Draw("same");
+    // m0.SetLineStyle(1);
+    // s1.SetLineStyle(5);
+    // s2.SetLineStyle(8);
+    // TPaveText ex(0.16,0.8,0.47,0.85,"nbNDC");
+    // ex.SetTextAlign(11);
+    // ex.SetBorderSize(0);
+    // ex.SetFillStyle(0);
+    // ex.SetTextColor(kGray+3);
+    // ex.SetTextFont(42);
+    // // ex.SetTextSize(gStyle->GetTextSize()*0.9);
     nofResult++;
   }
+
+  // delete result;
+  // delete subresult;
+  // delete sr;
+  // delete r;
+  // delete bins;
+  // delete gr;
+  // delete ex;
 }

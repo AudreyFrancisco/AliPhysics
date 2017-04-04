@@ -82,7 +82,8 @@ public:
       const char* centrality,
       const AliAnalysisMuMuBinning& binning,
       const char* spectraType="minv",
-      Bool_t corrected=kFALSE);
+      Bool_t corrected=kFALSE,
+      Bool_t SP       =kFALSE);
 
     AliAnalysisMuMuSpectra* CorrectSpectra(
       const char* type,
@@ -104,7 +105,8 @@ public:
       const char* subresult="CB2VWG_2.4_4.5_SP1.2",
       const char* printDirectoryPath="",
       Bool_t AccEffCorr =kFALSE,
-      Bool_t MeanV2     =kFALSE
+      Bool_t MeanV2     =kFALSE,
+      Bool_t SP         =kFALSE
       )const;
 
     void ComputeDimuonRawCount(
@@ -211,16 +213,25 @@ public:
       const char        * binType="INTEGRATED",
       const char        * subresults="",
       Bool_t AccEffCorr =kFALSE,
-      Bool_t MeanV2     =kFALSE)const;
+      Bool_t MeanV2     =kFALSE,
+      Bool_t SP         =kFALSE)const;
 
     void PrintNofParticle(
       const char        * particle="PSI",
       const char        * what="NofJPsi",
       const char        * binType="PT",
       Bool_t AccEffCorr =kFALSE,
-      Bool_t MeanV2     =kFALSE) const;
+      Bool_t MeanV2     =kFALSE,
+      Bool_t SP         =kFALSE) const;
 
     void V2asGraphic(
+      const char        * particle="PSI",
+      const char        * what="<v2>JPsi",
+      const char        * binType="PT",
+      Bool_t AccEffCorr =kFALSE,
+      Bool_t SP         =kFALSE) const;
+
+    void CompV2Method(
       const char        * particle="PSI",
       const char        * what="<v2>JPsi",
       const char        * binType="PT",
@@ -288,7 +299,8 @@ public:
       const char           * binningFlavour="",
       Bool_t fitmPt        =kFALSE,
       Bool_t fitmV2        =kTRUE,
-      Bool_t onlyCorrected =kFALSE);
+      Bool_t onlyCorrected =kFALSE,
+      Bool_t SP            =kFALSE);
 
     void ComputeV2WithDndPhi(
       const char              * binType="DPHIVSPT",
