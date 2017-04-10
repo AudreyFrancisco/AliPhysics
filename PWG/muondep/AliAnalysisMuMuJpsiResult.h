@@ -146,19 +146,23 @@ public:
   void FitMV2PSIPSIPRIMECB2VWG2_BKGMV2POL2();
   void FitMV2PSIPSIPRIMECB2VWG2_BKGMV2POL2EXP();
   void FitMV2PSIPSIPRIMECB2VWG2_BKGMV2POL4();
+  void FitMV2PSIPSIPRIMECB2VWG2_BKGMV2POL4Cheb();
   void FitMV2PSIPSIPRIMECB2POL2POL3_BKGMV2POL2();
   void FitMV2PSIPSIPRIMECB2POL2POL3_BKGMV2POLEXP();
   void FitMV2PSIPSIPRIMECB2POL2POL3_BKGMV2POL2EXP();
   void FitMV2PSIPSIPRIMECB2POL2POL3_BKGMV2POL4();
+  void FitMV2PSIPSIPRIMECB2POL2POL3_BKGMV2POL4Cheb();
 
   void FitMV2PSIPSIPRIMENA60NEWVWG2_BKGMV2POL2();
   void FitMV2PSIPSIPRIMENA60NEWVWG2_BKGMV2POLEXP();
   void FitMV2PSIPSIPRIMENA60NEWVWG2_BKGMV2POL2EXP();
   void FitMV2PSIPSIPRIMENA60NEWVWG2_BKGMV2POL4();
+  void FitMV2PSIPSIPRIMENA60NEWVWG2_BKGMV2POL4Cheb();
   void FitMV2PSIPSIPRIMENA60NEWPOL2POL3_BKGMV2POL2();
   void FitMV2PSIPSIPRIMENA60NEWPOL2POL3_BKGMV2POLEXP();
   void FitMV2PSIPSIPRIMENA60NEWPOL2POL3_BKGMV2POL2EXP();
   void FitMV2PSIPSIPRIMENA60NEWPOL2POL3_BKGMV2POL4();
+  void FitMV2PSIPSIPRIMENA60NEWPOL2POL3_BKGMV2POL4Cheb();
   Int_t NofRuns() const;
 
   void SetNofRuns(int n);
@@ -222,6 +226,8 @@ private:
   Double_t FitFunctionBackgroundPol2Exp(Double_t* x, Double_t* par);
 
   Double_t FitFunctionBackgroundPol4Exp(Double_t *x, Double_t *par);
+
+  Double_t FitFunctionBackgroundPol4Cheb(Double_t *x, Double_t *par);
 
   Double_t FitFunctionBackgroundPol2(Double_t *x, Double_t *par);
 
@@ -307,21 +313,25 @@ private:
   Double_t FitFunctionMeanPtSCB2VWG2POLEXP(Double_t *x, Double_t *par);
   Double_t FitFunctionMeanPtSCB2VWG2POL2EXP(Double_t *x, Double_t *par);
   Double_t FitFunctionMeanPtSCB2VWG2POL4(Double_t *x, Double_t *par);
+  Double_t FitFunctionMeanPtSCB2VWG2POL4Cheb(Double_t *x, Double_t *par);
 
   Double_t FitFunctionMeanPtSCB2POL2POL3POL2(Double_t* x, Double_t* par);
   Double_t FitFunctionMeanPtSCB2POL2POL3_POLEXP(Double_t *x, Double_t *par);
   Double_t FitFunctionMeanPtSCB2POL2POL3POL2EXP(Double_t *x, Double_t *par);
   Double_t FitFunctionMeanPtSCB2POL2POL3POL4(Double_t *x, Double_t *par);
+  Double_t FitFunctionMeanPtSCB2POL2POL3POL4Cheb(Double_t *x, Double_t *par);
 
 
   Double_t FitFunctionMeanPtSNA60NEWVWG2POL2(Double_t *x, Double_t *par);
   Double_t FitFunctionMeanPtSNA60NEWVWG2POLEXP(Double_t *x, Double_t *par);
   Double_t FitFunctionMeanPtSNA60NEWVWG2POL2EXP(Double_t *x, Double_t *par);
   Double_t FitFunctionMeanPtSNA60NEWVWG2POL4(Double_t *x, Double_t *par);
+  Double_t FitFunctionMeanPtSNA60NEWVWG2POL4Cheb(Double_t *x, Double_t *par);
   Double_t FitFunctionMeanPtSNA60NEWPOL2POL3POL2(Double_t *x, Double_t *par);
   Double_t FitFunctionMeanPtSNA60NEWPOL2POL3_POLEXP(Double_t *x, Double_t *par);
   Double_t FitFunctionMeanPtSNA60NEWPOL2POL3POL2EXP(Double_t *x, Double_t *par);
   Double_t FitFunctionMeanPtSNA60NEWPOL2POL3POL4(Double_t *x, Double_t *par);
+  Double_t FitFunctionMeanPtSNA60NEWPOL2POL3POL4Cheb(Double_t *x, Double_t *par);
 
 
   Double_t FitFunctionMeanPtS2NA60NEWVWGPOL2(Double_t *x, Double_t *par);

@@ -571,7 +571,7 @@ void AliAnalysisMuMu::DrawFitResults(const char* particle,
                             // Create pointer on fitted spectra. Any kind of capsule do the job
                             AliAnalysisMuMuSpectraCapsulePbPb * capsule = new AliAnalysisMuMuSpectraCapsulePbPb(spectra,spectraPath,"","");
                             if(!capsule){
-                              AliError("Could not find spetra !");
+                              AliError("Could not find spectra !");
                               return;
                             }
                             // Draw results
@@ -1515,7 +1515,7 @@ void AliAnalysisMuMu::V2asGraphic(const char* particle, const char* what, const 
                             AliAnalysisMuMuSpectraCapsulePbPb * capsule = new AliAnalysisMuMuSpectraCapsulePbPb(spectra,spectraPath,"","");
 
                             if(!capsule){
-                              AliError("Could not find spetra !");
+                              AliError("Could not find spectra !");
                               continue;
                             }
 
@@ -1791,7 +1791,7 @@ void AliAnalysisMuMu::CompV2Method(const char* particle, const char* what, const
                             AliAnalysisMuMuSpectraCapsulePbPb * capsule = new AliAnalysisMuMuSpectraCapsulePbPb(spectra,spectraPath,"","");
 
                             if(!capsule){
-                              AliError("Could not find spetra !");
+                              AliError("Could not find spectra !");
                               continue;
                             }
 
@@ -2176,7 +2176,7 @@ AliAnalysisMuMu::FitParticle(const char* particle,
   }
 
   //TODO
-  TString detector = "SPD";//{"VZEROA", "VZEROC","SPD"};
+  TString detector = "SPD";//{"VZEROA", "VZEROA","SPD"};
   //  Int_t binN(0);
 
   //MAIN PART : Loop on every binning range
@@ -2264,9 +2264,9 @@ AliAnalysisMuMu::FitParticle(const char* particle,
       while ( ( specifit = static_cast<TObjString*>(nextFitSingle())) ){
         // must find a better way to do ...
         // Here we tokenize the initial FitType string with ":" and see if function names and ranges match
-        AliDebug(1,Form("Checking if specifit=%s matches for bin=%s",specifit->String().Data(),bin->AsString().Data()));
+        AliDebug(2,Form("Checking if specifit=%s matches for bin=%s",specifit->String().Data(),bin->AsString().Data()));
         if ( ! specifit->String().Contains(bin->AsString().Data()) ){
-          AliDebug(1,Form("Could no find the bin %s in the specifit function",bin->AsString().Data()));
+          AliDebug(2,Form("Could no find the bin %s in the specifit function",bin->AsString().Data()));
           continue; // Check binning
         }
 
@@ -2411,7 +2411,7 @@ AliAnalysisMuMu::FitParticle(const char* particle,
           fitMinvName.Remove(fitMinvName.First("_"),fitMinvName.Sizeof()-fitMinvName.First("_"));
 
           if ( !sFitType.Contains(fitMinvName) ) {
-            cout << "FitType :" << sFitType<< " does not contains fitMinvName" << fitMinvName << endl;
+             AliDebug(1,Form("FitType : %s does not contains fitMinvName %s",sFitType.Data(),fitMinvName.Data()));
             continue; //FIXME: Ambiguous, i.e. NA60NEWPOL2EXP & NA60NEWPOL2 (now its ok cause only VWG and POL2EXP are used, but care)
           }
           std::cout << "" << std::endl;
@@ -2481,8 +2481,8 @@ AliAnalysisMuMu::FitParticle(const char* particle,
         if(SP) spectraSaveName += "-SPvsMinvUS";
         else spectraSaveName += "-MeanV2VsMinvUS";
         if(hname.Contains("SPD")) spectraSaveName +="-SPD";
-        else if(hname.Contains("VZEROA")) spectraSaveName +="-V0A";
-        else if(hname.Contains("VZEROC")) spectraSaveName +="-V0C";
+        else if(hname.Contains("VZEROA")) spectraSaveName +="-SPD";
+        else if(hname.Contains("VZEROC")) spectraSaveName +="-VZEROC";
       }
       spectra = new AliAnalysisMuMuSpectra(spectraSaveName.Data());
     }
@@ -4391,7 +4391,7 @@ void AliAnalysisMuMu::PrintNofParticle(const char* particle, const char* what, c
                             AliAnalysisMuMuSpectraCapsulePbPb * capsule = new AliAnalysisMuMuSpectraCapsulePbPb(spectra,spectraPath,"","");
 
                             if(!capsule){
-                              AliError("Could not find spetra !");
+                              AliError("Could not find spectra !");
                               continue;
                             }
 
