@@ -162,8 +162,13 @@ void AliAnalysisMuMuSpectraCapsule::PrintNofWhat(const char* what) const
     AliError(Form("Cannot find bins"));
     return;
   }
-  TCanvas *se = new TCanvas;
-  se->Divide(1,bins->GetEntries());
+  TCanvas *se[5];
+  TCanvas *schi2[5];
+  for(Int_t can=0; can<5; can++){
+    se[can] = new TCanvas;
+    schi2[can] = new TCanvas;
+  }
+  // se->Divide(1,bins->GetEntries());
   //Counters and Iterator for bin
   Int_t nofResult = 0;
   TIter nextBin(bins);
@@ -208,6 +213,7 @@ void AliAnalysisMuMuSpectraCapsule::PrintNofWhat(const char* what) const
      // To store subresults values
     Double_t subNofWhat[result->SubResults()->GetEntries()];
     Double_t subNofWhatStatError[result->SubResults()->GetEntries()];
+    Double_t subChi2[result->SubResults()->GetEntries()];
     const char * srName[result->SubResults()->GetEntries()];
 
     TString srToExclude("");
@@ -230,12 +236,52 @@ void AliAnalysisMuMuSpectraCapsule::PrintNofWhat(const char* what) const
       //Get quantities
       Double_t NofWhat      = subresult->GetValue(what);
       Double_t NofWhatErrorStat = subresult->GetErrorStat(what);
+      Double_t chi2 = subresult->GetValue("FitChi2PerNDF");
       subNofWhat[nofSubResult]          = NofWhat;
       subNofWhatStatError[nofSubResult] = NofWhatErrorStat;
+      subChi2[nofSubResult] = chi2;
       srName[nofSubResult] =sr->GetName();
-      if(!TString(srName[nofSubResult]).Contains("_2.2_4.5")) srName[nofSubResult] = "";
+      // if(!TString(srName[nofSubResult]).Contains("_2.2_4.5")) srName[nofSubResult] = "";
 
-      if(sr->GetValue("FitStatus")!=0){
+               // else  srName[nofSubResult] = "";      if(TString(srName[nofSubResult]).Contains("CB2VWG2_BKGMV2POL2_2.2_4.5(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "CB2VWG2_pol2_2.2";
+      // else if(TString(srName[nofSubResult]).Contains("CB2VWG2_BKGMV2POL2_2.3_4.6(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "CB2VWG2_pol2_2.3";
+      // else if(TString(srName[nofSubResult]).Contains("CB2VWG2_BKGMV2POL2_2.4_4.7(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "CB2VWG2_pol2_2.4";
+      // else if(TString(srName[nofSubResult]).Contains("CB2VWG2_BKGMV2POLEXP_2.2_4.5(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "CB2VWG2_polEx_2.2";
+      // else if(TString(srName[nofSubResult]).Contains("CB2VWG2_BKGMV2POLEXP_2.3_4.6(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "CB2VWG2_polEx_2.3";
+      // else if(TString(srName[nofSubResult]).Contains("CB2VWG2_BKGMV2POLEXP_2.4_4.7(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "CB2VWG2_polEx_2.4";
+      // else if(TString(srName[nofSubResult]).Contains("CB2VWG2_BKGMV2POL4Cheb_2.2_4.5(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "CB2VWG2_pol4C_2.2";
+      // else if(TString(srName[nofSubResult]).Contains("CB2VWG2_BKGMV2POL4Cheb_2.3_4.6(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "CB2VWG2_pol4C_2.3";
+      // else if(TString(srName[nofSubResult]).Contains("CB2VWG2_BKGMV2POL4Cheb_2.4_4.7(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "CB2VWG2_pol4C_2.4";
+      // else if(TString(srName[nofSubResult]).Contains("CB2POL2POL3_BKGMV2POL2_2.2_4.5(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "CB2POL_pol2_2.2";
+      // else if(TString(srName[nofSubResult]).Contains("CB2POL2POL3_BKGMV2POL2_2.3_4.6(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "CB2POL_pol2_2.3";
+      // else if(TString(srName[nofSubResult]).Contains("CB2POL2POL3_BKGMV2POL2_2.4_4.7(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "CB2POL_pol2_2.4";
+      // else if(TString(srName[nofSubResult]).Contains("CB2POL2POL3_BKGMV2POLEXP_2.2_4.5(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "CB2POL_polEx_2.2";
+      // else if(TString(srName[nofSubResult]).Contains("CB2POL2POL3_BKGMV2POLEXP_2.3_4.6(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "CB2POL_polEx_2.3";
+      // else if(TString(srName[nofSubResult]).Contains("CB2POL2POL3_BKGMV2POLEXP_2.4_4.7(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "CB2POL_polEx_2.4";
+      // else if(TString(srName[nofSubResult]).Contains("CB2POL2POL3_BKGMV2POL4Cheb_2.2_4.5(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "CB2POL_pol4C_2.2";
+      // else if(TString(srName[nofSubResult]).Contains("CB2POL2POL3_BKGMV2POL4Cheb_2.3_4.6(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "CB2POL_pol4C_2.3";
+      // else if(TString(srName[nofSubResult]).Contains("CB2POL2POL3_BKGMV2POL4Cheb_2.4_4.7(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "CB2POL_pol4C_2.4";
+      // else if(TString(srName[nofSubResult]).Contains("NA60NEWVWG2_BKGMV2POL2_2.2_4.5(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "NA60VWG2_pol2_2.2";
+      // else if(TString(srName[nofSubResult]).Contains("NA60NEWVWG2_BKGMV2POL2_2.3_4.6(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "NA60VWG2_pol2_2.3";
+      // else if(TString(srName[nofSubResult]).Contains("NA60NEWVWG2_BKGMV2POL2_2.4_4.7(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "NA60VWG2_pol2_2.4";
+      // else if(TString(srName[nofSubResult]).Contains("NA60NEWVWG2_BKGMV2POLEXP_2.2_4.5(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "NA60VWG2_polEx_2.2";
+      // else if(TString(srName[nofSubResult]).Contains("NA60NEWVWG2_BKGMV2POLEXP_2.3_4.6(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "NA60VWG2_polEx_2.3";
+      // else if(TString(srName[nofSubResult]).Contains("NA60NEWVWG2_BKGMV2POLEXP_2.4_4.7(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "NA60VWG2_polEx_2.4";
+      // else if(TString(srName[nofSubResult]).Contains("NA60NEWVWG2_BKGMV2POL4Cheb_2.2_4.5(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "NA60VWG2_pol4C_2.2";
+      // else if(TString(srName[nofSubResult]).Contains("NA60NEWVWG2_BKGMV2POL4Cheb_2.3_4.6(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "NA60VWG2_pol4C_2.3";
+      // else if(TString(srName[nofSubResult]).Contains("NA60NEWVWG2_BKGMV2POL4Cheb_2.4_4.7(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "NA60VWG2_pol4C_2.4";
+      // else if(TString(srName[nofSubResult]).Contains("NA60NEWPOL2POL3_BKGMV2POL2_2.2_4.5(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "NA60POL_pol2_2.2";
+      // else if(TString(srName[nofSubResult]).Contains("NA60NEWPOL2POL3_BKGMV2POL2_2.3_4.6(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "NA60POL_pol2_2.3";
+      // else if(TString(srName[nofSubResult]).Contains("NA60NEWPOL2POL3_BKGMV2POL2_2.4_4.7(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "NA60POL_pol2_2.4";
+      // else if(TString(srName[nofSubResult]).Contains("NA60NEWPOL2POL3_BKGMV2POLEXP_2.2_4.5(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "NA60POL_polEx_2.2";
+      // else if(TString(srName[nofSubResult]).Contains("NA60NEWPOL2POL3_BKGMV2POLEXP_2.3_4.6(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "NA60POL_polEx_2.3";
+      // else if(TString(srName[nofSubResult]).Contains("NA60NEWPOL2POL3_BKGMV2POLEXP_2.4_4.7(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "NA60POL_polEx_2.4";
+      // else if(TString(srName[nofSubResult]).Contains("NA60NEWPOL2POL3_BKGMV2POL4Cheb_2.2_4.5(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "NA60POL_pol4C_2.2";
+      // else if(TString(srName[nofSubResult]).Contains("NA60NEWPOL2POL3_BKGMV2POL4Cheb_2.3_4.6(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "NA60POL_pol4C_2.3";
+      // else if(TString(srName[nofSubResult]).Contains("NA60NEWPOL2POL3_BKGMV2POL4Cheb_2.4_4.7(Sig:2.2_4.5_SP1.1)")) srName[nofSubResult] = "NA60POL_pol4C_2.4";
+      // else  srName[nofSubResult] = "";
+
+      if(sr->GetValue("FitStatus")!=0 || subresult->GetValue("FitChi2PerNDF")>2.){
       // || (swhat.Contains("v2") && (sr->GetValue("<v2>JPsi")>0.1|| sr->GetValue("<v2>JPsi") < -0.1))){
         srToExclude += Form("%s,",sr->GetName());
         nofExcludedSr++;
@@ -246,8 +292,8 @@ void AliAnalysisMuMuSpectraCapsule::PrintNofWhat(const char* what) const
       //Output messages
       AliDebug(0,Form(" -------- "));
 
-      if(swhat.Contains("v2"))AliInfo(Form(" -- subresult %s :  %.4f +/- %.4f, FitStatus :%.0f",sr->GetName(),NofWhat,NofWhatErrorStat,sr->GetValue("FitStatus")));
-      else AliInfo(Form(" -- subresult %s :  %.0f +/- %.0f, FitStatus :%.0f ",sr->GetName(),NofWhat,NofWhatErrorStat,sr->GetValue("FitStatus")));
+      if(swhat.Contains("v2"))AliInfo(Form(" -- subresult %s :  %.4f +/- %.4f, FitStatus :%.0f, FitChi2PerNDF :%.1f",sr->GetName(),NofWhat,NofWhatErrorStat,sr->GetValue("FitStatus"),subresult->GetValue("FitChi2PerNDF")));
+      else AliInfo(Form(" -- subresult %s :  %.0f +/- %.0f, FitStatus :%.0f, FitChi2PerNDF :%.1f ",sr->GetName(),NofWhat,NofWhatErrorStat,sr->GetValue("FitStatus"),subresult->GetValue("FitChi2PerNDF")));
       nofSubResult++;
     }
     AliInfo(Form("%d excluded fits : %s",nofExcludedSr,srToExclude.Data()));
@@ -262,6 +308,7 @@ void AliAnalysisMuMuSpectraCapsule::PrintNofWhat(const char* what) const
 
     // Plot the histograms
     TH1F * h_test = new TH1F(Form("%s_%s",what,r->AsString().Data()),Form("%s_%s",what,r->AsString().Data()),result->SubResults()->GetEntries(),0,result->SubResults()->GetEntries());
+    TH1F * h_chi2 = new TH1F(Form("Chi2_%s_%s",what,r->AsString().Data()),Form("Chi2_%s_%s",what,r->AsString().Data()),result->SubResults()->GetEntries(),0,result->SubResults()->GetEntries());
     if(swhat.Contains("v2"))
     {
       h_test->SetMarkerColor(kAzure-2);
@@ -273,6 +320,19 @@ void AliAnalysisMuMuSpectraCapsule::PrintNofWhat(const char* what) const
     }
     for (int i = 0; i < result->SubResults()->GetEntries(); ++i)
     {
+    //     if(!TString(srName[nofSubResult]).Contains("CB2VWG2_BKGMV2POL2_2.2_4.5(Sig:2.2_4.5_SP1.1)")&&!TString(srName[nofSubResult]).Contains("CB2VWG2_BKGMV2POL2_2.3_4.6(Sig:2.3_4.6_SP1.1)")&&!TString(srName[nofSubResult]).Contains("CB2VWG2_BKGMV2POL2_2.4_4.7(Sig:2.4_4.7_SP1.1)")
+    //     &&!TString(srName[nofSubResult]).Contains("CB2VWG2_BKGMV2POLEXP_2.2_4.5(Sig:2.2_4.5_SP1.1)")&&!TString(srName[nofSubResult]).Contains("CB2VWG2_BKGMV2POLEXP_2.3_4.6(Sig:2.3_4.6_SP1.1)")&&!TString(srName[nofSubResult]).Contains("CB2VWG2_BKGMV2POLEXP_2.4_4.7(Sig:2.4_4.7_SP1.1)")
+    //     &&!TString(srName[nofSubResult]).Contains("CB2VWG2_BKGMV2POL4Cheb_2.2_4.5(Sig:2.2_4.5_SP1.1)")&&!TString(srName[nofSubResult]).Contains("CB2VWG2_BKGMV2POL4Cheb_2.3_4.6(Sig:2.3_4.6_SP1.1)")&&!TString(srName[nofSubResult]).Contains("CB2VWG2_BKGMV2POL4Cheb_2.4_4.7(Sig:2.4_4.7_SP1.1)")
+    //     &&!TString(srName[nofSubResult]).Contains("CB2POL2POL3_BKGMV2POL2_2.2_4.5(Sig:2.2_4.5_SP1.1)"&&!TString(srName[nofSubResult]).Contains("CB2POL2POL3_BKGMV2POL2_2.3_4.6(Sig:2.3_4.6_SP1.1)"&&!TString(srName[nofSubResult]).Contains("CB2POL2POL3_BKGMV2POL2_2.4_4.7(Sig:2.4_4.7_SP1.1)"
+    //     &&!TString(srName[nofSubResult]).Contains("CB2POL2POL3_BKGMV2POLEXP_2.2_4.5(Sig:2.2_4.5_SP1.1)")&&!TString(srName[nofSubResult]).Contains("CB2POL2POL3_BKGMV2POLEXP_2.3_4.6(Sig:2.3_4.6_SP1.1)")&&!TString(srName[nofSubResult]).Contains("CB2POL2POL3_BKGMV2POLEXP_2.4_4.7(Sig:2.4_4.7_SP1.1)")
+    //     &&!TString(srName[nofSubResult]).Contains("CB2POL2POL3_BKGMV2POL4Cheb_2.2_4.5(Sig:2.2_4.5_SP1.1)")&&!TString(srName[nofSubResult]).Contains("CB2POL2POL3_BKGMV2POL4Cheb_2.3_4.6(Sig:2.3_4.6_SP1.1)")&&!TString(srName[nofSubResult]).Contains("CB2POL2POL3_BKGMV2POL4Cheb_2.4_4.7(Sig:2.4_4.7_SP1.1)")
+    //     &&!TString(srName[nofSubResult]).Contains("NA60NEWVWG2_BKGMV2POL2_2.2_4.5(Sig:2.2_4.5_SP1.1)")&&!TString(srName[nofSubResult]).Contains("NA60NEWVWG2_BKGMV2POL2_2.3_4.6(Sig:2.3_4.6_SP1.1)")&&!TString(srName[nofSubResult]).Contains("NA60NEWVWG2_BKGMV2POL2_2.4_4.7(Sig:2.4_4.7_SP1.1)")
+    //     &&!TString(srName[nofSubResult]).Contains("NA60NEWVWG2_BKGMV2POLEXP_2.2_4.5(Sig:2.2_4.5_SP1.1)")) &&!TString(srName[nofSubResult]).Contains("NA60NEWVWG2_BKGMV2POLEXP_2.3_4.6(Sig:2.3_4.6_SP1.1)")) &&!TString(srName[nofSubResult]).Contains("NA60NEWVWG2_BKGMV2POLEXP_2.4_4.7(Sig:2.4_4.7_SP1.1)")
+    //     &&!TString(srName[nofSubResult]).Contains("NA60NEWVWG2_BKGMV2POL4Cheb_2.2_4.5(Sig:2.2_4.5_SP1.1)")) &&!TString(srName[nofSubResult]).Contains("NA60NEWVWG2_BKGMV2POL4Cheb_2.3_4.6(Sig:2.3_4.6_SP1.1)") &&!TString(srName[nofSubResult]).Contains("NA60NEWVWG2_BKGMV2POL4Cheb_2.4_4.7(Sig:2.4_4.7_SP1.1)")
+    //     &&!TString(srName[nofSubResult]).Contains("NA60NEWPOL2POL3_BKGMV2POL2_2.2_4.5(Sig:2.2_4.5_SP1.1)")&&!TString(srName[nofSubResult]).Contains("NA60NEWPOL2POL3_BKGMV2POL2_2.3_4.6(Sig:2.3_4.6_SP1.1)")&&!TString(srName[nofSubResult]).Contains("NA60NEWPOL2POL3_BKGMV2POL2_2.4_4.7(Sig:2.4_4.7_SP1.1)")
+    //     &&!TString(srName[nofSubResult]).Contains("NA60NEWPOL2POL3_BKGMV2POLEXP_2.2_4.5(Sig:2.2_4.5_SP1.1)")&&!TString(srName[nofSubResult]).Contains("NA60NEWPOL2POL3_BKGMV2POLEXP_2.3_4.6(Sig:2.3_4.6_SP1.1)")&&!TString(srName[nofSubResult]).Contains("NA60NEWPOL2POL3_BKGMV2POLEXP_2.4_4.7(Sig:2.4_4.7_SP1.1)")
+    //     &&!TString(srName[nofSubResult]).Contains("NA60NEWPOL2POL3_BKGMV2POL4Cheb_2.2_4.5(Sig:2.2_4.5_SP1.1)")&&!TString(srName[nofSubResult]).Contains("NA60NEWPOL2POL3_BKGMV2POL4Cheb_2.3_4.6(Sig:2.3_4.6_SP1.1)")&&!TString(srName[nofSubResult]).Contains("NA60NEWPOL2POL3_BKGMV2POL4Cheb_2.4_4.7(Sig:2.4_4.7_SP1.1)"))
+    //      {continue;}
         // the histo we plot
         h_test->SetBinContent(i+1,subNofWhat[i]);
         h_test->SetBinError(i+1,subNofWhatStatError[i]);
@@ -280,11 +340,15 @@ void AliAnalysisMuMuSpectraCapsule::PrintNofWhat(const char* what) const
         // Here we change the label names
         // if(nofResult==(bins->GetEntries()-1))
         h_test->GetXaxis()->SetBinLabel(i+1,Form("%s",srName[i]));
+        h_chi2->GetXaxis()->SetBinLabel(i+1,Form("%s",srName[i]));
+
+        h_chi2->SetBinContent(i+1,subChi2[i]);
     }
 
     // --- Here we draw ---
-    se->cd(nofResult+1);
-    se->SetBottomMargin(4.);
+    se[nofResult]->cd();
+    // se->cd(nofResult+1);
+    se[nofResult]->SetBottomMargin(4.);
     h_test->GetYaxis()->SetTitle(what);
     h_test->SetStats(0);
     h_test->DrawCopy();
@@ -319,6 +383,9 @@ void AliAnalysisMuMuSpectraCapsule::PrintNofWhat(const char* what) const
     // ex.SetTextColor(kGray+3);
     // ex.SetTextFont(42);
     // // ex.SetTextSize(gStyle->GetTextSize()*0.9);
+
+    schi2[nofResult]->cd();
+    h_chi2->DrawCopy("");
     nofResult++;
   }
 

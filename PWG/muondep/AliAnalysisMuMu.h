@@ -228,7 +228,7 @@ public:
       const char        * particle="PSI",
       const char        * what="<v2>JPsi",
       const char        * binType="PT",
-      Bool_t AccEffCorr =kFALSE,
+      Int_t AccEffCorr  =0, // if 0 no AE, 1 AE only, 2 : plot comparison
       Bool_t SP         =kFALSE) const;
 
     void CompV2Method(

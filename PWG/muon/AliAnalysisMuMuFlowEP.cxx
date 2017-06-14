@@ -450,17 +450,17 @@ void AliAnalysisMuMuFlowEP::FillHistosForPair(const char* eventSelection,
 
         TH1* h(0x0);
 
-        if ( ok ){
-          h = proxy->Histo(minvName.Data());
-          if (!h) AliError(Form("Could not get %s",minvName.Data()));
-          else h->Fill(pair4Momentum.M(),inputWeight);
-        }
+        // if ( ok ){
+        //   h = proxy->Histo(minvName.Data());
+        //   if (!h) AliError(Form("Could not get %s",minvName.Data()));
+        //   else h->Fill(pair4Momentum.M(),inputWeight);
+        // }
 
-        if( okMC ){
-          h = mcProxy->Histo(minvName.Data());
-          if (!h) AliError(Form("Could not get MC %s",minvName.Data()));
-          else h->Fill(pair4MomentumMC->M(),inputWeightMC);
-        }
+        // if( okMC ){
+        //   h = mcProxy->Histo(minvName.Data());
+        //   if (!h) AliError(Form("Could not get MC %s",minvName.Data()));
+        //   else h->Fill(pair4MomentumMC->M(),inputWeightMC);
+        // }
 
         // Fill Mean pT ----> Probably to delete
         if ( fcomputeMeanV2  && (r->Quantity() == "PT"||r->IsIntegrated())){
@@ -538,15 +538,15 @@ void AliAnalysisMuMuFlowEP::FillHistosForPair(const char* eventSelection,
         // fill histo
         if (!IsHistogramDisabled(minvName.Data()) && !minvName.Contains("DPHI")){
 
-          TH1* hCorr = proxy->Histo(minvName.Data());
-          if (!hCorr) AliError(Form("Could not get %s",minvName.Data()));
-          else if ( okAccEff ) hCorr->Fill(pair4Momentum.M(),inputWeight/AccxEff);
+          // TH1* hCorr = proxy->Histo(minvName.Data());
+          // if (!hCorr) AliError(Form("Could not get %s",minvName.Data()));
+          // else if ( okAccEff ) hCorr->Fill(pair4Momentum.M(),inputWeight/AccxEff);
 
-          if( okAccEffMC ){
-            hCorr = mcProxy->Histo(minvName.Data());
-            if (!hCorr) AliError(Form("Could not get MC %s",minvName.Data()));
-            else hCorr->Fill(pair4MomentumMC->M(),inputWeightMC/AccxEffMC);
-          }
+          // if( okAccEffMC ){
+          //   hCorr = mcProxy->Histo(minvName.Data());
+          //   if (!hCorr) AliError(Form("Could not get MC %s",minvName.Data()));
+          //   else hCorr->Fill(pair4MomentumMC->M(),inputWeightMC/AccxEffMC);
+          // }
 
           if (fcomputeMeanV2){
 

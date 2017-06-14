@@ -1376,8 +1376,9 @@ void AliAnalysisMuMu::RAAasGraphic(const char* particle,
 }
 
 //_____________________________________________________________________________
-void AliAnalysisMuMu::V2asGraphic(const char* particle, const char* what, const char* binType, Bool_t AccEffCorr, Bool_t SP) const
+void AliAnalysisMuMu::V2asGraphic(const char* particle, const char* what, const char* binType, Int_t AccEffCorr, Bool_t SP) const
 {
+    Bool_t resCorr = kFALSE;
     ///
     /// Function to use after JPsi(). It loops over all combination of centrality/enventype/ trigger (etc.) and
     /// print RAA on terminal accordingly. Fnorm / <T_AA> / other constants are written in AliAnalysisMuMuSpectraCapsulePbPb.
@@ -1393,7 +1394,7 @@ void AliAnalysisMuMu::V2asGraphic(const char* particle, const char* what, const 
     ///
     ///
 
-
+    AliWarning("Comparison with Javier for 40-60%, please fix it");
     if (!OC() || !CC())
         {
         AliError("No mergeable/counter collection. Consider Upgrade()");
@@ -1430,10 +1431,22 @@ void AliAnalysisMuMu::V2asGraphic(const char* particle, const char* what, const 
     TObjString* sbinType;
     TObjString* scentrality;
 
+// Comparing with Javier
+    // TFile *spd_0520 = new TFile("/Users/francisco/WorkDir/Fit/AN/Javier/Javiermv2/pol2Cheb4polExp/v2pt_EPSPD_cent4_v2bkgPol2ChebPolExp.root");
+    // TFile *v0a_0520 = new TFile("/Users/francisco/WorkDir/Fit/AN/Javier/Javiermv2/pol2Cheb4polExp/v2pt_EPV0A_cent4_v2bkgPol2ChebPolExp.root");
+    // TFile *spd_2040 = new TFile("/Users/francisco/WorkDir/Fit/AN/Javier/Javiermv2/pol2Cheb4polExp/v2pt_EPSPD_cent2_v2bkgPol2ChebPolExp.root");
+    // TFile *v0a_2040 = new TFile("/Users/francisco/WorkDir/Fit/AN/Javier/Javiermv2/pol2Cheb4polExp/v2pt_EPV0A_cent2_v2bkgPol2ChebPolExp.root");
+    TFile *spd_2040 = new TFile("/Users/francisco/WorkDir/Fit/AN/Javier/Javiermv2/pol2Cheb4polExp/v2pt_EPSPD_cent6_v2bkgPol2ChebPolExp.root");
+    // TFile *v0a_4060 = new TFile("/Users/francisco/WorkDir/Fit/AN/Javier/Javiermv2/pol2Cheb4polExp/v2pt_EPV0A_cent6_v2bkgPol2ChebPolExp.root");
+
+    TGraphErrors *javier[2] = {(TGraphErrors *)spd_2040->Get("grV2ObsvsMeanPtStat"),(TGraphErrors *)spd_2040->Get("grV2ObsvsMeanPtSyst")};
     //graphs
     TGraphErrors* graph[centralityArray->GetEntries()][2];
+    TGraphErrors* graphAE[centralityArray->GetEntries()][2];
     TList* list=0x0;
+    TList* listAE=0x0;
     TMultiGraph *mg[centralityArray->GetEntries()];
+    TMultiGraph *mgAE[centralityArray->GetEntries()];
     TMultiGraph *mgcent = new TMultiGraph();
     Int_t colors[]     = {kBlack, kRed+1 , kCyan+2, kMagenta+1, kOrange+1, kCyan+2};
     Int_t markers[]    = {kFullCircle, kFullSquare,kFullDiamond,kFullStar,kFullTriangleUp,kOpenCircle,kOpenSquare,kOpenTriangleUp};
@@ -1453,7 +1466,7 @@ void AliAnalysisMuMu::V2asGraphic(const char* particle, const char* what, const 
     LoadStyles();
     TCanvas *c = new TCanvas("mv2", "J/#psi v2 vs pT with SPD as EP detector",1200,800);
     c->Divide(nx,ny);
-    AliInfo(Form("Plotting %d dataTypes with %d centralities",nofGraph,nx-1));
+    AliInfo(Form("Plotting %d dataTypes with %d centralities",nofGraph,nx));
     //Loop on particle type
     while ( ( sparticle = static_cast<TObjString*>(nextParticle()) ) )
         {
@@ -1482,7 +1495,7 @@ void AliAnalysisMuMu::V2asGraphic(const char* particle, const char* what, const 
                     cent++;
                     cout << " ///////////////////// centrality ++ : " <<cent << endl;
                     Int_t binType=0;
-                    TLegend  *leg = new TLegend(0.22,0.165,0.34,0.35);
+                    TLegend  *leg = new TLegend(0.26,0.13,0.32,0.29);
                     leg->SetTextSize(gStyle->GetTextSize()*0.63);
                     // Loop on each paircut (not the ones in MuMuConfig but the ones set)
                     //==============================================================================
@@ -1498,11 +1511,14 @@ void AliAnalysisMuMu::V2asGraphic(const char* particle, const char* what, const 
                             AliDebug(1,Form("----TYPE %s",sbinType->String().Data()));
                             //________Get spectra
                             TString spectraPath= Form("/%s/%s/%s/%s/%s-%s",seventType->String().Data(),strigger->String().Data(),scentrality->String().Data(),spairCut->String().Data(),sparticle->String().Data(),sbinType->String().Data());
-                            if (AccEffCorr)spectraPath+="-AccEffCorr";
-                            if(SP) spectraPath+="-SPvsMinvUS-SPD";
-                            else spectraPath+="-MeanV2VsMinvUS-SPD";
-
+                            TString spectraPathAE= Form("/%s/%s/%s/%s/%s-%s",seventType->String().Data(),strigger->String().Data(),scentrality->String().Data(),spairCut->String().Data(),sparticle->String().Data(),sbinType->String().Data());
+                            spectraPathAE+="-AccEffCorr";
+                            // if(SP) {spectraPath+="-SPvsMinvUS-SPD";spectraPathAE+="-SPvsMinvUS-SPD";}
+                            // else {spectraPath+="-MeanV2VsMinvUS-SPD";spectraPathAE+="-MeanV2VsMinvUS-SPD";}
+                        spectraPath+="-MeanV2VsMinvUS-SPD";
+                        spectraPathAE+="-MeanV2VsMinvUS-SPD";
                             AliAnalysisMuMuSpectra * spectra = static_cast<AliAnalysisMuMuSpectra*>(OC()->GetObject(spectraPath.Data()));
+                            AliAnalysisMuMuSpectra * spectraAE = static_cast<AliAnalysisMuMuSpectra*>(OC()->GetObject(spectraPathAE.Data()));
                             // spectra->Print();
 
                             if(!spectra){
@@ -1513,8 +1529,9 @@ void AliAnalysisMuMu::V2asGraphic(const char* particle, const char* what, const 
 
                             // Create pointer on fitted spectra
                             AliAnalysisMuMuSpectraCapsulePbPb * capsule = new AliAnalysisMuMuSpectraCapsulePbPb(spectra,spectraPath,"","");
+                            AliAnalysisMuMuSpectraCapsulePbPb * capsuleAE = new AliAnalysisMuMuSpectraCapsulePbPb(spectraAE,spectraPathAE,"","");
 
-                            if(!capsule){
+                            if(!capsule || (AccEffCorr>0 && !capsuleAE)){
                               AliError("Could not find spectra !");
                               continue;
                             }
@@ -1529,23 +1546,70 @@ void AliAnalysisMuMu::V2asGraphic(const char* particle, const char* what, const 
                                 AliError("Did not find graph in the list");
                                 return;
                             }
+                            if(AccEffCorr>0) {
+                              listAE = capsuleAE->V2asGraphic(what);
+                              if(!list) AliError("No graphs for AE !");
+                              graphAE[cent-1][0] = static_cast<TGraphErrors*>(listAE->At(0)->Clone());
+                              graphAE[cent-1][1] = static_cast<TGraphErrors*>(listAE->At(1)->Clone());
+                            }
                             Double_t reso = 0.91031;
                             if (scentrality->String().Contains("05.00_20.00"))reso=0.87297;
                             else if(scentrality->String().Contains("40.00_60.00")) reso = 0.83192;
                             AliInfo(Form("Using resolution factor of %f",reso));
+                            Double_t lW = 2.8;
                             Double_t err_emb=0.006/reso; //error from embedding, to change
                             Double_t errY;
-                            for(Int_t bin = 0; bin<graph[cent-1][1]->GetN(); bin++){
-                              errY=graph[cent-1][1]->GetErrorY(bin);
-                              graph[cent-1][1]->SetPointError(bin,graph[cent-1][1]->GetErrorX(bin),sqrt(errY*errY+err_emb*err_emb));
+                            if(resCorr){
+                              for(Int_t bin = 0; bin<graph[cent-1][1]->GetN(); bin++){
+                                errY=graph[cent-1][1]->GetErrorY(bin);
+                                graph[cent-1][1]->SetPointError(bin,graph[cent-1][1]->GetErrorX(bin),sqrt(errY*errY+err_emb*err_emb));
+                              }
                             }
+                            if(AccEffCorr>0){
+                              for(Int_t bin = 0; bin<graphAE[cent-1][1]->GetN(); bin++){
+                                errY=graphAE[cent-1][1]->GetErrorY(bin);
+                                graphAE[cent-1][1]->SetPointError(bin,graphAE[cent-1][1]->GetErrorX(bin),sqrt(errY*errY+err_emb*err_emb));
+                              }
+                              
+                              graphAE[cent-1][0]->SetMarkerSize(0.9);
+                              graphAE[cent-1][1]->SetFillStyle(0);
+                              graphAE[cent-1][0]->SetLineWidth(lW);
+                              graphAE[cent-1][1]->SetLineWidth(lW);
+                              graphAE[cent-1][1]->SetFillStyle(1001);
+                              graphAE[cent-1][0]->SetMarkerColor(colors[binType]);
+                              graphAE[cent-1][0]->SetLineColor(colors[binType]);
+                              graphAE[cent-1][1]->SetFillColorAlpha(colors[binType],0.45);
+                              graphAE[cent-1][1]->SetLineColor(colors[binType]);
+                              graphAE[cent-1][0]->SetMarkerStyle(markers[binType]);
+
+                              mg[cent-1]->Add(graphAE[cent-1][1],"e2");
+                              mg[cent-1]->Add(graphAE[cent-1][0],"ep");
+                              mgcent->Add(graphAE[cent-1][1],"e2");
+                              mgcent->Add(graphAE[cent-1][0],"ep");
+                            }
+
+                              else{
+                                javier[0]->SetMarkerColor(colors[binType]);
+                                javier[0]->SetLineColor(colors[binType]);
+                                javier[0]->SetLineWidth(lW);
+                                javier[1]->SetLineWidth(lW);
+                                javier[1]->SetFillStyle(1001);
+                                javier[1]->SetFillColorAlpha(colors[binType],.3);
+                                javier[1]->SetLineColor(colors[binType]);
+                                javier[0]->SetMarkerSize(1.2);
+                                javier[0]->SetMarkerStyle(kFullDiamond);
+                                javier[0]->SetMarkerColor(colors[binType]);
+                                javier[0]->SetLineColor  (colors[binType]);
+                                mg[cent-1]->Add(javier[1],"e2");
+                                mg[cent-1]->Add(javier[0],"ep");
+                              }
                             c->cd(cent);
                             cout << " ///////////////////// centrality :" <<cent << endl;
                             //cosmetics
-                            Double_t lW = 2.8;
+
                             if(markers[binType-1]==kFullDiamond)graph[cent-1][0]->SetMarkerSize(1.4);
                             else graph[cent-1][0]->SetMarkerSize(0.9);
-                            // graph[cent-1][1]->SetFillStyle(0);
+                            graph[cent-1][1]->SetFillStyle(0);
                             graph[cent-1][0]->SetLineWidth(lW);
                             graph[cent-1][1]->SetLineWidth(lW);
                             graph[cent-1][1]->SetFillStyle(1001);
@@ -1575,7 +1639,7 @@ void AliAnalysisMuMu::V2asGraphic(const char* particle, const char* what, const 
                             gsys->SetTextFont(42);
                             gsys->AddText("#bf{global syst : #pm 1%}");
                             gsys->SetTextSize(gStyle->GetTextSize()*0.85);
-                            TPaveText *pt = new TPaveText(0.19,0.65,0.47,0.85,"nbNDC");
+                            TPaveText *pt = new TPaveText(0.25,0.68,0.56,0.86,"nbNDC");
                             pt->SetTextSize(gStyle->GetTextSize()*0.8);
                             pt->SetBorderSize(0);
                             pt->SetFillStyle(0);
@@ -1586,9 +1650,19 @@ void AliAnalysisMuMu::V2asGraphic(const char* particle, const char* what, const 
                             pt->AddText("#bf{Dimuon v_{2} technique with the SPD}");
 
                             TString pairName(spairCut->String());
-                            if(pairName.Contains("3.25-2.50"))leg->AddEntry(graph[cent-1][0],"2.5 < #it{y} < 3.25","ep");
-                            else if(pairName.Contains("4.00-3.25"))leg->AddEntry(graph[cent-1][0],"3.25 < #it{y} < 4","ep");
-                            else leg->AddEntry(graph[cent-1][0],"2.5 < #it{y} < 4","ep");
+                            if(AccEffCorr>0){
+                              leg->AddEntry(graph[cent-1][0],"without Acc*Eff correction","ep");
+                              leg->AddEntry(graphAE[cent-1][0],"with Acc*Eff correction","ep");
+                            }
+                            else{
+                              leg->AddEntry(graph[cent-1][0],"Audrey","ep");
+                              leg->AddEntry(javier[0],"Javier","ep");
+                            }
+                            //decomment
+                            // else if(pairName.Contains("3.25-2.50"))leg->AddEntry(graph[cent-1][0],"2.5 < #it{y} < 3.25","ep");
+                            // else if(pairName.Contains("4.00-3.25"))leg->AddEntry(graph[cent-1][0],"3.25 < #it{y} < 4","ep");
+                            // else leg->AddEntry(graph[cent-1][0],"2.5 < #it{y} < 4","ep");
+
                             // leg->AddEntry(graph[cent-1][1],"Total uncorr. uncert.","f");
 
                             gsys->Draw("same");
@@ -1619,7 +1693,7 @@ void AliAnalysisMuMu::V2asGraphic(const char* particle, const char* what, const 
         gsys->SetTextFont(42);
         gsys->AddText("#bf{global syst : #pm 1%}");
         gsys->SetTextSize(gStyle->GetTextSize()*0.85);
-        TPaveText *pt = new TPaveText(0.19,0.65,0.47,0.85,"nbNDC");
+        TPaveText *pt = new TPaveText(0.25,0.68,0.56,0.86,"nbNDC");
         pt->SetTextSize(gStyle->GetTextSize()*0.8);
         pt->SetBorderSize(0);
         pt->SetFillStyle(0);
@@ -1649,6 +1723,7 @@ void AliAnalysisMuMu::V2asGraphic(const char* particle, const char* what, const 
 
     return ;
 
+    spd_2040->Close();
 }
 
 //_____________________________________________________________________________
@@ -1851,7 +1926,7 @@ void AliAnalysisMuMu::CompV2Method(const char* particle, const char* what, const
                             gsys->SetTextFont(42);
                             gsys->AddText("#bf{global syst : #pm 1%}");
                             gsys->SetTextSize(gStyle->GetTextSize()*0.85);
-                            TPaveText *pt = new TPaveText(0.19,0.65,0.47,0.85,"nbNDC");
+                            TPaveText *pt = new TPaveText(0.25,0.68,0.56,0.86,"nbNDC");
                             pt->SetTextSize(gStyle->GetTextSize()*0.8);
                             pt->SetBorderSize(0);
                             pt->SetFillStyle(0);
@@ -1895,7 +1970,7 @@ void AliAnalysisMuMu::CompV2Method(const char* particle, const char* what, const
         gsys->SetTextFont(42);
         gsys->AddText("#bf{global syst : #pm 1%}");
         gsys->SetTextSize(gStyle->GetTextSize()*0.85);
-        TPaveText *pt = new TPaveText(0.19,0.65,0.47,0.85,"nbNDC");
+        TPaveText *pt = new TPaveText(0.25,0.68,0.56,0.86,"nbNDC");
         pt->SetTextSize(gStyle->GetTextSize()*0.8);
         pt->SetBorderSize(0);
         pt->SetFillStyle(0);
@@ -2398,6 +2473,8 @@ AliAnalysisMuMu::FitParticle(const char* particle,
           AliError(Form("Cannot fit mean V2: could not get the minv result for bin %s in %s",bin->AsString().Data(),id.Data()));
           continue; //return 0x0;
         }
+
+        if(spectraName.Contains("weight=2.0"))sFitType += ":weight=2.0";
 
         TObjArray* minvSubResults = minvResult->SubResults();
         TIter nextSubResult(minvSubResults);
