@@ -447,7 +447,7 @@ void AliAnalysisTaskMuMu::FillHistos(const char* eventSelection,
             if ( ( testi && testj ) && testij )
             {
               AliCodeTimerAuto(Form("%s (FillHistosForPair)",analysis->ClassName()),3);
-              analysis->FillHistosForPair(eventSelection,triggerClassName,centrality,pairCut->GetName(),*tracki,*trackj,kFALSE);
+              analysis->FillHistosForPair(eventSelection,triggerClassName,centrality,pairCut->GetName(),*tracki,*trackj);//,kFALSE);
             }
           }
         }
@@ -482,7 +482,7 @@ void AliAnalysisTaskMuMu::FillHistos(const char* eventSelection,
               Bool_t testj  = trackCut->Pass(*trackj);
               Bool_t testij = pairCut->Pass(*tracki,*trackj);
 
-              if ( testij && testi && testj ) analysis->FillHistosForPair(eventSelection,triggerClassName,centrality,pairCut->GetName(),*tracki,*trackj,fMix);
+              if ( testij && testi && testj ) analysis->FillHistosForPair(eventSelection,triggerClassName,centrality,pairCut->GetName(),*tracki,*trackj);//,fMix);
             }
           }
         }

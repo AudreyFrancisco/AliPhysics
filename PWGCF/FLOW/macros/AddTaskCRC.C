@@ -10,7 +10,7 @@ AliAnalysisTask * AddTaskCRC(Double_t ptMin=0.2,
                              Bool_t bUseZDC=kFALSE,
                              TString ZDCCalibFileName,
                              TString sCorrWeight="TPCmVZuZDCu",
-                             Bool_t bCorrectForBadChannel=kFALSE,
+                             Int_t bCutTPCbound=0,
                              Bool_t bUseCRCRecenter=kFALSE,
                              Float_t ZDCGainAlpha=0.395,
                              TString Label="",
@@ -307,57 +307,39 @@ AliAnalysisTask * AddTaskCRC(Double_t ptMin=0.2,
     cutsEvent->SetPrimaryVertexZrange(-dVertexRange,dVertexRange);
     cutsEvent->SetQA(bCutsQA);
   }
- else if (analysisTypeUser == "AOD") {
-   if (sDataSet == "2010" || sDataSet == "2011") {
-     cutsEvent->SetCentralityPercentileRange(centrMin,centrMax);
-   }
-   if (sDataSet.Contains("2015")) {
-     cutsEvent->SetCentralityPercentileRange(centrMin,centrMax,kTRUE);
-   }
-  // method used for centrality determination
-  if(sCentrEstimator=="V0")  cutsEvent->SetCentralityPercentileMethod(AliFlowEventCuts::kV0);
-  if(sCentrEstimator=="TRK") cutsEvent->SetCentralityPercentileMethod(AliFlowEventCuts::kTPConly);
-  if(sCentrEstimator=="CL1") cutsEvent->SetCentralityPercentileMethod(AliFlowEventCuts::kSPD1clusters);
-  AliFlowTrackCuts* RefMultCuts = new AliFlowTrackCuts("RefMultCuts");
-   RefMultCuts->SetParamType(AliFlowTrackCuts::kAODFilterBit);
-   RefMultCuts->SetAODfilterBit(768);
-   RefMultCuts->SetMinimalTPCdedx(-999999999);
-   RefMultCuts->SetMaxDCAToVertexXY(1000.);
-   RefMultCuts->SetMaxDCAToVertexZ(1000.);
-   RefMultCuts->SetMinNClustersTPC(70.);
-   RefMultCuts->SetMinChi2PerClusterTPC(0.1);
-   RefMultCuts->SetMaxChi2PerClusterTPC(4.);
-   RefMultCuts->SetPtRange(0.2,20.2);
-   RefMultCuts->SetEtaRange(-0.8,0.8);
-   RefMultCuts->SetAcceptKinkDaughters(kFALSE);
-  cutsEvent->SetRefMultCuts(RefMultCuts);
-  cutsEvent->SetRefMultMethod(AliFlowEventCuts::kTPConly);
-  // vertex-z cut
-  cutsEvent->SetPrimaryVertexZrange(-dVertexRange,dVertexRange);
-  if (sDataSet.Contains("2015")) cutsEvent->SetPrimaryVertexZrange(-dVertexRange+3.596504e-01,dVertexRange+3.596504e-01);
-  // enable the qa plots
-  cutsEvent->SetQA(bCutsQA);
-  // explicit multiplicity outlier cut
-  cutsEvent->SetCutTPCmultiplicityOutliersAOD(kTRUE);
-  if (sDataSet == "2011") cutsEvent->SetLHC11h(kTRUE);
-  if (sDataSet == "2010") cutsEvent->SetLHC10h(kTRUE);
- }
- 
- // pass these cuts to your flow event task
- taskFE->SetCutsEvent(cutsEvent);
- AliFlowTrackCuts* cutsRP = new AliFlowTrackCuts("RP cuts");
- AliFlowTrackCuts* cutsPOI = new AliFlowTrackCuts("POI cuts");
- 
- if (analysisTypeUser == "MCkine") {
-  // Track cuts for RPs
-  cutsRP->SetParamType(AliFlowTrackCuts::kMC);
-  cutsRP->SetCutMC(kTRUE);
-  cutsRP->SetPtRange(ptMin,ptMax);
-  cutsRP->SetEtaRange(etaMin,etaMax);
-  cutsRP->SetQA(bCutsQA);
-  if(bUseVZERO) {
-   cutsRP->SetEtaRange(-10.,+10.);
-   cutsRP->SetEtaGap(-1.,1.);
+  else if (analysisTypeUser == "AOD" || analysisTypeUser == "TrackQA" || analysisTypeUser == "Tracklets") {
+    if (sDataSet == "2010" || sDataSet == "2011") {
+      cutsEvent->SetCentralityPercentileRange(centrMin,centrMax);
+    }
+    if (sDataSet.Contains("2015")) {
+      cutsEvent->SetCentralityPercentileRange(centrMin,centrMax,kTRUE);
+    }
+    // method used for centrality determination
+    if(sCentrEstimator=="V0")  cutsEvent->SetCentralityPercentileMethod(AliFlowEventCuts::kV0);
+    if(sCentrEstimator=="TRK") cutsEvent->SetCentralityPercentileMethod(AliFlowEventCuts::kTPConly);
+    if(sCentrEstimator=="CL1") cutsEvent->SetCentralityPercentileMethod(AliFlowEventCuts::kSPD1clusters);
+    AliFlowTrackCuts* RefMultCuts = new AliFlowTrackCuts("RefMultCuts");
+    RefMultCuts->SetParamType(AliFlowTrackCuts::kAODFilterBit);
+    RefMultCuts->SetAODfilterBit(768);
+    RefMultCuts->SetMinimalTPCdedx(-999999999);
+    RefMultCuts->SetMaxDCAToVertexXY(1000.);
+    RefMultCuts->SetMaxDCAToVertexZ(1000.);
+    RefMultCuts->SetMinNClustersTPC(70.);
+    RefMultCuts->SetMinChi2PerClusterTPC(0.1);
+    RefMultCuts->SetMaxChi2PerClusterTPC(4.);
+    RefMultCuts->SetPtRange(0.2,20.2);
+    RefMultCuts->SetEtaRange(-0.8,0.8);
+    RefMultCuts->SetAcceptKinkDaughters(kFALSE);
+    cutsEvent->SetRefMultCuts(RefMultCuts);
+    cutsEvent->SetRefMultMethod(AliFlowEventCuts::kTPConly);
+    // vertex-z cut
+    cutsEvent->SetPrimaryVertexZrange(-dVertexRange,dVertexRange);
+    // enable the qa plots
+    cutsEvent->SetQA(bCutsQA);
+    // explicit multiplicity outlier cut
+    cutsEvent->SetCutTPCmultiplicityOutliersAOD(kTRUE);
+    if (sDataSet == "2011") cutsEvent->SetLHC11h(kTRUE);
+    if (sDataSet == "2010") cutsEvent->SetLHC10h(kTRUE);
   }
   
   // pass these cuts to your flow event task
@@ -544,17 +526,20 @@ AliAnalysisTask * AddTaskCRC(Double_t ptMin=0.2,
   if (ZDCCalibFileName != "" && bUseZDC) {
     taskQC->SetRecenterZDC(kTRUE);
   }
- taskQC->SetStoreZDCQVecVtxPos(bSetStoreZDCQVecVtxPos);
- taskQC->SetNUAforCRC(kTRUE);
- taskQC->SetCRCEtaRange(-0.8,0.8);
- taskQC->SetUseCRCRecenter(bUseCRCRecenter);
- taskQC->SetDivSigma(bDivSigma);
- taskQC->SetInvertZDC(bUseZDC);
- taskQC->SetCorrWeight(sCorrWeight);
- taskQC->SetQAZDCCuts(bSetQAZDC);
- taskQC->SetMinMulZN(MinMulZN);
- taskQC->SetMaxDevZN(MaxDevZN);
- taskQC->SetZDCGainAlpha(ZDCGainAlpha);
+  taskQC->SetStoreZDCQVecVtxPos(bSetStoreZDCQVecVtxPos);
+  taskQC->SetNUAforCRC(kTRUE);
+  taskQC->SetCRCEtaRange(-0.8,0.8);
+  taskQC->SetUseCRCRecenter(bUseCRCRecenter);
+  taskQC->SetDivSigma(bDivSigma);
+  taskQC->SetInvertZDC(bUseZDC);
+  taskQC->SetCorrWeight(sCorrWeight);
+  taskQC->SetQAZDCCuts(bSetQAZDC);
+  taskQC->SetMinMulZN(MinMulZN);
+  taskQC->SetMaxDevZN(MaxDevZN);
+  taskQC->SetZDCGainAlpha(ZDCGainAlpha);
+  taskQC->SetTestSin(bTestSin);
+  taskQC->SetRecenterZDCVtxRbR(bRecZDCVtxRbR);
+  if (analysisTypeUser == "Tracklets") taskQC->SetUseTracklets(kTRUE);
   if(bSetQAZDC && bUseZDC && sDataSet == "2010") {
     TFile* ZDCESEFile = TFile::Open(ZDCESEFileName,"READ");
     gROOT->cd();
@@ -730,10 +715,17 @@ AliAnalysisTask * AddTaskCRC(Double_t ptMin=0.2,
   
   if(bUseCRCRecenter) {
     TString QVecWeightsFileName = "alien:///alice/cern.ch/user/j/jmargutt/";
-//    if(AODfilterBit==768) QVecWeightsFileName += "15oHI_QnVarCalib_FB768.root";
-//    if(AODfilterBit==96) QVecWeightsFileName += "15oHI_QnVarCalib_FB96.root";
-//    if(AODfilterBit==32) QVecWeightsFileName += "15oHI_QnVarCalib_FB32.root";
-    QVecWeightsFileName += "15oHI_Q1VtxCalib_FB768.root";
+    if(sDataSet=="2015" && sIntRuns=="high") {
+      if(bUsePtWeights) {
+        if(AODfilterBit==32)  QVecWeightsFileName += "15oHI_FB32_TPCQVecReCen.root";
+        if(AODfilterBit==96)  QVecWeightsFileName += "15oHI_FB96_TPCQVecReCen.root";
+        //        if(AODfilterBit==128) QVecWeightsFileName += "15oHI_FB128_TPCQVecReCen.root";
+        //        if(AODfilterBit==768 && !bPtDepDCAxyCut) QVecWeightsFileName += "15oHI_FB768_TPCQVecReCen.root";
+        //        if(AODfilterBit==768 &&  bPtDepDCAxyCut) QVecWeightsFileName += "15oHI_FB768_DCAcut_TPCQVecReCen.root";
+        if(AODfilterBit==128) QVecWeightsFileName += "15oHI_FB128_TPCQVecReCen_MagPolRefMul.root";
+        if(AODfilterBit==768) QVecWeightsFileName += "15oHI_FB768_TPCQVecReCen_MagPolRefMul.root";
+      }
+    }
     TFile* QVecWeightsFile = TFile::Open(QVecWeightsFileName,"READ");
     if(!QVecWeightsFile) {
       cout << "ERROR: QVecWeightsFile not found!" << endl;

@@ -1534,8 +1534,10 @@ private:
   TArrayD fAvVtxPosX;    // Run list
   TArrayD fAvVtxPosY;    // Run list
   TArrayD fAvVtxPosZ;    // Run list
+  TArrayI fnEvRbR; // number of events in each run
   TList *fCRCQVecList; //! Q Vectors list
   TList *fCRCQVecListTPC; //! Q Vectors list TPC
+  TList *fCRCQVecListVZ; //! Q Vectors list VZERO
   TList *fCRCQVecListRun[fCRCMaxnRun]; //! Q Vectors list per run
   TList *fCRCQVecWeightsList; //! Weights for Q Vectors
   TList *fCRCZDCCalibList; //! ZDC calibration
@@ -1633,8 +1635,17 @@ private:
   TProfile *fCRCZDCQVecTest[fCRCMaxnRun][8]; //! Q Vectors Resolution Terms
   const static Int_t fkCRCnCQVecVtxPos = 8;
   Bool_t fStoreZDCQVecVtxPos; //
-  TProfile3D *fCRCZDCQVecVtxPos[fCRCMaxnRun][fkCRCnCQVecVtxPos]; //! Vtx positions re-centered Qvec
+//  TProfile3D *fCRCZDCQVecVtxPos[fCRCMaxnRun][fkCRCnCQVecVtxPos]; //! Vtx positions re-centered Qvec
   TProfile3D *fCRCZDCQVecVtxPosCen[fCRCMaxnCen][fkCRCnCQVecVtxPos]; //! Vtx positions re-centered Qvec in cen bins
+  TProfile3D *fCRCZDCQVecVtxCenEZDC[3][fkCRCnCQVecVtxPos]; //!
+  const static Int_t fknEZDCBins = 10;
+  TProfile3D *fCRCZDCQVecVtxCenEZDC3D[fCRCMaxnCen][fknEZDCBins][fkCRCnCQVecVtxPos]; //!
+  TH1D* fCRCZDCQVecDummyEZDCBins[fCRCMaxnCen]; //!
+//  TProfile2D *fCRCZDCQVecECom[fCRCMaxnRun][fkCRCnCQVecVtxPos]; //! re-centering Qvec vs Energy common tower
+  const static Int_t fkCRCnCQVecEcomPos = 12;
+//  TProfile3D *fCRCZDCQVecEComTot[fkCRCnCQVecEcomPos]; //! re-centering Qvec vs Energy common tower
+  const static Int_t fkNsteps = 12;
+  TProfile2D *fCRCZDCQVecCorSteps[4]; //!
   //  TProfile2D *fCRCZDCResCenEn; //!
   // TProfile2D *fCRCZDCQ2[8]; //! Q2
   Double_t fEvPlZDCCflat;
@@ -1643,10 +1654,9 @@ private:
   Double_t fEvPlDPsiA;
   
   // test
-  TProfile2D *fCRCZDCQVecResvsEAsym; //!
-  TProfile2D *fCRCZDCQVecResvsETot; //!
-  TProfile2D *fCRCZDCQVecResvsESum; //!
-  TProfile3D *fCRCZDCQVecResvsETotvsVtx; //!
+//  TProfile2D *fCRCZDCQVecResvsEAsym; //!
+//  TProfile2D *fCRCZDCQVecResvsETot; //!
+//  TProfile2D *fCRCZDCQVecResvsESum; //!
   
   // TProfile *fCRCVZvsZDCCov[fCRCMaxnRun][16]; //! ZDC vs VZ Q Vectors correlations
   
@@ -1806,10 +1816,10 @@ private:
   TProfile2D *fCRCTPCQVecCenVtxTime[fCRCMaxnRun][3][4]; //!
   TProfile2D *fCRCZDCQVecCenVtxTime[fCRCMaxnRun][3][4]; //!
 //  TProfile2D *fTPCEtaHist[fkNHistQVecCorrv1eta]; //!
-  TProfile3D *fCRCTPCQVecVtxPosCenRe[fCRCMaxnCen][fCRCZDCnEtaBin]; //!
-  TProfile3D *fCRCTPCQVecVtxPosCenIm[fCRCMaxnCen][fCRCZDCnEtaBin]; //!
-  TProfile3D *fTProTempRe[fCRCMaxnCen][fCRCZDCnEtaBin]; //!
-  TProfile3D *fTProTempIm[fCRCMaxnCen][fCRCZDCnEtaBin]; //!
+  TProfile3D *fCRCTPCQVecVtxPosCen[fCRCMaxnCen][fCRCZDCnEtaBin][6]; //!
+  TProfile2D *fTPCQVecProTemp[2][4]; //!
+  const static Int_t fkNv1evenCor = 6;
+  TProfile2D *fFlowSPZDCv1evenCorPro[fkNv1evenCor]; //!
   
   // Flow QC
   TList *fFlowQCList;    //! QC List
@@ -1973,6 +1983,7 @@ private:
   Int_t fMinMulZN;
   Float_t fMaxDevZN;
   Float_t fZDCGainAlpha;
+  Bool_t fbFlagIsPosMagField;
   
   ClassDef(AliFlowAnalysisCRC,57);
   

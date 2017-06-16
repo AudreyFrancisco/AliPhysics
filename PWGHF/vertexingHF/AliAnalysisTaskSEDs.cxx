@@ -417,12 +417,12 @@ void AliAnalysisTaskSEDs::UserCreateOutputObjects()
   fHistNEvents->GetXaxis()->SetBinLabel(13,"no. of Ds after filtering cuts");
   fHistNEvents->GetXaxis()->SetBinLabel(14,"no. of Ds after selection cuts");
   fHistNEvents->GetXaxis()->SetBinLabel(15,"no. of not on-the-fly rec Ds");
-  
+    
   fHistNEvents->GetXaxis()->SetNdivisions(1,kFALSE);
-
+    
   fHistNEvents->SetMinimum(0);
   fOutput->Add(fHistNEvents);
-  
+    
   fHistCentrality[0]=new TH1F("hCentr","centrality",10000,0.,100.);
   fHistCentrality[1]=new TH1F("hCentr(selectedCent)","centrality(selectedCent)",10000,0.,100.);
   fHistCentrality[2]=new TH1F("hCentr(OutofCent)","centrality(OutofCent)",10000,0.,100.);
@@ -433,7 +433,13 @@ void AliAnalysisTaskSEDs::UserCreateOutputObjects()
     fOutput->Add(fHistCentrality[i]);
     fOutput->Add(fHistCentralityMult[i]);
   }
-
+  if(fDoCutV0multTPCout) {
+    fHistAllV0multNTPCout = new TH2F("HistAllV0multNTPCout", "V0mult vs # TPCout (all) ;V0mult ;# TPCout", 1000, 0., 40000, 1000, 0, 30000);
+    fHistSelV0multNTPCout = new TH2F("HistSelV0multNTPCout", "V0mult vs # TPCout (sel) ;V0mult ;# TPCout", 1000, 0., 40000, 1000, 0, 30000);
+    fOutput->Add(fHistAllV0multNTPCout);
+    fOutput->Add(fHistSelV0multNTPCout);
+  }
+    
   Double_t massDs=TDatabasePDG::Instance()->GetParticle(431)->Mass();
     
   Int_t nInvMassBins=(Int_t)(fMassRange/fMassBinSize+0.5);
@@ -474,8 +480,14 @@ void AliAnalysisTaskSEDs::UserCreateOutputObjects()
       fMassHistK0st[index]->Sumw2();
       hisname.Form("hCosP%sPt%d",htype.Data(),i);
       fCosPHist[index]=new TH1F(hisname.Data(),hisname.Data(),100,0.5,1.);
+      hisname.Form("hCosPxy%sPt%d",htype.Data(),i);
+      fCosPxyHist[index]=new TH1F(hisname.Data(),hisname.Data(),100,0.5,1.);
       hisname.Form("hDLen%sPt%d",htype.Data(),i);
       fDLenHist[index]=new TH1F(hisname.Data(),hisname.Data(),100,0.,0.5);
+      hisname.Form("hDLenxy%sPt%d",htype.Data(),i);
+      fDLenxyHist[index]=new TH1F(hisname.Data(),hisname.Data(),100,0.,0.5);
+      hisname.Form("hNDLenxy%sPt%d",htype.Data(),i);
+      fNDLenxyHist[index]=new TH1F(hisname.Data(),hisname.Data(),100,0.,11.);
       hisname.Form("hSumd02%sPt%d",htype.Data(),i);
       fSumd02Hist[index]=new TH1F(hisname.Data(),hisname.Data(),100,0.,1.);
       hisname.Form("hSigVert%sPt%d",htype.Data(),i);
@@ -486,6 +498,12 @@ void AliAnalysisTaskSEDs::UserCreateOutputObjects()
       fPtCandHist[index]=new TH1F(hisname.Data(),hisname.Data(),100,0.5,20.);
       hisname.Form("hDCA%sPt%d",htype.Data(),i);
       fDCAHist[index]=new TH1F(hisname.Data(),hisname.Data(),100,0.,0.1);
+      hisname.Form("hNormIP%sPt%d",htype.Data(),i);
+      fNormIPHist[index]=new TH1F(hisname.Data(),hisname.Data(),100,0.,6.);
+      hisname.Form("hCosPiDs%sPt%d",htype.Data(),i);
+      fCosPiDsHist[index]=new TH1F(hisname.Data(),hisname.Data(),100,0.5,1.);
+      hisname.Form("hCosPiKPhi%sPt%d",htype.Data(),i);
+      fCosPiKPhiHist[index]=new TH1F(hisname.Data(),hisname.Data(),100,0.,0.5);
       hisname.Form("hPtProng0%sPt%d",htype.Data(),i);
       fPtProng0Hist[index]=new TH1F(hisname.Data(),hisname.Data(),100,0.0,20.);
       hisname.Form("hPtProng1%sPt%d",htype.Data(),i);

@@ -14,7 +14,7 @@
  * provided "as is" without express or implied warranty.                  *
  **************************************************************************/
 
-
+#include <TArrayI.h>
 #include <TCutG.h>
 #include <TFile.h>
 #include <THashList.h>
