@@ -37,10 +37,10 @@ set(SRCS
   AliAnalysisMuMuJpsiResult.cxx
   AliAnalysisMuMuResult.cxx
   AliAnalysisMuMuSpectra.cxx
-  AliAnalysisMuMuSpectraProcessor.cxx
-  AliAnalysisMuMuSpectraProcessorPP.cxx
-  AliAnalysisMuMuSpectraProcessorPbP.cxx
-  AliAnalysisMuMuSpectraProcessorPbPb.cxx
+  AliAnalysisMuMuSpectraCapsule.cxx
+  AliAnalysisMuMuSpectraCapsulePP.cxx
+  AliAnalysisMuMuSpectraCapsulePbP.cxx
+  AliAnalysisMuMuSpectraCapsulePbPb.cxx
   AliAnalysisRunList.cxx
   AliAnalysisTaskESDMCLabelAddition.cxx 
   AliAnalysisTaskMuonCDBConnect.cxx

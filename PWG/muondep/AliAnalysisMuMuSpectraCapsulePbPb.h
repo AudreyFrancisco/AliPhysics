@@ -1,0 +1,107 @@
+
+#ifndef ALINANALYSISMUMUSPECTRACAPSULEPBPB_H
+#define ALINANALYSISMUMUSPECTRACAPSULEPBPB_H
+
+
+/* Copyright(c) 1998-1999, ALICE Experiment at CERN, All rights reserved. *
+ * See cxx source for full Copyright notice                               */
+
+// $Id$
+
+/**
+ 
+  @ingroup pwg_muondep_mumu
+
+  @class AliAnalysisMuMuSpectraCapsulePbPb
+
+  @brief Handle operations on Spectra after fit procedure
+
+  @author Benjamin Audurier (Subatech)
+
+*/
+
+
+#include "TNamed.h"
+#include "TMath.h"
+#include "TCanvas.h"
+#include <TString.h>
+#include "TGraphErrors.h"
+#include "AliAnalysisMuMuSpectra.h"
+#include "AliCounterCollection.h"
+#include "AliMergeableCollection.h"
+#include "AliAnalysisMuMuSpectraCapsule.h"
+
+class TGraphErrors;
+class AliAnalysisMuMuSpectra;
+class AliAnalysisMuMuSpectraCapsulePbPb : public AliAnalysisMuMuSpectraCapsule
+{
+
+public:
+  //ctor
+  AliAnalysisMuMuSpectraCapsulePbPb(
+                             const AliAnalysisMuMuSpectra            *  spectra=0x0,
+                             const TString                           spectraPath ="",
+                             const char                              * externFile="",
+                             const char                              * externFile2="");
+  // dtor
+  virtual ~AliAnalysisMuMuSpectraCapsulePbPb();
+  // Compute Yield
+  TGraphErrors* ComputeYield(const char* what="", const TH1* histo=0x0, const char* sResName="");
+  // Draw fit results and save them if wanted
+  void DrawResults(const char* particle="PSI",const char* subresults="")const;
+  // Print Flag
+  void SetPrintFlag(){fPrintFlag=kTRUE;};
+  // Style for canvas
+  void SetCanvasStyle(TCanvas *can) const ;
+  // Print some data members
+  void Print(Option_t* opt="") const;
+  // Print constants used
+  void PrintConst() const;
+  // Compute quantities linked to RAA
+  TList* RAAasGraphic(Double_t MUL) const;
+  // V2 vs what
+  TList* V2asGraphic(const char* what="PT") const;
+  //Fit the DeltaPhiDistribution for each subresult
+  void FitDistvsDphi(Double_t ptMin, Double_t ptMax,const char* particle="PSI",const char* subresults="", Bool_t draw=kFALSE)const;
+
+  // Return some data member. Double "const" on purpose to avoid leverage on data members
+  const Double_t              * GetConstArray()     const {return fConstArray;};
+  const AliAnalysisMuMuSpectra* GetSpectra()       const {return fSpectra;};
+  const TString                GetSpectraName()    const {return fSpectraName;};
+
+private:
+  // Read and compute values from extern file
+  Bool_t ComputeRAA(TString sbin, Double_t numArray[],Double_t MUL, Double_t binwidth) const;
+  // Read extern file for Pt and Y case
+  Bool_t ReadFromFile(TString sbin, float valueArray[]) const;
+  // Set global constants according to centrality
+  Bool_t SetConstantFromExternFile(const char* file);
+  // Equality operator
+  AliAnalysisMuMuSpectraCapsulePbPb(const AliAnalysisMuMuSpectraCapsulePbPb& rhs);// not implemented on purpose
+  AliAnalysisMuMuSpectraCapsulePbPb& operator=(const AliAnalysisMuMuSpectraCapsulePbPb& rhs);// not implemented on purpose
+  //V2 DeltaPhi
+  TGraphErrors* PlotFlow(const char* what, const char* subresult, Double_t ptBinMin, Double_t ptBinMax, Bool_t divideByBinWidth=kFALSE) const;//, Bool_t bck) const;
+  void DrawDnDphi(TGraphErrors* distribution, TF1* fit, const char* subresName, Double_t ptMin, Double_t ptMax, Double_t v2, Double_t v2Err) const;
+
+
+private:
+  TString fExternFile;      // name of spectra selected
+  TString fExternFile2;     // name of spectra selected
+  Double_t fConstArray[13]; // Array to store constant according to centrality bins
+  Bool_t fPrintFlag;
+
+  const AliAnalysisMuMuSpectra* fSpectra;// Spectra with result and subresults
+  const TString               fSpectraName;     // SpectraName
+
+/// \cond CLASSIMP
+ClassDef(AliAnalysisMuMuSpectraCapsulePbPb,2);
+/// \endcond
+};
+
+
+
+
+
+
+
+#endif

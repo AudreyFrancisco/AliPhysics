@@ -26,10 +26,7 @@ public:
 	void SetVertex(Double_t V[3]);
 	void SetVtxContributors(Int_t nContributors){fNVtxContributors=nContributors;};
 	void SetTriggerString(TString val) { fTriggerString = val;};
-	void SetMultiplicity(TString method,Float_t multiplicity);
-	void SetPhysicsSelectionMask(UShort_t mask){fPhysicsSelectionMask=mask;};
-	void SetIsPileupFromSPD(Bool_t ispileup){fPileupFromSPD=ispileup;};
-	void SetL0TriggerInput(UShort_t L0TriggerInput){fL0TriggerInput=L0TriggerInput;};
+	void SetMultiplicity(TString method,Double_t multiplicity);
 	Double_t GetEventPlane() {return fEventPlane ;};
 	Int_t GetRunNumber() {return fRunNb ;};
 	Double_t GetXVertex() {return fVertex[0] ;};
@@ -38,10 +35,7 @@ public:
 	Double_t*GetVertex()  {return fVertex    ;};
 	TString GetTriggerString() {return fTriggerString ;};
 	Int_t GetNVtxContributors(){return fNVtxContributors;};
-	UShort_t GetPhysicsSelectionMask(){return fPhysicsSelectionMask;};
-	UShort_t GetL0TriggerInput(){return fL0TriggerInput;};
-	Float_t GetMultiplicity(TString method);
-	Bool_t IsPileupFromSPD(){return fPileupFromSPD;};
+	Double_t GetMultiplicity(TString method);
 	
 	AliLMRMuon *AddMuon();
 	AliLMRMuon *GetMuon(Int_t imu) { return ((imu < fMuons->GetEntriesFast()) ? (AliLMRMuon *)fMuons->At(imu) : 0);};
@@ -50,30 +44,21 @@ public:
 private:
 	TClonesArray * fMuons;
 	Double_t fEventPlane;
-	Float_t fMultiplicity_V0M          ;
-	Float_t fMultiplicity_ADM          ;
-	Float_t fMultiplicity_SPDTracklets ;
-	Float_t fMultiplicity_SPDClusters  ;
-	Float_t fMultiplicity_RefMult05    ;
-	Float_t fMultiplicity_RefMult08    ;
-	Float_t fMultiplicity_V0A          ;
-	Float_t fMultiplicity_V0C          ;
-	Float_t fMultiplicity_V0EqA        ;
-	Float_t fMultiplicity_V0EqC        ;
-	Float_t fMultiplicity_V0EqM        ;
-	Float_t fMultiplicity_ZNA          ;
-	Float_t fMultiplicity_ZNC          ;
+	Double_t fMultiplicity_V0M;
+	Double_t fMultiplicity_ADM;
+	Double_t fMultiplicity_SPDTracklets;
+	Double_t fMultiplicity_SPDClusters;
+	Double_t fMultiplicity_RefMult05;
+	Double_t fMultiplicity_RefMult08;
 	Int_t fRunNb;
 	Short_t fNMuons;
-	UShort_t fPhysicsSelectionMask;
-	UShort_t fL0TriggerInput;
 	Double_t fVertex[3];
 	Int_t fNVtxContributors;
 	TString fTriggerString;
-	Bool_t fPileupFromSPD;
 
 	ClassDef(AliLMREvent, 2)  //The class title
 
 };
 
 #endif
+
