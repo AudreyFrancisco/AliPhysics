@@ -1394,7 +1394,7 @@ void AliAnalysisMuMu::V2asGraphic(const char* particle, const char* what, const 
     ///
     ///
 
-    AliWarning("Comparison with Javier for 40-60%, please fix it");
+    AliWarning("Comparison with Javier for 5-20%, please fix it");
     if (!OC() || !CC())
         {
         AliError("No mergeable/counter collection. Consider Upgrade()");
@@ -1434,9 +1434,9 @@ void AliAnalysisMuMu::V2asGraphic(const char* particle, const char* what, const 
 // Comparing with Javier
     // TFile *spd_0520 = new TFile("/Users/francisco/WorkDir/Fit/AN/Javier/Javiermv2/pol2Cheb4polExp/v2pt_EPSPD_cent4_v2bkgPol2ChebPolExp.root");
     // TFile *v0a_0520 = new TFile("/Users/francisco/WorkDir/Fit/AN/Javier/Javiermv2/pol2Cheb4polExp/v2pt_EPV0A_cent4_v2bkgPol2ChebPolExp.root");
-    // TFile *spd_2040 = new TFile("/Users/francisco/WorkDir/Fit/AN/Javier/Javiermv2/pol2Cheb4polExp/v2pt_EPSPD_cent2_v2bkgPol2ChebPolExp.root");
+    TFile *spd_2040 = new TFile("/Users/francisco/WorkDir/Fit/AN/Javier/Javiermv2/pol2Cheb4polExp/v2pt_EPSPD_cent2_v2bkgPol2ChebPolExp.root");
     // TFile *v0a_2040 = new TFile("/Users/francisco/WorkDir/Fit/AN/Javier/Javiermv2/pol2Cheb4polExp/v2pt_EPV0A_cent2_v2bkgPol2ChebPolExp.root");
-    TFile *spd_2040 = new TFile("/Users/francisco/WorkDir/Fit/AN/Javier/Javiermv2/pol2Cheb4polExp/v2pt_EPSPD_cent6_v2bkgPol2ChebPolExp.root");
+    // TFile *spd_4060 = new TFile("/Users/francisco/WorkDir/Fit/AN/Javier/Javiermv2/pol2Cheb4polExp/v2pt_EPSPD_cent6_v2bkgPol2ChebPolExp.root");
     // TFile *v0a_4060 = new TFile("/Users/francisco/WorkDir/Fit/AN/Javier/Javiermv2/pol2Cheb4polExp/v2pt_EPV0A_cent6_v2bkgPol2ChebPolExp.root");
 
     TGraphErrors *javier[2] = {(TGraphErrors *)spd_2040->Get("grV2ObsvsMeanPtStat"),(TGraphErrors *)spd_2040->Get("grV2ObsvsMeanPtSyst")};
@@ -6811,9 +6811,9 @@ void  AliAnalysisMuMu::LoadStyles() const{
   gStyle->SetEndErrorSize(3);
   gStyle->SetLabelSize(0.05,"xyz");
   gStyle->SetLabelFont(font,"xyz");
-  gStyle->SetLabelOffset(0.01,"xyz");
+  gStyle->SetLabelOffset(0.008,"xyz");
   gStyle->SetTitleFont(font,"xyz");
-  gStyle->SetTitleOffset(1.1,"xy");
+  gStyle->SetTitleOffset(1.,"xy");
   gStyle->SetTitleSize(0.05,"xyz");
   gStyle->SetMarkerSize(1.3);
   gStyle->SetPalette(1,0);
