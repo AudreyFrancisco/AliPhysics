@@ -1,45 +1,32 @@
-#ifndef ALIANALYSISMUMUMINV_H
-#define ALIANALYSISMUMUMINV_H
+#ifndef ALIANALYSISMUMUFLOWSP_H
+#define ALIANALYSISMUMUFLOWSP_H
 
 /**
  *
  * \class AliAnalysisMuMuNch
  * \brief Invariant mass dimuon analysis
- * \author L. Aphecetche, J. Martin Blanco and B. Audurier (Subatech)
+ * \author A. Francisco (Subatech)
  */
 
 #include "AliAnalysisMuMuBase.h"
 #include "AliAnalysisMuMuBinning.h"
 #include "TString.h"
 #include "TH2.h"
+#include "TVector2.h"
 
 class TH2F;
 class AliVParticle;
 
-class AliAnalysisMuMuMinv : public AliAnalysisMuMuBase
+class AliAnalysisMuMuFlowSP : public AliAnalysisMuMuBase
 {
 public:
 
-  AliAnalysisMuMuMinv(TH2* AccEffHisto=0x0, Int_t systLevel=0);
-  virtual ~AliAnalysisMuMuMinv();
-
-  Bool_t IsPtInRange(const AliVParticle& t1, const AliVParticle& t2,
-                           Double_t& ptmin, Double_t& ptmax) const;
-
-  void NameOfIsPtInRange(TString& name, Double_t& ymin, Double_t& ymax) const;
-
-  Bool_t IsRapidityInRange(const AliVParticle& t1, const AliVParticle& t2) const;
-  void NameOfIsRapidityInRange(TString& name) const { name = "PAIRY"; }
+  AliAnalysisMuMuFlowSP(TH2* AccEffHisto=0x0, Int_t systLevel=0);
+  virtual ~AliAnalysisMuMuFlowSP();
 
   Bool_t ShouldCorrectDimuonForAccEff() { return (fAccEffHisto != 0x0); }
 
-  void FillMeanPtHisto() { fcomputeMeanPt=kTRUE; }
-
-  void SetMCptCut(Double_t mcptmin, Double_t mcptmax) { fmcptcutmin=mcptmin;fmcptcutmax=mcptmax; }
-
   void SetMuonWeight() { fWeightMuon=kTRUE; }
-
-  void SetLegacyBinNaming() { fMinvBinSeparator = ""; }
 
   void SetBinsToFill(const char* particle, const char* bins);
 
@@ -55,6 +42,7 @@ public:
 
   void DefineMinvRange(Double_t minvMin, Double_t minvMax, Double_t minvBinSize);
 
+
 protected:
 
   void DefineHistogramCollection(const char* eventSelection, const char* triggerClassName,
@@ -65,6 +53,8 @@ protected:
                                  const char* pairCutName,
                                  const AliVParticle& part,
                                  const AliVParticle& part2);
+
+  virtual void FillHistosForEvent(const char* eventSelection,const char* triggerClassName, const char* centrality);
 
   void FillHistosForMCEvent(const char* eventSelection,const char* triggerClassName,const char* centrality);
 
@@ -83,14 +73,10 @@ private:
 
   Double_t WeightPairDistribution(Double_t pt,Double_t rapidity);
 
-  // Double_t powerLaw3Par(Double_t *x, Double_t *par);
-
-  // Double_t normPol12Par(Double_t *x, Double_t *par);
-
   Double_t TriggerLptApt(Double_t *x, Double_t *par);
 
+  TVector2 GetQn(const char* detector, Int_t step = 3);
 private:
-  Bool_t fcomputeMeanPt;
   Bool_t fWeightMuon;
   TH2F     * fAccEffHisto;
   TString fMinvBinSeparator;
@@ -105,8 +91,12 @@ private:
   Double_t fMinvMax;
   Double_t fmcptcutmin;
   Double_t fmcptcutmax;
+  Int_t fNDetectors;
+  Int_t fHar;
+  TString fEqSteps  [5] = {"raw", "plain", "rec", "align","twist"};
+  TString fDetectors[3] = {"SPD","VZEROA", "VZEROC"};
 
-  ClassDef(AliAnalysisMuMuMinv,8) // implementation of AliAnalysisMuMuBase for muon pairs
+  ClassDef(AliAnalysisMuMuFlowSP,1) // implementation of AliAnalysisMuMuBase for muon pairs
 };
 
 #endif

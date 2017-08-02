@@ -7,9 +7,7 @@
  *
  * \brief Various event cuts used in AliAnalysisTaskMuMu
  *
- * \author L. Aphecetche
- * \author J. Martin Blanco
- * \author B. Audurier
+ * \author L. Aphecetche and J. Martin Blanco
  *
  */
 
@@ -17,7 +15,6 @@
 #include "TString.h"
 
 class AliMuonEventCuts;
-class AliAnalysisUtils;
 class TList;
 class AliVEvent;
 class AliVVertex;
@@ -54,11 +51,11 @@ public:
   Bool_t IsPhysicsSelectedMUL(const AliInputEventHandler& eventHandler) const;
   void NameOfIsPhysicsSelectedMUL(TString& name) const { name="PSMUL"; }
 
-  Bool_t IsPhysicsSelectedMULORMLL(const AliInputEventHandler& eventHandler) const;
-  void NameOfIsPhysicsSelectedMULORMLL(TString& name) const { name="PSMULORMLL"; }
+  Bool_t IsPhysicsSelectedMUSPB(const AliInputEventHandler& eventHandler) const;
+  void NameOfIsPhysicsSelectedMUSPB(TString& name) const { name="PSMUSPB"; }
 
-  Bool_t IsPhysicsSelectedINT7inMUON(const AliInputEventHandler& eventHandler) const;
-  void NameOfIsPhysicsSelectedINT7inMUON(TString& name) const { name="PSINT7inMUON"; }
+  Bool_t IsPhysicsSelectedMULorMLL(const AliInputEventHandler& eventHandler) const;
+  void NameOfIsPhysicsSelectedMULorMLL(TString& name) const { name="PSMULORMLL"; }
 
   Bool_t IsPhysicsSelectedMSL(const AliInputEventHandler& eventHandler) const;
   void NameOfIsPhysicsSelectedMSL(TString& name) const { name="PSMSL"; }
@@ -90,11 +87,7 @@ public:
   Bool_t IsTZEROPileUp(const AliVEvent& event) const;
   void NameOfIsTZEROPileUp(TString& name) const { name="TZEROPILEUP"; }
 
-  Bool_t IsSPDPileUp(AliVEvent& event) const;
-  void NameOfIsSPDPileUp(TString& name) const { name="SPDPILEUP"; }
-
   AliMuonEventCuts* MuonEventCuts() const;
-  AliAnalysisUtils* AnalysisUtils() const;
 
 //  enum EEventCut
 //  {
@@ -120,9 +113,8 @@ private:
   AliAnalysisMuMuEventCutter(const AliAnalysisMuMuEventCutter& rhs);
 
   mutable AliMuonEventCuts* fMuonEventCuts; // common cuts for muon events (from Diego)
-  mutable AliAnalysisUtils* fAnalysisUtils; // common cuts for AliAnalysisUtils
 
-  ClassDef(AliAnalysisMuMuEventCutter,2) // default event cutters for AliAnalysisTaskMuMu
+  ClassDef(AliAnalysisMuMuEventCutter,1) // default event cutters for AliAnalysisTaskMuMu
 };
 
 #endif

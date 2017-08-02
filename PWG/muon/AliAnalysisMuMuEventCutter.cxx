@@ -21,7 +21,6 @@
 #include "AliLog.h"
 #include "AliMuonEventCuts.h"
 #include "AliAnalysisMuonUtility.h"
-#include "AliAnalysisUtils.h"
 #include "TList.h"
 #include "TTree.h"
 #include "Riostream.h"
@@ -48,14 +47,14 @@ ClassImp(AliAnalysisMuMuEventCutter)
 
 //______________________________________________________________________________
 AliAnalysisMuMuEventCutter::AliAnalysisMuMuEventCutter(TRootIOCtor* /*ioCtor*/)
-: TObject(), fMuonEventCuts(0x0), fAnalysisUtils(0x0)
+: TObject(), fMuonEventCuts(0x0)
 {
   /// default io ctor
 }
 
 //______________________________________________________________________________
 AliAnalysisMuMuEventCutter::AliAnalysisMuMuEventCutter(const char* triggerClasses, const char* triggerInputsMap)
-: TObject(), fMuonEventCuts(0x0), fAnalysisUtils(0x0)
+: TObject(), fMuonEventCuts(0x0)
 {
   /// ctor
   TString tclasses(triggerClasses);
@@ -77,7 +76,7 @@ AliAnalysisMuMuEventCutter::AliAnalysisMuMuEventCutter(const char* triggerClasse
 
 //______________________________________________________________________________
 AliAnalysisMuMuEventCutter::AliAnalysisMuMuEventCutter(TList* triggerClasses, TList* triggerInputsMap)
-: TObject(), fMuonEventCuts(0x0), fAnalysisUtils(0x0)
+: TObject(), fMuonEventCuts(0x0)
 {
   /// ctor
   TString tclasses;
@@ -134,7 +133,6 @@ AliAnalysisMuMuEventCutter::~AliAnalysisMuMuEventCutter()
 {
   /// dtor
   delete fMuonEventCuts;
-  delete fAnalysisUtils;
 }
 
 //_____________________________________________________________________________
@@ -199,16 +197,15 @@ Bool_t AliAnalysisMuMuEventCutter::IsPhysicsSelectedMUL(const AliInputEventHandl
   return const_cast<AliInputEventHandler&>(eventHandler).IsEventSelected() & AliVEvent::kMuonUnlikeLowPt7;
 }
 
-Bool_t AliAnalysisMuMuEventCutter::IsPhysicsSelectedMULORMLL(const AliInputEventHandler& eventHandler) const
+Bool_t AliAnalysisMuMuEventCutter::IsPhysicsSelectedMUSPB(const AliInputEventHandler& eventHandler) const
 {
   /// Whether or not the event is physics selected
-  return const_cast<AliInputEventHandler&>(eventHandler).IsEventSelected() & ( AliVEvent::kMuonUnlikeLowPt7 | AliVEvent::kMuonLikeLowPt7 );
+  return const_cast<AliInputEventHandler&>(eventHandler).IsEventSelected() & AliVEvent::kMUSPB;
 }
-
-Bool_t AliAnalysisMuMuEventCutter::IsPhysicsSelectedINT7inMUON(const AliInputEventHandler& eventHandler) const
+Bool_t AliAnalysisMuMuEventCutter::IsPhysicsSelectedMULorMLL(const AliInputEventHandler& eventHandler) const
 {
   /// Whether or not the event is physics selected
-  return const_cast<AliInputEventHandler&>(eventHandler).IsEventSelected() & AliVEvent::kINT7inMUON;
+  return const_cast<AliInputEventHandler&>(eventHandler).IsEventSelected() & (AliVEvent::kMuonLikeLowPt7 | AliVEvent::kMuonUnlikeLowPt7) ;
 }
 
 Bool_t AliAnalysisMuMuEventCutter::IsPhysicsSelectedMSL(const AliInputEventHandler& eventHandler) const
@@ -474,19 +471,6 @@ AliAnalysisMuMuEventCutter::MuonEventCuts() const
   return fMuonEventCuts;
 }
 
-//_____________________________________________________________________________
-AliAnalysisUtils*
-AliAnalysisMuMuEventCutter::AnalysisUtils() const
-{
-  /// Return the single instance of AliAnalysisUtils object we're using
-
-  if (!fAnalysisUtils)
-  {
-    fAnalysisUtils = new AliAnalysisUtils();
-  }
-  return fAnalysisUtils;
-}
-
 
 //_____________________________________________________________________________
 void AliAnalysisMuMuEventCutter::NameOfIsSPDzVertexInRange(TString& name, const Double_t& zMin, const Double_t& zMax) const
@@ -541,10 +525,4 @@ Bool_t AliAnalysisMuMuEventCutter::IsTZEROPileUp(const AliVEvent& event) const
     }
   }
   return pileupFlag;
-}
-
-//_____________________________________________________________________________
-Bool_t AliAnalysisMuMuEventCutter::IsSPDPileUp(AliVEvent& event) const
-{
-  return AnalysisUtils()->IsPileUpSPD(&event);
 }

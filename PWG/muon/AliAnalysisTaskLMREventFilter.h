@@ -25,7 +25,7 @@ public:
   virtual void UserCreateOutputObjects();
   virtual void UserExec(Option_t *option);
   virtual void Terminate(Option_t *);
-  Bool_t IsSelectedTrigger(AliAODEvent *fAOD, Bool_t fillHisto,UShort_t &physicsSelectionMask,UShort_t &L0TriggerInput);
+  Bool_t IsSelectedTrigger(AliAODEvent *fAOD, Bool_t fillHisto,UShort_t &evtTrigSelect);
   virtual void NotifyRun();
 private:
   
@@ -40,20 +40,11 @@ private:
   AliLMREvent *fAliLMREvent;
 
   TH1D *fhTriggers;
-  TH1D *fhBeamType;
-  TH1D *fhL0TriggerInputMLL;
-  TH1D *fhL0TriggerInputMUL;
-  TH1D *fhL0TriggerInputMSL;
-  TH1D *fhL0TriggerInputTVX;
   TH2D *fhNMu;
 
-  Int_t fL0TriggerInputMLL;
-  Int_t fL0TriggerInputMUL;
-  Int_t fL0TriggerInputMSL;
-  Int_t fL0TriggerInputTVX;
   Int_t fNTrigClass;
-  TString fTriggerClasses[13];
-  Int_t fminContributorsPileUp;
+  TString fTriggerClasses[7];
+  UShort_t fTriggerMask[7];
   ClassDef(AliAnalysisTaskLMREventFilter, 1) // example of analysis
 
 };
