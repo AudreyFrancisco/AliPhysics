@@ -46,7 +46,6 @@
 #include "AliAnalysisMuMuBinning.h"
 #include "TH1F.h"
 #include "TH2F.h"
-#include "THnSparse.h"
 #include "TProfile.h"
 #include "TRegexp.h"
 #include "AliVEvent.h"
@@ -259,100 +258,6 @@ AliAnalysisMuMuBase::CreateTrackHistos(UInt_t dataType,
 
 //_____________________________________________________________________________
 void
-AliAnalysisMuMuBase::CreatePairTHnSparse(UInt_t dataType,
-                                      const char* eventSelection,
-                                      const char* triggerClassName,
-                                      const char* centrality,
-                                      const char* hname, const char* htitle,
-                                      Int_t nDim, Int_t* nbinsx, Double_t* xmin, Double_t* xmax) const
-{
-  /// Create n copies of an histogram (with name=hname, title=htitle, etc..)
-  /// where n = # of track *pair* cut combinations defined
-  /// see also CreateHistos
-
-  if ( IsHistogramDisabled(hname) ) return;
-
-  TObjArray pathNames;
-  pathNames.SetOwner(kTRUE);
-
-  TIter nextCutCombination(CutRegistry()->GetCutCombinations(AliAnalysisMuMuCutElement::kTrackPair));
-  AliAnalysisMuMuCutCombination* cutCombination;
-
-  while ( ( cutCombination = static_cast<AliAnalysisMuMuCutCombination*>(nextCutCombination())) )
-  {
-    if ( dataType & kHistoForData )
-    {
-      pathNames.Add(new TObjString(Form("/%s/%s/%s/%s",eventSelection,triggerClassName,centrality,cutCombination->GetName())));
-    }
-    if ( ( dataType & kHistoForMCInput ) && HasMC() )
-    {
-      pathNames.Add(new TObjString(Form("/%s/%s/%s/%s/%s",MCInputPrefix(),eventSelection,triggerClassName,centrality,cutCombination->GetName())));
-    }
-  }
-
-  TIter next(&pathNames);
-  TObjString* pathName;
-
-  while ( ( pathName = static_cast<TObjString*>(next()) ) )
-  {
-    THnSparse* h(0x0);
-    h = new THnSparseT<TArrayF>(hname,htitle,nDim,nbinsx,xmin,xmax);
-    h->Sumw2();
-
-    if( HistogramCollection()->Adopt(pathName->String().Data(),h))
-    printf("%s/%s adopted\n",pathName->String().Data(),h->GetName() );
-  }
-}
-
-//_____________________________________________________________________________
-void
-AliAnalysisMuMuBase::CreateTrackTHnSparse(UInt_t dataType,
-                                      const char* eventSelection,
-                                      const char* triggerClassName,
-                                      const char* centrality,
-                                      const char* hname, const char* htitle,
-                                      Int_t nDim, Int_t* nbinsx, Double_t* xmin, Double_t* xmax) const
-{
-  /// Create n copies of an histogram (with name=hname, title=htitle, etc..)
-  /// where n = # of track  cut combinations defined
-  /// see also CreateHistos
-
-  if ( IsHistogramDisabled(hname) ) return;
-
-  TObjArray pathNames;
-  pathNames.SetOwner(kTRUE);
-
-  TIter nextCutCombination(CutRegistry()->GetCutCombinations(AliAnalysisMuMuCutElement::kTrack));
-  AliAnalysisMuMuCutCombination* cutCombination;
-
-  while ( ( cutCombination = static_cast<AliAnalysisMuMuCutCombination*>(nextCutCombination())) )
-  {
-    if ( dataType & kHistoForData )
-    {
-      pathNames.Add(new TObjString(Form("/%s/%s/%s/%s",eventSelection,triggerClassName,centrality,cutCombination->GetName())));
-    }
-    if ( ( dataType & kHistoForMCInput ) && HasMC() )
-    {
-      pathNames.Add(new TObjString(Form("/%s/%s/%s/%s/%s",MCInputPrefix(),eventSelection,triggerClassName,centrality,cutCombination->GetName())));
-    }
-  }
-
-  TIter next(&pathNames);
-  TObjString* pathName;
-
-  while ( ( pathName = static_cast<TObjString*>(next()) ) )
-  {
-    THnSparse* h(0x0);
-    h = new THnSparseT<TArrayF>(hname,htitle,nDim,nbinsx,xmin,xmax);
-    h->Sumw2();
-
-    if( HistogramCollection()->Adopt(pathName->String().Data(),h))
-    printf("%s/%s adopted\n",pathName->String().Data(),h->GetName() );
-  }
-}
-
-//_____________________________________________________________________________
-void
 AliAnalysisMuMuBase::CreatePairHistos(UInt_t dataType,
                                       const char* eventSelection,
                                       const char* triggerClassName,
@@ -514,10 +419,10 @@ void AliAnalysisMuMuBase::Init(AliCounterCollection& cc,
                                const AliAnalysisMuMuCutRegistry& registry)
 {
   /// Set the internal references
-  fEventCounters       = &cc;
+  fEventCounters = &cc;
   fHistogramCollection = &hc;
-  fBinning             = &binning;
-  fCutRegistry         = &registry;
+  fBinning = &binning;
+  fCutRegistry = &registry;
 }
 
 //_____________________________________________________________________________

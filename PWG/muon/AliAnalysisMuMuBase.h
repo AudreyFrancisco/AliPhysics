@@ -36,8 +36,7 @@ public:
    */
   virtual void DefineHistogramCollection(const char* eventSelection,
                                          const char* triggerClassName,
-                                         const char* centrality,
-                                         Bool_t mix) = 0;
+                                         const char* centrality) = 0;
 
   /** Fill histograms for one event */
   virtual void FillHistosForEvent(const char* /*eventSelection*/,const char* /*triggerClassName*/,const char* /*centrality*/) {}
@@ -54,8 +53,7 @@ public:
   virtual void FillHistosForPair(const char* /*eventSelection*/,const char* /*triggerClassName*/,const char* /*centrality*/,
                                  const char* /*pairCutName*/,
                                  const AliVParticle& /*part1*/,
-                                 const AliVParticle& /*part2*/,
-                                 const Bool_t /*IsMixedHisto*/) {}
+                                 const AliVParticle& /*part2*/) {}
 
   virtual void Init(AliCounterCollection& cc,
                     AliMergeableCollection& hc,
@@ -149,20 +147,6 @@ protected:
                         const char* hname, const char* htitle,
                         Int_t nbinsx, Double_t xmin, Double_t xmax,
                         Int_t nbinsy=-1, Double_t ymin=0.0, Double_t ymax=0.0) const;
-
-  void CreatePairTHnSparse(UInt_t dataType,
-                        const char* eventSelection,
-                        const char* triggerClassName,
-                        const char* centrality,
-                        const char* hname, const char* htitle,
-                        Int_t nDim, Int_t* nbinsx, Double_t* xmin, Double_t* xmax) const;
-
-  void CreateTrackTHnSparse(UInt_t dataType,
-                        const char* eventSelection,
-                        const char* triggerClassName,
-                        const char* centrality,
-                        const char* hname, const char* htitle,
-                        Int_t nDim, Int_t* nbinsx, Double_t* xmin, Double_t* xmax) const;
 
   Bool_t ExistSemaphoreHistogram(const char* eventSelection,
                                  const char* triggerClassName,

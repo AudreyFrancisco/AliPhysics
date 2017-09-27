@@ -3,8 +3,8 @@
 
 /**
  *
- * \class AliAnalysisMuMuSP
- * \brief Elliptic dimuon analysis with the scalar product method
+ * \class AliAnalysisMuMuNch
+ * \brief Invariant mass dimuon analysis
  * \author A. Francisco (Subatech)
  */
 
@@ -46,14 +46,13 @@ public:
 protected:
 
   void DefineHistogramCollection(const char* eventSelection, const char* triggerClassName,
-                                 const char* centrality,Bool_t =kFALSE);
+                                 const char* centrality);
 
   virtual void FillHistosForPair(const char* eventSelection,const char* triggerClassName,
                                  const char* centrality,
                                  const char* pairCutName,
                                  const AliVParticle& part,
-                                 const AliVParticle& part2,
-                                 const Bool_t IsMixedHisto);
+                                 const AliVParticle& part2);
 
   virtual void FillHistosForEvent(const char* eventSelection,const char* triggerClassName, const char* centrality);
 

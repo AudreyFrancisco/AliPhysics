@@ -10,15 +10,11 @@
 
 #include "AliAnalysisMuMuBase.h"
 #include "AliAnalysisMuMuBinning.h"
-#include "AliMergeableCollection.h"
 #include "TString.h"
-#include "TLorentzVector.h"
 #include "TH2.h"
 
 class TH2F;
 class AliVParticle;
-class TLorentzVector;
-class AliMergeableCollectionProxy;
 
 class AliAnalysisMuMuMinv : public AliAnalysisMuMuBase
 {
@@ -37,7 +33,7 @@ public:
 
   Bool_t ShouldCorrectDimuonForAccEff() { return (fAccEffHisto != 0x0); }
 
-  void FillMeanPtHisto() { fComputeMeanPt=kTRUE; }
+  void FillMeanPtHisto() { fcomputeMeanPt=kTRUE; }
 
   void SetMCptCut(Double_t mcptmin, Double_t mcptmax) { fmcptcutmin=mcptmin;fmcptcutmax=mcptmax; }
 
@@ -51,6 +47,7 @@ public:
   void SetOriginPtFunc(TString formula, const Double_t *param, Double_t xMin, Double_t xMax);
   // create the new function with its initial parameters to fit the generated/weighted pT distribution
   void SetNewPtFunc(TString formula, const Double_t *param, Double_t xMin, Double_t xMax);
+
   // create the original function with the parameters used in simulation to generate the y distribution
   void SetOriginYFunc(TString formula, const Double_t *param, Double_t xMin, Double_t xMax);
   // create the new function with its initial parameters to fit the generated/weighted y distribution
@@ -61,18 +58,15 @@ public:
 protected:
 
   void DefineHistogramCollection(const char* eventSelection, const char* triggerClassName,
-                                 const char* centrality,Bool_t =kFALSE);
+                                 const char* centrality);
 
   virtual void FillHistosForPair(const char* eventSelection,const char* triggerClassName,
                                  const char* centrality,
                                  const char* pairCutName,
                                  const AliVParticle& part,
-                                 const AliVParticle& part2,
-                                 const Bool_t IsMixedHisto);
+                                 const AliVParticle& part2);
 
   void FillHistosForMCEvent(const char* eventSelection,const char* triggerClassName,const char* centrality);
-
-  void FillMinvHisto(TString* minvName,TProfile* hprof,TProfile* hprof2,AliMergeableCollectionProxy* proxy, TLorentzVector* pair4Momentum, Double_t inputWeight);
 
 private:
 
@@ -81,7 +75,7 @@ private:
   // normalize the function to its integral in the given range
   void NormFunc(TF1 *f, Double_t min, Double_t max);
 
-  TString GetMinvHistoName(const AliAnalysisMuMuBinning::Range& r, Bool_t accEffCorrected, Double_t PairCharge=0, Bool_t mix =kFALSE) const;
+  TString GetMinvHistoName(const AliAnalysisMuMuBinning::Range& r, Bool_t accEffCorrected) const;
 
   Double_t GetAccxEff(Double_t pt,Double_t rapidity);
 
@@ -89,14 +83,14 @@ private:
 
   Double_t WeightPairDistribution(Double_t pt,Double_t rapidity);
 
+  // Double_t powerLaw3Par(Double_t *x, Double_t *par);
+
+  // Double_t normPol12Par(Double_t *x, Double_t *par);
+
   Double_t TriggerLptApt(Double_t *x, Double_t *par);
 
-  Bool_t  CheckBinRangeCut(AliAnalysisMuMuBinning::Range* r, TLorentzVector* pair4Momentum, AliMergeableCollectionProxy* proxy);
-
-  Bool_t CheckMCTracksMatchingStackAndMother(Int_t labeli, Int_t labelj, AliVParticle* mcTracki, AliVParticle* mcTrackj, Double_t inputWeightMC);
-
 private:
-  Bool_t fComputeMeanPt;
+  Bool_t fcomputeMeanPt;
   Bool_t fWeightMuon;
   TH2F     * fAccEffHisto;
   TString fMinvBinSeparator;

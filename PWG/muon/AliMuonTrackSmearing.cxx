@@ -194,8 +194,6 @@ void AliMuonTrackSmearing::ComputeRecoTrack ( Double_t pGen, Double_t etaGen,
 
   fRecoCharge = chargeGen;
 
-  Double_t sign = ( chargeGen > 0. ) ? 1. : -1.;
-
   Double_t eLoss02 = ELoss(pGen,1.5); // = 110cm eLoss_Common + 305 cm eLoss_tungsten
   Double_t eLoss23 = ELoss(pGen,2.5); // = 378cm eLoss_Common + 37 cm eLoss_tungsten
   Double_t eLoss310 = ELoss(pGen,6.); // = 378cm eLoss_Common + 37 cm eLoss_steel
@@ -320,7 +318,7 @@ void AliMuonTrackSmearing::ComputeRecoTrack ( Double_t pGen, Double_t etaGen,
     if ( fChosenFunc == kBreitWigner ) {
       pAbsEndRec = ThetaDevToP(GenRndBreitWigner(thetaDevMCS, sigmaThetaRes, fSigmaTrkCut * sigmaThetaRes / fSigmayCh * fSigmaTrk));
     } else if ( fChosenFunc == kCrystalBall ) {
-      Double_t mean = thetaDevMCS + sign * fNSigmaShift * sigmaThetaRes;
+      Double_t mean = thetaDevMCS + fNSigmaShift * sigmaThetaRes;
       pAbsEndRec = ThetaDevToP(GenRndCrystalBall(mean, sigmaThetaRes, fCrystalBallTails[4], fCrystalBallTails[5], fSigmaTrkCut * sigmaThetaRes / fSigmayCh * fSigmaTrk));
     }
   }

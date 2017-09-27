@@ -342,8 +342,7 @@ void AliAnalysisMuMuGlobal::FillHistosForMCEvent(const char* eventSelection,
 //_____________________________________________________________________________
 void AliAnalysisMuMuGlobal::DefineHistogramCollection(const char* eventSelection,
                                                       const char* triggerClassName,
-                                                      const char* centrality,
-                                                      Bool_t mix)
+                                                      const char* centrality)
 {
   /// Actually create the histograms for phyics/triggerClassName
   
