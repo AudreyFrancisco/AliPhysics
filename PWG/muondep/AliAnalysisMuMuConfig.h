@@ -7,28 +7,21 @@
 // $Id$
 
 /**
-  @ingroup pwg_muondep_mumu
-
-  @class AliAnalysisMuMuConfig
-
-  @brief helper class to store steering options for other MuMu classes
-
- Holds some options (e.g. for the AliAnalysisMuMu and AliAnalysisMuMuEvolution classesi)
- like the list of triggers to consider, the fit to be performed, etc...
- both for real data and for simulations (which might differ in e.g.
- the naming of the triggers).
- This class reads an extern file config.mumu. Each line should be written as <key> : <value> <type>
-
- #DimuonTrigger: CMUL8-S-NOPF-MUON real sim
- MuonTrigger : CMSL7-8-NOPF-MUON sim
- MuonTrigger : CMSL7-7-NOPF-MUON sim
-
- \author Laurent Aphecetche, Subatech
- @author : Benjamin Audurier (Subatech)
-
- @todo : make it readeable/writeable from/to a simple ASCII file ?
-
- */
+*   @class AliAnalysisMuMuConfig
+*
+*   @brief  helper class to store steering options for the AliAnalysisMuMu and AliAnalysisMuMuEvolution classes
+*
+*   @details THis class reads an extern file config.mumu. Each line should be written as <key> : <value> <type>
+*
+*   #DimuonTrigger: CMUL8-S-NOPF-MUON real sim
+*   MuonTrigger : CMSL7-8-NOPF-MUON sim
+*   MuonTrigger : CMSL7-7-NOPF-MUON sim
+*
+*   TODO : make it readeable/writeable from/to a simple ASCII file ?
+*
+*   @author : Laurent Aphecetche (Subatech)
+*   @author : Benjamin Audurier (Subatech)
+**/
 
 #include "TObject.h"
 #include "TString.h"
@@ -163,6 +156,8 @@ public:
 
   TObjArray* GetListElements(const char* type, Bool_t simulation) const;
   TObjArray* GetTriggersList(Bool_t simulation) const;
+
+  void DefineDefaultsFromFile(const char* configfile);
 
   void LoadAliceStyles();
 
