@@ -22,6 +22,8 @@ A note on "naming conventions" :
 Y is the functio name
 
 @author Laurent Aphecetche (Subatech)
+@author Benjamin Audurier (Subatech)
+@author Audrey Francisco (Subatech)
 */
 
 #include "TNamed.h"
@@ -111,7 +113,9 @@ public:
 
   //** All the mean pt fit methods MUST contain the corresponding name of the inv mass spectra method
   void FitMPTPSIPSIPRIMECB2VWG_BKGMPTPOL2();
+  void FitMPTPSIPSIPRIMECB2POL1POL2_BKGMPTPOL2();
   void FitMPTPSIPSIPRIMECB2VWG_BKGMPTPOL2EXP();
+  void FitMPTPSIPSIPRIMECB2POL1POL2_BKGMPTPOL2EXP();
   void FitMPTPSIPSIPRIMECB2POL2EXP_BKGMPTPOL2();
   void FitMPTPSIPSIPRIMECB2POL2EXP_BKGMPTPOL2EXP();
 
@@ -120,21 +124,15 @@ public:
   void FitMPTPSIPSIPRIMECB2VWG_BKGMPTPOL4();
   void FitMPTPSIPSIPRIMECB2VWGINDEPTAILS_BKGMPTPOL2();
 
-//  void FitMPT2CB2POL2EXP_BKGMPTPOL4();
-//  void FitMPT2CB2POL4EXP_BKGMPTPOL2();
-//  void FitMPT2CB2POL4EXP_BKGMPTPOL4();
-
   void FitMPTPSIPSIPRIMENA60NEWVWG_BKGMPTPOL2();
   void FitMPTPSIPSIPRIMENA60NEWVWG_BKGMPTPOL2EXP();
+  void FitMPTPSIPSIPRIMENA60NEWPOL1POL2_BKGMPTPOL2();
+  void FitMPTPSIPSIPRIMENA60NEWPOL1POL2_BKGMPTPOL2EXP();
   void FitMPTPSIPSIPRIMENA60NEWPOL2EXP_BKGMPTPOL2();
   void FitMPTPSIPSIPRIMENA60NEWPOL2EXP_BKGMPTPOL2EXP();
   void FitMPTPSIPSIPRIMENA60NEWPOL4EXP_BKGMPTPOL2();
 
   void FitPSIPSIPRIMECOMB_CB2VWG_MPTCB2VWG_BKGMPTPOL2();
-
-//  void FitMPT2NA60NEWVWG_BKGMPTPOL4();
-//  void FitMPT2NA60NEWPOL2EXP_BKGMPTPOL4();
-//  void FitMPT2NA60NEWPOL4EXP_BKGMPTPOL4();
 
   //flow flow flow
   void FitMV2PSIPSIPRIMECB2VWG_BKGMV2POL2();
@@ -275,7 +273,10 @@ private:
 
   Double_t FitFunctionTotalTwoCB2VWGINDEPTAILS(Double_t *x, Double_t *par);
 
+  Double_t hFunction(Double_t*x, Double_t* par);
   Double_t alphaCB2VWG(Double_t*x, Double_t* par);
+
+  Double_t alphaCB2POL1POL2(Double_t*x, Double_t* par);
 
   Double_t alphaCB2POL2POL3(Double_t*x, Double_t* par);
 
@@ -284,6 +285,8 @@ private:
   Double_t alphaCB2POL2EXP(Double_t*x, Double_t* par);
 
   Double_t alphaNA60NEWVWG(Double_t*x, Double_t* par);
+
+  Double_t alphaNA60NEWPOL1POL2(Double_t*x, Double_t* par);
 
   Double_t alphaNA60NEWVWG2(Double_t*x, Double_t* par);
 
@@ -301,7 +304,10 @@ private:
 
   Double_t FitFunctionMeanPtS2CB2VWGPOL2(Double_t *x, Double_t *par);
 
+  Double_t FitFunctionMeanPtS2CB2POL1POL2POL2(Double_t *x, Double_t *par);
   Double_t FitFunctionMeanPtS2CB2VWGPOL2EXP(Double_t *x, Double_t *par);
+
+  Double_t FitFunctionMeanPtS2CB2POL1POL2POL2EXP(Double_t *x, Double_t *par);
 
   Double_t FitFunctionMeanPtS2CB2VWG2POL2(Double_t *x, Double_t *par);
 
@@ -336,12 +342,15 @@ private:
 
   Double_t FitFunctionMeanPtS2NA60NEWVWGPOL2(Double_t *x, Double_t *par);
 
+  Double_t FitFunctionMeanPtS2NA60NEWPOL1POL2POL2(Double_t *x, Double_t *par);
   Double_t FitFunctionMeanPtS2NA60NEWVWGPOL2EXP(Double_t *x, Double_t *par);
 
+  Double_t FitFunctionMeanPtS2NA60NEWPOL1POL2POL2EXP(Double_t *x, Double_t *par);
   Double_t FitFunctionMeanPtS2NA60NEWPOL2EXPPOL2(Double_t *x, Double_t *par);
 
   Double_t FitFunctionMeanPtS2NA60NEWPOL2EXPPOL2EXP(Double_t *x, Double_t *par);
 
+  Double_t FitFunctionMeanPtHFunction(Double_t *x, Double_t *par);
 
 
   Double_t FitFunctionMeanPtS2CB2VWGPOL3(Double_t *x, Double_t *par);
