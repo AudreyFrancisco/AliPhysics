@@ -947,7 +947,7 @@ void AliAnalysisMuMuBinning::Range::Print(Option_t* /*opt*/) const
     std::cout << " - " << Flavour().Data();
   }
 
-  std::cout << "->" << AsString().Data() << std::endl;
+  std::cout << "  -> " << AsString().Data() << std::endl;
 
 }
 
