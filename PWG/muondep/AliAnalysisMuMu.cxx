@@ -1664,7 +1664,7 @@ AliAnalysisMuMuSpectra* AliAnalysisMuMu::FitParticle(const char* particle,const 
     else if ( sHistoType.CompareTo("SP") )
       hname = corrected ? Form("SPVsMinvUS_AccEffCorr+%s_%s",bin->AsString().Data(),EPdetector.Data()) : Form("SPVsMinvUS+%s_%s",bin->AsString().Data(),EPdetector.Data());
     else {
-      AliError("Wrong spectra type choice: Possibilities are: 'minv' or 'mpt' ");
+      AliError("Wrong spectra type choice: Possibilities are: 'minv', 'mpt', 'mpt2', 'mV2' or 'SP'");
       continue;
     }
 
