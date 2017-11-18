@@ -15,7 +15,6 @@
 #pragma link C++ class AliAnalysisNonPrimaryVertices+;
 #pragma link C++ class AliESDMuonTrackCuts+;
 #pragma link C++ class AliAnalysisTaskSingleMuESD+;
-#pragma link C++ class AliAnalysisTaskV1SingleMu+;
 #pragma link C++ class AliAnalysisTaskLinkToMC+;
 #pragma link C++ class AliCFMuonResTask1+;
 #pragma link C++ class AliCFMuonSingleTask1+;
@@ -42,6 +41,7 @@
 #pragma link C++ class AliMuonAnalysisOutput+;
 #pragma link C++ class AliVAnalysisMuon+;
 #pragma link C++ class AliAnalysisTaskFlowSingleMu+;
+#pragma link C++ class AliAnalysisTaskV1SingleMu+;
 #pragma link C++ class AliAnalysisMuonUtility+;
 #pragma link C++ class AliUtilityMuonAncestor+;
 #pragma link C++ class AliUtilityDimuonSource+;

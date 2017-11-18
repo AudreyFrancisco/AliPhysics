@@ -5,50 +5,45 @@
 // AliAnalysisTaskV1SingleMu
 // Analysis task for v1 of single muons in the spectrometer with the scalar product method
 //
-//  Author: Audrey Francisco
+//  Author: Audrey Francisco from AliAnalysisDimu
 //
-//
-//
+
 
 #include "AliAnalysisTaskSE.h"
 #include "AliAnalysisMuonUtility.h"
-#include "AliAODEvent.h"
-#include "AliESDEvent.h"
+// #include "AliAODEvent.h"
+// #include "AliESDEvent.h"
+#include "AliMuonTrackCuts.h"
+#include "AliMuonEventCuts.h"
 // #include "AliMuonTrackCuts.h"
 
 class TObjArray;
 class THnSparse;
 class AliMergeableCollection;
-class AliMuonTrackCuts;
-class AliMuonEventCuts;
 class AliUtilityMuonAncestor;
 
 
 class AliAnalysisTaskV1SingleMu : public AliAnalysisTaskSE {
  public:
   AliAnalysisTaskV1SingleMu();
-  AliAnalysisTaskV1SingleMu(const char *name, const AliMuonTrackCuts& cuts);
+  AliAnalysisTaskV1SingleMu(const char *name);//, const AliMuonTrackCuts& cuts);
   virtual ~AliAnalysisTaskV1SingleMu();
-
-  /// Get muon track cuts
-  AliMuonTrackCuts* GetMuonTrackCuts() { return fMuonTrackCuts; }
-  AliMuonEventCuts* GetMuonEventCuts() { return fMuonEventCuts; }
 
   void UserCreateOutputObjects();
   void UserExec(Option_t *option);
-  // void ProcessEvent(TString physSel, const TObjArray& selectTrigClasses, TString centrality);
+  void NotifyRun();
   void  Terminate(Option_t *option);
 
-  void NotifyRun();
+  /// Get muon event cuts
+  AliMuonEventCuts* GetMuonEventCuts() { return &fMuonEventCuts; }
+  /// Get muon track cuts
+  AliMuonTrackCuts* GetMuonTrackCuts() { return &fMuonTrackCuts; }
 
- private:
-  TObject* GetMergeableObject ( TString identifier, TString objectName );
+  /// Set muon event cuts
+  void SetMuonEventCuts ( AliMuonEventCuts* muonEventCuts ) { fMuonEventCuts = *muonEventCuts; }
+  /// Set muon track cuts
+  void SetMuonTrackCuts ( AliMuonTrackCuts* muonTrackCuts ) { fMuonTrackCuts = *muonTrackCuts; }
 
-  AliAnalysisTaskV1SingleMu(const AliAnalysisTaskV1SingleMu&);
-  AliAnalysisTaskV1SingleMu& operator=(const AliAnalysisTaskV1SingleMu&);
-
-  Int_t GetParticleType ( AliVParticle* track );
-  
   enum {
     kStepReconstructed,  ///< Reconstructed tracks
     kStepGeneratedMC,    ///< Generated tracks (MC)
@@ -63,6 +58,15 @@ class AliAnalysisTaskV1SingleMu : public AliAnalysisTaskSE {
     //TODO :add SP var
     kNvars           ///< THnSparse dimensions
   };
+
+ private:
+  TObject* GetMergeableObject ( TString identifier, TString objectName );
+
+  AliAnalysisTaskV1SingleMu(const AliAnalysisTaskV1SingleMu&);
+  AliAnalysisTaskV1SingleMu& operator=(const AliAnalysisTaskV1SingleMu&);
+
+  Int_t GetParticleType ( AliVParticle* track );
+
   //add enum for MC (AliUtilityMuonAncestor)
     enum {
     kCharmMu,       ///< Mu from charm
@@ -77,19 +81,18 @@ class AliAnalysisTaskV1SingleMu : public AliAnalysisTaskSE {
     kNtrackSources  ///< Total number of track sources
   };
 
-  AliMuonEventCuts* fMuonEventCuts; ///< Muon event cuts
-  AliMuonTrackCuts* fMuonTrackCuts;  ///< Muon event cuts
-  AliESDEvent* fESDEvent;      //!< ESD event, not owner
-  AliAODEvent* fAODEvent;      //!< AOD event, not owner
+  AliMuonEventCuts fMuonEventCuts;  ///< Muon event cuts
+  AliMuonTrackCuts fMuonTrackCuts;  ///< Muon event cuts
+  // AliESDEvent* fESDEvent;      //!< ESD event, not owner
+  // AliAODEvent* fAODEvent;      //!< AOD event, not owner
   AliUtilityMuonAncestor* fUtilityMuonAncestor; ///< Utility to get the muon ancestor for MC
-  Bool_t fCutOnDimu;
   Int_t fNPtBins;
   Int_t fHarmonic;
   TString fNormMethod;
   AliMergeableCollection* fMergeableCollection; //!<! collection of mergeable objects
   THnSparse* fSparse; ///< CF container
 
-  ClassDef(AliAnalysisTaskV1SingleMu, 1); // Single muon analysis
+  ClassDef(AliAnalysisTaskV1SingleMu, 1); // Single muon v1 analysis
 };
 
 #endif

@@ -20,7 +20,7 @@
 /// The macro class can run on AODs or ESDs.
 /// If Monte Carlo information is present, some basics checks are performed.
 ///
-/// \author Audrey Francisco
+/// \author Audrey Francisco from AliAnalysisTaskDimu
 //-----------------------------------------------------------------------------
 
 #define AliAnalysisTaskV1SingleMu_cxx
@@ -89,17 +89,10 @@
 ClassImp(AliAnalysisTaskV1SingleMu) // Class implementation in ROOT context
 /// \endcond
 
-using std::ifstream;
-
 //________________________________________________________________________
 AliAnalysisTaskV1SingleMu::AliAnalysisTaskV1SingleMu() :
 AliAnalysisTaskSE(),
-fMuonEventCuts(0x0),
-fMuonTrackCuts(0x0),
-fESDEvent(0x0),
-fAODEvent(0x0),
 fUtilityMuonAncestor(0x0),
-fCutOnDimu(kFALSE),
 fNPtBins(1),
 fHarmonic(1),
 fNormMethod("QoverQlength"),
@@ -110,14 +103,11 @@ fSparse(0x0)
 }
 
 //________________________________________________________________________
-AliAnalysisTaskV1SingleMu::AliAnalysisTaskV1SingleMu(const char *name, const AliMuonTrackCuts& cuts) :
+AliAnalysisTaskV1SingleMu::AliAnalysisTaskV1SingleMu(const char *name) :
 AliAnalysisTaskSE(name),
-fMuonEventCuts(new AliMuonEventCuts("stdEventCuts","stdEventCuts")),
-fMuonTrackCuts(new AliMuonTrackCuts(cuts)),
-fESDEvent(0x0),
-fAODEvent(0x0),
+// fMuonEventCuts(new AliMuonEventCuts("stdEventCuts","stdEventCuts")),
+// fMuonTrackCuts(new AliMuonTrackCuts(cuts)),
 fUtilityMuonAncestor(0x0),
-fCutOnDimu(kFALSE),
 fNPtBins(1),
 fHarmonic(1),
 fNormMethod("QoverQlength"),
@@ -141,11 +131,9 @@ AliAnalysisTaskV1SingleMu::~AliAnalysisTaskV1SingleMu()
   if ( ! AliAnalysisManager::GetAnalysisManager() || ! AliAnalysisManager::GetAnalysisManager()->IsProofMode() ) {
     delete fMergeableCollection;
   }
-  delete fMuonTrackCuts;
-  delete fMuonEventCuts;
   delete fSparse;
-  delete fAODEvent;
-  delete fESDEvent;
+  // delete fAODEvent;
+  // delete fESDEvent;
 }
 //________________________________________________________________________
 TObject* AliAnalysisTaskV1SingleMu::GetMergeableObject ( TString identifier, TString objectName )
@@ -246,8 +234,8 @@ void AliAnalysisTaskV1SingleMu::UserCreateOutputObjects()
   // histo->GetXaxis()->SetTitle(currTitle.Data());
   fMergeableCollection = new AliMergeableCollection(GetOutputSlot(1)->GetContainer()->GetName());
 
-  fMuonEventCuts->Print("mask");
-  fMuonTrackCuts->Print("mask");
+  fMuonEventCuts.Print("mask");
+  fMuonTrackCuts.Print("mask");
 
   PostData(1,fMergeableCollection);
   fUtilityMuonAncestor = new AliUtilityMuonAncestor();
@@ -263,25 +251,25 @@ void AliAnalysisTaskV1SingleMu::UserExec ( Option_t * /*option*/ )
   //
 
   printf("SingleMu task user exec \n");
-  fAODEvent = dynamic_cast<AliAODEvent*> (InputEvent());
-  if ( ! fAODEvent )
-    fESDEvent = dynamic_cast<AliESDEvent*> (InputEvent());
-  if ( ! fAODEvent && ! fESDEvent ) {
-    AliError ("AOD or ESD event not found. Nothing done!");
-    return;
-  }
-  printf("before fMuonEventCuts \n");
+  // fAODEvent = dynamic_cast<AliAODEvent*> (InputEvent());
+  // if ( ! fAODEvent )
+  //   fESDEvent = dynamic_cast<AliESDEvent*> (InputEvent());
+  // if ( ! fAODEvent && ! fESDEvent ) {
+  //   AliError ("AOD or ESD event not found. Nothing done!");
+  //   return;
+  // }
+  // printf("before fMuonEventCuts \n");
 
-  if ( ! fMuonEventCuts->IsSelected(fInputHandler) ) return;
+  if ( fMuonEventCuts && ! fMuonEventCuts.IsSelected(fInputHandler) ) return;
   printf("Muon event cuts ok \n");
   // //
   // // Global event info
   // //
-  const TObjArray* selectTrigClasses = fMuonEventCuts->GetSelectedTrigClassesInEvent(fInputHandler);
+  const TObjArray* selectTrigClasses = fMuonEventCuts.GetSelectedTrigClassesInEvent(fInputHandler);
   // Int_t nSelTrigClasses = selectTrigClasses->GetEntries();
 
   Double_t containerInput[kNvars];
-  Double_t centrality = fMuonEventCuts->GetCentrality(InputEvent());
+  Double_t centrality = fMuonEventCuts.GetCentrality(InputEvent());
   containerInput[kHCentrality] = centrality;
   /////////////////////////////////////////////////////////////
   //////////////          Fill Qn info           //////////////
@@ -367,7 +355,7 @@ void AliAnalysisTaskV1SingleMu::UserExec ( Option_t * /*option*/ )
       // This muon produces the final state muon, and its status code is 11
       // To avoid all problems, keep only final state muon (status code <10)
       // FIXME: is the convention valid for other generators as well?
-      Bool_t isSelected = ( istep == kStepReconstructed ) ? fMuonTrackCuts->IsSelected(track) : ( TMath::Abs(track->PdgCode()) == 13 && AliAnalysisMuonUtility::GetStatusCode(track) < 10 );
+      Bool_t isSelected = ( istep == kStepReconstructed ) ? fMuonTrackCuts.IsSelected(track) : ( TMath::Abs(track->PdgCode()) == 13 && AliAnalysisMuonUtility::GetStatusCode(track) < 10 );
       if ( ! isSelected ) {
         printf("Track not selected \n");
         continue;
@@ -393,9 +381,9 @@ void AliAnalysisTaskV1SingleMu::UserExec ( Option_t * /*option*/ )
         printf("Filling trigger %s with container inputs: %f, %f\n",trigClass.Data(),track->Pt(),track->Eta());
         TString identifier = Form("/%s",trigClass.Data());
         static_cast<TH1*>(GetMergeableObject(identifier, "nevents"))->Fill(1.);
-        if ( istep == kStepReconstructed && ! fMuonTrackCuts->TrackPtCutMatchTrigClass(track, fMuonEventCuts->GetTrigClassPtCutLevel(trigClass.Data())) ) continue;
+        if ( istep == kStepReconstructed && ! fMuonTrackCuts.TrackPtCutMatchTrigClass(track, fMuonEventCuts.GetTrigClassPtCutLevel(trigClass.Data())) ) continue;
         // TString identifier = Form("/%s/%f",trigClass.Data(),centrality);
-        static_cast<THnSparse*>(GetMergeableObject(Form("%s/%f",identifier.Data(),centrality), "MuSparse"))->Fill(containerInput,1.);
+        static_cast<THnSparse*>(GetMergeableObject(identifier, "MuSparse"))->Fill(containerInput,1.);
       } // loop on selected trigger classes
       printf("end of loop on trigger class\n");
     } // loop on tracks
@@ -409,7 +397,7 @@ void AliAnalysisTaskV1SingleMu::UserExec ( Option_t * /*option*/ )
 void AliAnalysisTaskV1SingleMu::NotifyRun()
 {
   /// Set run number for cuts
-  fMuonTrackCuts->SetRun(fInputHandler);
+  fMuonTrackCuts.SetRun(fInputHandler);
 }
 //________________________________________________________________________
 Int_t AliAnalysisTaskV1SingleMu::GetParticleType ( AliVParticle* track )
