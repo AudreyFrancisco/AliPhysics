@@ -83,8 +83,6 @@ class AliAnalysisTaskV1SingleMu : public AliAnalysisTaskSE {
 
   AliMuonEventCuts fMuonEventCuts;  ///< Muon event cuts
   AliMuonTrackCuts fMuonTrackCuts;  ///< Muon event cuts
-  // AliESDEvent* fESDEvent;      //!< ESD event, not owner
-  // AliAODEvent* fAODEvent;      //!< AOD event, not owner
   AliUtilityMuonAncestor* fUtilityMuonAncestor; ///< Utility to get the muon ancestor for MC
   Int_t fNPtBins;
   Int_t fHarmonic;

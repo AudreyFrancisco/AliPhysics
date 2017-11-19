@@ -117,7 +117,6 @@ fSparse(0x0)
   //
   /// Constructor.
   //
-  printf("SingleMu task Constructor");
   DefineOutput(1, AliMergeableCollection::Class());
 }
 
@@ -173,8 +172,6 @@ void AliAnalysisTaskV1SingleMu::UserCreateOutputObjects()
   /// Create outputs
   //
 
-  printf("SingleMu task creating output");
-
   //
   Int_t nPtBins = 160;
   Double_t ptMin = 0., ptMax = 80.;
@@ -194,7 +191,7 @@ void AliAnalysisTaskV1SingleMu::UserCreateOutputObjects()
 
   // Int_t nSPBins = 2;
   // Double_t SPMin = -2, SPMax = 2.;
-  // TString SPName("SP"), SPTitle("SP"), SPUnits("e");
+  // TString SPName("Scalar product"), SPTitle("SP"), SPUnits("");
 
   Int_t nbins[kNvars] = {nPtBins, nEtaBins, nChargeBins, nPhiBins};
   Double_t xmin[kNvars] = {ptMin, etaMin, chargeMin, phiMin};
@@ -239,8 +236,6 @@ void AliAnalysisTaskV1SingleMu::UserCreateOutputObjects()
 
   PostData(1,fMergeableCollection);
   fUtilityMuonAncestor = new AliUtilityMuonAncestor();
-
-  printf("SingleMu task output created \n");
 }
 
 //________________________________________________________________________
@@ -249,8 +244,6 @@ void AliAnalysisTaskV1SingleMu::UserExec ( Option_t * /*option*/ )
   //
   /// Fill output objects
   //
-
-  printf("SingleMu task user exec \n");
   // fAODEvent = dynamic_cast<AliAODEvent*> (InputEvent());
   // if ( ! fAODEvent )
   //   fESDEvent = dynamic_cast<AliESDEvent*> (InputEvent());
@@ -258,10 +251,9 @@ void AliAnalysisTaskV1SingleMu::UserExec ( Option_t * /*option*/ )
   //   AliError ("AOD or ESD event not found. Nothing done!");
   //   return;
   // }
-  // printf("before fMuonEventCuts \n");
 
-  if ( fMuonEventCuts && ! fMuonEventCuts.IsSelected(fInputHandler) ) return;
-  printf("Muon event cuts ok \n");
+  if ( ! fMuonEventCuts.IsSelected(fInputHandler) ) return;
+
   // //
   // // Global event info
   // //
@@ -324,7 +316,6 @@ void AliAnalysisTaskV1SingleMu::UserExec ( Option_t * /*option*/ )
   AliVParticle* track = 0x0;
 
   Int_t nSteps = MCEvent() ? 2 : 1;
-  printf("nSteps : %d \n",nSteps);
   for ( Int_t istep = 0; istep<nSteps; ++istep ) {
     std::vector<TString> selTrigClasses;
     if ( istep == kStepReconstructed ) {
@@ -336,14 +327,10 @@ void AliAnalysisTaskV1SingleMu::UserExec ( Option_t * /*option*/ )
 
     Int_t nTracks = ( istep == kStepReconstructed ) ? AliAnalysisMuonUtility::GetNTracks(InputEvent()) : MCEvent()->GetNumberOfTracks();
     //loop on tracks
-    printf("ntracks : %d \n",nTracks);
-  
+
     // Int_t nSelected = 0;
-    printf("loop on tracks \n");
     for (Int_t itrack = 0; itrack < nTracks; itrack++) {
-      printf("355 \n");
       track = ( istep == kStepReconstructed ) ? AliAnalysisMuonUtility::GetTrack(itrack,InputEvent()) : MCEvent()->GetTrack(itrack);
-      printf("357\n");
 
       // In case of MC we usually ask that the particle is a muon
       // However, in W or Z simulations, Pythia stores both the initial muon
@@ -357,11 +344,8 @@ void AliAnalysisTaskV1SingleMu::UserExec ( Option_t * /*option*/ )
       // FIXME: is the convention valid for other generators as well?
       Bool_t isSelected = ( istep == kStepReconstructed ) ? fMuonTrackCuts.IsSelected(track) : ( TMath::Abs(track->PdgCode()) == 13 && AliAnalysisMuonUtility::GetStatusCode(track) < 10 );
       if ( ! isSelected ) {
-        printf("Track not selected \n");
         continue;
       }
-      printf("******Track selected \n");
-      printf("******375\n");
 
       containerInput[kHvarPt]         = track->Pt();
       containerInput[kHvarEta]        = track->Eta();
@@ -376,21 +360,17 @@ void AliAnalysisTaskV1SingleMu::UserExec ( Option_t * /*option*/ )
       // containerInput[kHvarV1QB]       = TMath::Cos(fHarmonic*track->Phi())*QB[0]+TMath::Sin(fHarmonic*track->Phi())*QB[1];
       // containerInput[kHvarOdd]        = TMath::Cos(fHarmonic*track->Phi())*(QB[0]-QA[0])+TMath::Sin(fHarmonic*track->Phi())*(QB[1]-QA[1]);;
       // containerInput[kHvarEven]       = TMath::Cos(fHarmonic*track->Phi())*(QB[0]+QA[0])+TMath::Sin(fHarmonic*track->Phi())*(QB[1]+QA[1]);;
-      printf("******390\n");
+
       for ( auto& trigClass : selTrigClasses ) {
-        printf("Filling trigger %s with container inputs: %f, %f\n",trigClass.Data(),track->Pt(),track->Eta());
         TString identifier = Form("/%s",trigClass.Data());
         static_cast<TH1*>(GetMergeableObject(identifier, "nevents"))->Fill(1.);
         if ( istep == kStepReconstructed && ! fMuonTrackCuts.TrackPtCutMatchTrigClass(track, fMuonEventCuts.GetTrigClassPtCutLevel(trigClass.Data())) ) continue;
         // TString identifier = Form("/%s/%f",trigClass.Data(),centrality);
         static_cast<THnSparse*>(GetMergeableObject(identifier, "MuSparse"))->Fill(containerInput,1.);
       } // loop on selected trigger classes
-      printf("end of loop on trigger class\n");
     } // loop on tracks
-    printf("end of loop on tracks\n");
   }// loop on container steps
 
-  printf("posting fMergeableCollection \n");
   PostData(1, fMergeableCollection);
 }
 //________________________________________________________________________
