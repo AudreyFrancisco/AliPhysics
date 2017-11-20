@@ -87,7 +87,6 @@
 #pragma link C++ class AliAnalysisTaskSEHFvn+;
 #pragma link C++ class AliAnalysisTaskHFv1+;
 #pragma link C++ class AliAnalysisTaskFlowD2H+;
-#pragma link C++ class AliAnalysisTaskV1SingleMu+;
 #pragma link C++ class AliHFAfterBurner+;
 #pragma link C++ class AliAnalysisTaskSELambdacUp+;
 #pragma link C++ class AliAnalysisTaskCountLcEta+;
