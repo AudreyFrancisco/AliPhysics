@@ -125,6 +125,7 @@ set(SRCS
   cutVarFDsub/AliHFCutVarFDsubEfficiency.cxx
   cutVarFDsub/AliHFCutVarFDsubMassFitter.cxx
   cutVarFDsub/AliHFCutVarFDsubMinimiser.cxx
+  HFMuFlow/AliAnalysisTaskV1SingleMu.cxx
   upgrade/AliAnalysisTaskSELambdacUp.cxx
   upgrade/AliAnalysisTaskCountLcEta.cxx
   AliAnalysisTaskSELc2eleLambdafromAODtracks.cxx
