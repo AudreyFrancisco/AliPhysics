@@ -2635,9 +2635,9 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2VWG2()
   fHisto->GetListOfFunctions()->Delete();
 
   TString histoName = fHisto->GetTitle();
-  TString sfitOption= histoName.Contains("Corrected") ? "0SERL" : "NO0SRLM"; //SERLM
+  TString sfitOption= histoName.Contains("Corrected") ? "SERLM" : "SERLM"; //SERLM
   const char* fitOption = sfitOption.Data(); //We can add NO to avoid plotting
-  const char* fitOptionBg = "0LSR"; //We can add NO to avoid plotting//SER
+  const char* fitOptionBg = "SERO"; //We can add NO to avoid plotting//SER
 
 
   //__________ Get tails parameters, fitting range and SigmaPsiP
@@ -3253,9 +3253,9 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2POL2POL3()
   fHisto->GetListOfFunctions()->Delete();
 
   TString histoName = fHisto->GetTitle();
-  TString sfitOption= histoName.Contains("Corrected") ? "0SERL" : "NO0SLER";
+  TString sfitOption= histoName.Contains("Corrected") ? "SERLM" : "SERLM";
   const char* fitOption = sfitOption.Data(); //We can add NO to avoid plotting
-  const char* fitOptionBg = "0SRL"; //We can add NO to avoid plotting
+  const char* fitOptionBg = "SERI"; //We can add NO to avoid plotting
 
   //__________ Get tails parameters, fitting range and SigmaPsiP
   Double_t alphaLow     = GetValue("alJPsi");
@@ -4960,9 +4960,9 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWVWG2()
 
   fHisto->GetListOfFunctions()->Delete();
   TString histoName = fHisto->GetTitle();
-  TString sfitOption= histoName.Contains("Corrected") ? "0SERL" : "NO0SRLM";
+  TString sfitOption= histoName.Contains("Corrected") ? "SERLM" : "SERLM";
   const char* fitOption = sfitOption.Data();
-  const char* fitOptionBg = "0SR";
+  const char* fitOptionBg = "SERI";
 
 
   //__________ Get tails parameters, fitting range and SigmaPsiP
@@ -5537,9 +5537,9 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWPOL2POL3()
   fHisto->GetListOfFunctions()->Delete();
 
   TString histoName = fHisto->GetTitle();
-  TString sfitOption= histoName.Contains("Corrected") ? "0SERL" : "NO0SLER";
+  TString sfitOption= histoName.Contains("Corrected") ? "SERLM" : "SERLM";
   const char* fitOption = sfitOption.Data();
-  const char* fitOptionBg = "0SRL";
+  const char* fitOptionBg = "SERI";
 
 
   //__________ Get tails parameters, fitting range and SigmaPsiP
@@ -12814,7 +12814,7 @@ void AliAnalysisMuMuJpsiResult::ProcessMinvFit(TFitResultPtr& fitResult, TF1* fi
 
   Int_t bin(0);
 
-  if ( (static_cast<int>(fitResult) && (static_cast<int>(fitResult)!=4000||static_cast<int>(fitResult)!=0)  ) || static_cast<int>(fitResult->CovMatrixStatus())!=3 /*|| static_cast<int>(fitResult->CovMatrixStatus())!=2*/)
+  if ( (static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) || static_cast<int>(fitResult->CovMatrixStatus())!=3 /*|| static_cast<int>(fitResult->CovMatrixStatus())!=2*/)
   {
     if ( (0.5*fitTotal->GetParameter(iParKPsip) <= fitTotal->GetParError(iParKPsip))) { //kPsi'
       std::cout << "-----------------------------------------------" << std::endl;
@@ -12843,7 +12843,7 @@ void AliAnalysisMuMuJpsiResult::ProcessMinvFit(TFitResultPtr& fitResult, TF1* fi
     if(iLastParBkg == 5 )CheckRoots(fitResult,fitTotal,2,fitTotal->GetParameter(3),fitTotal->GetParameter(4),fitTotal->GetParameter(5),0.,fitOption);
    }
 
-  if ( (static_cast<int>(fitResult) && (static_cast<int>(fitResult)!=4000||static_cast<int>(fitResult)!=0)) || static_cast<int>(fitResult->CovMatrixStatus())!=3 /*|| static_cast<int>(fitResult->CovMatrixStatus())!=2*/)
+  if ( (static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) || static_cast<int>(fitResult->CovMatrixStatus())!=3 /*|| static_cast<int>(fitResult->CovMatrixStatus())!=2*/)
   {
     if ( (0.5*fitTotal->GetParameter(iParKPsip) <= fitTotal->GetParError(iParKPsip))  ){ //kPsi'
       std::cout << "------------------------------------------------" << std::endl;
@@ -12872,7 +12872,7 @@ void AliAnalysisMuMuJpsiResult::ProcessMinvFit(TFitResultPtr& fitResult, TF1* fi
     if(iLastParBkg == 5 )CheckRoots(fitResult,fitTotal,2,fitTotal->GetParameter(3),fitTotal->GetParameter(4),fitTotal->GetParameter(5),0.,fitOption);
   }
 
-  if ( (static_cast<int>(fitResult) && (static_cast<int>(fitResult)!=4000||static_cast<int>(fitResult)!=0)) || static_cast<int>(fitResult->CovMatrixStatus())!=3 /*|| static_cast<int>(fitResult->CovMatrixStatus())!=2*/) {
+  if ( (static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||static_cast<int>(fitResult->CovMatrixStatus())!=3 /*|| static_cast<int>(fitResult->CovMatrixStatus())!=2*/) {
     std::cout << "============================================================================================\\" << std::endl;
     std::cout << "======== Refitting bkg again (setting range rejected 2.5-3.7, and fit range 1.7-4.5) =======\\" << std::endl;
     std::cout << "============================================================================================\\" << std::endl;
@@ -12891,7 +12891,7 @@ void AliAnalysisMuMuJpsiResult::ProcessMinvFit(TFitResultPtr& fitResult, TF1* fi
     if(iLastParBkg == 5 )CheckRoots(fitResult,fitTotal,2,fitTotal->GetParameter(3),fitTotal->GetParameter(4),fitTotal->GetParameter(5),0.,fitOption);
   }
 
-  if ( (static_cast<int>(fitResult) && (static_cast<int>(fitResult)!=4000||static_cast<int>(fitResult)!=0)) || static_cast<int>(fitResult->CovMatrixStatus())!=3 /*|| static_cast<int>(fitResult->CovMatrixStatus())!=2*/) {
+  if ( (static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||static_cast<int>(fitResult->CovMatrixStatus())!=3 /*|| static_cast<int>(fitResult->CovMatrixStatus())!=2*/) {
     std::cout << "============================================================================================\\" << std::endl;
     std::cout << "======== Refitting bkg again (setting range rejected 2.5-3.5, and fit range 1.5-5)  ========\\" << std::endl;
     std::cout << "============================================================================================\\" << std::endl;
@@ -12910,7 +12910,7 @@ void AliAnalysisMuMuJpsiResult::ProcessMinvFit(TFitResultPtr& fitResult, TF1* fi
     if(iLastParBkg == 5 )CheckRoots(fitResult,fitTotal,2,fitTotal->GetParameter(3),fitTotal->GetParameter(4),fitTotal->GetParameter(5),0.,fitOption);
   }
 
-  if ( (static_cast<int>(fitResult) && (static_cast<int>(fitResult)!=4000||static_cast<int>(fitResult)!=0)) || static_cast<int>(fitResult->CovMatrixStatus())!=3.)
+  if ( (static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||static_cast<int>(fitResult->CovMatrixStatus())!=3.)
   {
 
     for ( Int_t i = 0; i < iLastParBkg+1 ; ++i ) fitTotal->SetParameter(i, bckInit->GetParameter(i));
@@ -12934,7 +12934,8 @@ void AliAnalysisMuMuJpsiResult::ProcessMinvFit(TFitResultPtr& fitResult, TF1* fi
 
     std::cout << "================================\\" << std::endl;
     std::cout << "======== Refitting again =======\\" << std::endl;
-    std::cout << "================================\\" << std::endl;    fitResult = fHisto->Fit(fitTotal,fitOption,"");
+    std::cout << "================================\\" << std::endl;
+	fitResult = fHisto->Fit(fitTotal,fitOption,"");
 
     std::cout << "FitResult = " << static_cast<int>(fitResult) << std::endl;
     std::cout << "CovMatrixStatus = " << fitResult->CovMatrixStatus() << std::endl;
@@ -12953,7 +12954,7 @@ void AliAnalysisMuMuJpsiResult::ProcessMinvFit(TFitResultPtr& fitResult, TF1* fi
   //   std::cout << "CovMatrixStatus = " << fitResult->CovMatrixStatus() << std::endl;
   // }
 
-  if ( (static_cast<int>(fitResult) && (static_cast<int>(fitResult)!=4000||static_cast<int>(fitResult)!=0)) || static_cast<int>(fitResult->CovMatrixStatus())!=3.){
+  if ( (static_cast<int>(fitResult) && static_cast<int>(fitResult)!=4000) ||static_cast<int>(fitResult->CovMatrixStatus())!=3.){
     std::cout << "===========================================================\\" << std::endl;
     std::cout << "======== Cannot fit properly, try something else... =======\\" << std::endl;
     std::cout << "===========================================================\\" << std::endl;
