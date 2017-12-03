@@ -779,7 +779,6 @@ Bool_t AliAnalysisMuMuResult::IsIncluded(const TString& alias) const
 Bool_t AliAnalysisMuMuResult::IsValidValue(Double_t val) const
 {
   /// Whether val is a valid one
-  std::cout << "value " <<val << ": " << TMath::Limits<Double_t>::Max() << std::endl;
   return ( val < TMath::Limits<Double_t>::Max() );
 }
 

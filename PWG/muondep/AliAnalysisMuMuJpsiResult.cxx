@@ -5558,11 +5558,12 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWPOL2POL3()
   Double_t sigmaJPsi    = GetValue("sigmaJPsi");
   Double_t fitRangeLow = GetValue(kFitRangeLow);
   Double_t fitRangeHigh = GetValue(kFitRangeHigh);
-  Double_t a_init    = IsValidValue(GetValue("a_init"))  ? GetValue("a_init")  : -130.;
-  Double_t b_init    = IsValidValue(GetValue("b_init"))  ? GetValue("b_init")  : 350.;
-  Double_t ap_init   = IsValidValue(GetValue("ap_init")) ? GetValue("ap_init") : -0.05;
-  Double_t bp_init   = IsValidValue(GetValue("bp_init")) ? GetValue("bp_init") : 0.5;
-  Double_t cp_init   = IsValidValue(GetValue("cp_init")) ? GetValue("cp_init") : -1.;
+  Double_t a_init    = IsValidValue(GetValue("a_init"))  ? GetValue("a_init")  : 33.;
+  Double_t b_init    = IsValidValue(GetValue("b_init"))  ? GetValue("b_init")  : 3.;
+  Double_t ap_init   = IsValidValue(GetValue("ap_init")) ? GetValue("ap_init") : 0.3;
+  Double_t bp_init   = IsValidValue(GetValue("bp_init")) ? GetValue("bp_init") : 0.04;
+  Double_t cp_init   = IsValidValue(GetValue("cp_init")) ? GetValue("cp_init") : 1.;
+
 
   Double_t rejRl    = IsValidValue(GetValue("rejRl"))  ? GetValue("rejRl")  : 2.2;
   Double_t rejRh    = IsValidValue(GetValue("rejRh"))  ? GetValue("rejRh")  : 3.9;
