@@ -456,7 +456,7 @@ void AliAnalysisMuMuSpectraProcessor::PrintNofWhat(const char* what) const
       Int_t fitStatus = subresult->HasValue("FitResult") ? subresult->GetValue("FitResult") : 0;
       Int_t covStatus = subresult->HasValue("CovMatrixStatus") ? subresult->GetValue("CovMatrixStatus") : 3;
       Int_t chi2      = subresult->HasValue("FitChi2PerNDF") ? subresult->GetValue("FitChi2PerNDF") : 1;
-      if ( (fitStatus!=0 && fitStatus!=4000) || chi2 > 2.5 /*|| covStatus!=3*/ ){
+      if ( ( (fitStatus!=0 && fitStatus!=4000) || chi2 > 2.5 ) || NofWhatErrorStat<1.E-3 /*|| covStatus!=3*/ ){
           printf("Fit most likely excluded, you can check in AliAnalysisMuMuResults (FitResult = %d | Cov. Mat. = %d | chi2 = %d)\n",fitStatus,covStatus,chi2);
           ++excludedResults;
       }

@@ -164,6 +164,9 @@ fMinvRS("")
       name += "_";
       name += Form("Weight=%1.1f",GetValue(kKeyWeight));
     }
+    if(( TString(fitType).Contains("g4") )){
+      name +="_tailsG4";
+    }
 
     if ( !isMPt ) {
       name += "_";
@@ -3255,7 +3258,7 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2POL2POL3()
   TString histoName = fHisto->GetTitle();
   TString sfitOption= histoName.Contains("Corrected") ? "SERLM" : "SERLM";
   const char* fitOption = sfitOption.Data(); //We can add NO to avoid plotting
-  const char* fitOptionBg = "SERI"; //We can add NO to avoid plotting
+  const char* fitOptionBg = "SER"; //We can add NO to avoid plotting
 
   //__________ Get tails parameters, fitting range and SigmaPsiP
   Double_t alphaLow     = GetValue("alJPsi");
@@ -5539,7 +5542,7 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWPOL2POL3()
   TString histoName = fHisto->GetTitle();
   TString sfitOption= histoName.Contains("Corrected") ? "SERLM" : "SERLM";
   const char* fitOption = sfitOption.Data();
-  const char* fitOptionBg = "SERI";
+  const char* fitOptionBg = "SER";
 
 
   //__________ Get tails parameters, fitting range and SigmaPsiP
@@ -12650,7 +12653,7 @@ void AliAnalysisMuMuJpsiResult::DecodeFitType(const char* fitType)
 
       if ( histoType.CompareTo("minv",TString::kIgnoreCase) == 0 ) Set(kKeyHistoType,0.,0.0); //histoType=0 means minv histo
       else if ( histoType.CompareTo("mpt",TString::kIgnoreCase) == 0 ) Set(kKeyHistoType,1.,0.0); //histoType=1 means mpt histo
-      else if ( histoType.CompareTo("mV2",TString::kIgnoreCase) == 0 ) Set(kKeyHistoType,1.,0.0); //histoType=1 means mpt histo
+      else if ( histoType.CompareTo("mV2",TString::kIgnoreCase) == 0 ) Set(kKeyHistoType,3.,0.0); //histoType=1 means mpt histo
       else if ( histoType.CompareTo("minv&mpt",TString::kIgnoreCase) == 0 ) Set(kKeyHistoType,2.,0.0); //histoType=1 means combined fit minv and mpt
       else
       {
@@ -12663,7 +12666,7 @@ void AliAnalysisMuMuJpsiResult::DecodeFitType(const char* fitType)
     {
       tails = value;
       if ( tails.CompareTo("mctails",TString::kIgnoreCase) == 0 ) Set(kKeyTails,0.,0.0);
-      else if ( tails.CompareTo("mctailsJPsi&PsiP",TString::kIgnoreCase) == 0 ) Set(kKeyTails,1.,0.0);
+      else if ( (tails.CompareTo("mctailsJPsi&PsiP",TString::kIgnoreCase) == 0 ) || (tails.CompareTo("g4",TString::kIgnoreCase) == 0 )) Set(kKeyTails,1.,0.0);
       else if ( tails.CompareTo("",TString::kIgnoreCase) == 0 ) Set(kKeyTails,2.,0.0); // Predefined tails
       else
       {

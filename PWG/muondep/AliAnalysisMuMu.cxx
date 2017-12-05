@@ -1725,7 +1725,7 @@ AliAnalysisMuMuSpectra* AliAnalysisMuMu::FitParticle(const char* particle,const 
         TString func   ="";
         TString range  ="";
         TString Weight ="";
-        TString mctails="";
+        TString Tails="";
 
         TObjArray* oldFitParam = fitType->String().Tokenize(":");
         TIter nextoldFitParam(oldFitParam);
@@ -1735,12 +1735,16 @@ AliAnalysisMuMuSpectra* AliAnalysisMuMu::FitParticle(const char* particle,const 
           if ( param->String().Contains("func=") )    func    = param->String().Data();
           if ( param->String().Contains("range=") )   range   = param->String().Data();
           if ( param->String().Contains("weight=") )  Weight  = param->String().Data();
-          if ( param->String().Contains("mctails") )  mctails = param->String().Data();
+          if ( param->String().Contains("Tails=") )   Tails   = param->String().Data();
+          // if ( param->String().Contains("mctails") )  mctails = param->String().Data();
         }
         if ( specifit->String().Contains(func.Data())
           && specifit->String().Contains(range.Data())
           && specifit->String().Contains(Weight.Data())
-          && specifit->String().Contains(mctails.Data()) ) fitType->String() = specifit->String().Data();
+          && specifit->String().Contains(Tails.Data()) ) {
+          std::cout << "specifit was found : " << specifit->String().Data() << std::endl;
+            fitType->String() = specifit->String().Data();
+        }
 
         delete oldFitParam;
       }
@@ -1752,40 +1756,40 @@ AliAnalysisMuMuSpectra* AliAnalysisMuMu::FitParticle(const char* particle,const 
       }
 
       // Conf. for MC Tails (see function type)
-      if ( fitType->String().Contains("mctails",TString::kIgnoreCase) || fitType->String().Contains("mctails2",TString::kIgnoreCase) ){
+      // if ( fitType->String().Contains("mctails",TString::kIgnoreCase) || fitType->String().Contains("mctails2",TString::kIgnoreCase) ){
 
-        TString sbin                          = bin->AsString();
-        TString spectraMCName                 = spectraName;
-        AliAnalysisMuMuBinning::Range* binMC  = bin;
+      //   TString sbin                          = bin->AsString();
+      //   TString spectraMCName                 = spectraName;
+      //   AliAnalysisMuMuBinning::Range* binMC  = bin;
 
-        // Javier's Legacy
-        if( (sbin.Contains("MULT") || sbin.Contains("NCH") || sbin.Contains("DNCHDETA") || sbin.Contains("V0A") || sbin.Contains("V0ACENT") || sbin.Contains("V0C") || sbin.Contains("V0M") || sbin.Contains("NTRCORR")|| sbin.Contains("RELNTRCORR")) && !sbin.Contains("NTRCORRPT") && !sbin.Contains("NTRCORRY")){
+      //   // Javier's Legacy
+      //   if( (sbin.Contains("MULT") || sbin.Contains("NCH") || sbin.Contains("DNCHDETA") || sbin.Contains("V0A") || sbin.Contains("V0ACENT") || sbin.Contains("V0C") || sbin.Contains("V0M") || sbin.Contains("NTRCORR")|| sbin.Contains("RELNTRCORR")) && !sbin.Contains("NTRCORRPT") && !sbin.Contains("NTRCORRY")){
 
-          //-------has to have a better way to do it
-          AliAnalysisMuMuBinning* b = new AliAnalysisMuMuBinning;
-          b->AddBin("psi","INTEGRATED");
+      //     //-------has to have a better way to do it
+      //     AliAnalysisMuMuBinning* b = new AliAnalysisMuMuBinning;
+      //     b->AddBin("psi","INTEGRATED");
 
-          binMC = static_cast<AliAnalysisMuMuBinning::Range*>(b->CreateBinObjArray()->At(0));
+      //     binMC = static_cast<AliAnalysisMuMuBinning::Range*>(b->CreateBinObjArray()->At(0));
 
-          spectraMCName = b->GetName();
-          delete b;
+      //     spectraMCName = b->GetName();
+      //     delete b;
 
-          if ( corrected ){
-            spectraMCName += "-";
-            spectraMCName += "AccEffCorr";
-          }
-        }
+      //     if ( corrected ){
+      //       spectraMCName += "-";
+      //       spectraMCName += "AccEffCorr";
+      //     }
+      //   }
 
-        Bool_t okMCtails = kFALSE;
-        if( !fitType->String().Contains("momo",TString::kIgnoreCase) )
-          okMCtails = GetParametersFromMC(fitType->String(),Form("/%s/%s",centrality,pairCut),spectraMCName.Data(),binMC);
-        else
-          okMCtails = GetParametersFromMC(fitType->String(),Form("/PP/%s",pairCut),spectraMCName.Data(),binMC);
+      //   Bool_t okMCtails = kFALSE;
+      //   if( !fitType->String().Contains("momo",TString::kIgnoreCase) )
+      //     okMCtails = GetParametersFromMC(fitType->String(),Form("/%s/%s",centrality,pairCut),spectraMCName.Data(),binMC);
+      //   else
+      //     okMCtails = GetParametersFromMC(fitType->String(),Form("/PP/%s",pairCut),spectraMCName.Data(),binMC);
 
-        if(!okMCtails) continue;
+      //   if(!okMCtails) continue;
 
-        added += ( r->AddFit(fitType->String().Data()) == kTRUE );
-      }
+      //   added += ( r->AddFit(fitType->String().Data()) == kTRUE );
+      // }
 
       // Config. for mpt (see function type)
       else if ( fitType->String().Contains("histoType=mpt",TString::kIgnoreCase) && !fitType->String().Contains("histoType=minv",TString::kIgnoreCase) && !fitType->String().Contains("MPTPSI_HFUNCTION",TString::kIgnoreCase) ){
@@ -1981,7 +1985,7 @@ AliAnalysisMuMuSpectra* AliAnalysisMuMu::FitParticle(const char* particle,const 
       nextFitType.Reset();
       Bool_t meanptVSminvFlag = kFALSE;
       Bool_t meanpt2VSminvFlag = kFALSE;
-	  Bool_t meanv2VSminvFlag = kFALSE;
+	    Bool_t meanv2VSminvFlag = kFALSE;
       while ( ( fitType = static_cast<TObjString*>(nextFitType())) ){
         meanpt2VSminvFlag = fitType->String().Contains("histoType=mpt2");
         if(!meanpt2VSminvFlag)meanptVSminvFlag  = fitType->String().Contains("histoType=mpt");
