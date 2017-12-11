@@ -970,9 +970,9 @@ Bool_t AliAnalysisMuMuFlow::Isq2InSmallRange(const AliVParticle& t1, const AliVP
   }
   if(Q2[0][0]<1E-8 && Q2[1][0]<1E-8 ) return kFALSE;
   Double_t q2 = sqrt(Q2[0][0]*Q2[0][0]+Q2[0][1]*Q2[0][1]);
-  Int_t bin    = fq2Map[0]->GetBinContent(GetCentrality());
-  std::cout << "Small q2 : " << bin <<", value :" << q2 <<std::endl;
-  return q2 < fq2Map[0]->GetBinContent(bin);
+  // Int_t bin    = fq2Map[0]->GetBinContent(fq2Map[0]->FindBin(GetCentrality()));
+  std::cout << "centrality " << GetCentrality() << "Small q2 : " << q2 <<std::endl;
+  return q2 < 0.08;//fq2Map[0]->GetBinContent(bin);
 }
 //________________________________________________________________________
 Bool_t AliAnalysisMuMuFlow::Isq2InLargeRange(const AliVParticle& t1, const AliVParticle& t2) const
@@ -983,9 +983,9 @@ Bool_t AliAnalysisMuMuFlow::Isq2InLargeRange(const AliVParticle& t1, const AliVP
   }
   if(Q2[0][0]<1E-8 && Q2[1][0]<1E-8 ) return kFALSE;
   Double_t q2 = sqrt(Q2[0][0]*Q2[0][0]+Q2[0][1]*Q2[0][1]);
-  Int_t bin    = fq2Map[1]->GetBinContent(GetCentrality());
-  std::cout << "Large q2 : " << bin <<", value :" << q2 <<std::endl;
-  return q2 > fq2Map[1]->GetBinContent(bin);
+  // Int_t bin    = fq2Map[1]->GetBinContent(fq2Map[1]->FindBin(GetCentrality()));
+  std::cout << "centrality " << GetCentrality() << "Large q2 : " << q2 <<std::endl;
+  return q2 > 0.108;//fq2Map[1]->GetBinContent(bin);
 }
 
 //_____________________________________________________________________________
