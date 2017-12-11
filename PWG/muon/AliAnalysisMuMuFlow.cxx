@@ -104,7 +104,7 @@ AliAnalysisMuMuFlow::DefineHistogramCollection(const char* eventSelection,
 
   // no bins defined by the external steering macro, use our own defaults
   //if (!fBinsToFill) SetBinsToFill("psi","integrated,ptvsy,yvspt,pt,y,phi");
-  if (!fBinsToFill) SetBinsToFill("psi","integrated,pt,y,dphiSPD, dphiV0A, dphiV0C,dphivsptSPD,dphivsptV0A,dphivsptV0C");
+  if (!fBinsToFill) SetBinsToFill("psi","dphiSPD, dphiV0A, dphiV0C,dphivsptSPD,dphivsptV0A,dphivsptV0C");
 
   // mass range
   Double_t minvMin = fMinvMin;
@@ -205,6 +205,10 @@ AliAnalysisMuMuFlow::DefineHistogramCollection(const char* eventSelection,
     // Make sure histo is wanted
     if ( !IsHistogramDisabled(minvName.Data()) ){
       AliDebug(1,Form("bin %d %s histoname = %s",nb,r->AsString().Data(),minvName.Data()));
+      // Reconstructed pair histo
+      CreatePairHistos(kHistoForData | kHistoForMCInput,eventSelection,triggerClassName,centrality,minvName.Data(),
+                       Form("#mu+#mu- inv. mass %s;M_{#mu^{+}#mu^{-}} (GeV/c^{2});Counts",r->AsString().Data()),nMinvBins,minvMin,minvMax,-2);
+
 
       if(fcomputeSP){
         TString mUName(Form("U_%s",minvName.Data()));
@@ -243,6 +247,9 @@ AliAnalysisMuMuFlow::DefineHistogramCollection(const char* eventSelection,
       minvName = GetMinvHistoName(*r,kTRUE);
 
       if ( !IsHistogramDisabled(minvName.Data()) ){
+        CreatePairHistos(kHistoForData | kHistoForMCInput,eventSelection,triggerClassName,centrality,minvName.Data(),
+                       Form("#mu+#mu- inv. mass %s;M_{#mu^{+}#mu^{-}} (GeV/c^{2});Counts",r->AsString().Data()),nMinvBins,minvMin,minvMax,-2);
+
 
         AliDebug(1,Form("bin %d %s histoname = %s",nb,r->AsString().Data(),minvName.Data()));
         if ( fcomputeMeanV2 && !minvName.Contains("PHI") ){
@@ -531,8 +538,14 @@ void AliAnalysisMuMuFlow::FillHistosForPair(const char* eventSelection,
       // Get Minv histo name associated to the bin
       TString minvName = GetMinvHistoName(*r,kFALSE);
 
+
       //Create, fill and store Minv histo
       if (!IsHistogramDisabled(minvName.Data())){
+        if(minvName.Contains("PHI")){
+          TH1* h = proxy->Histo(minvName.Data());
+          if (!h) AliError(Form("Could not get %s",minvName.Data()));
+          else  h->Fill(pair4Momentum.M(),inputWeight);
+        }
 
         if ( (r->Quantity() == "PT"||r->IsIntegrated())){
           if(fcomputeMeanV2){
@@ -636,7 +649,7 @@ void AliAnalysisMuMuFlow::FillHistosForPair(const char* eventSelection,
 
           TH1* hCorr = proxy->Histo(minvName.Data());
 
-          if (!hCorr) AliError(Form("Could not get %sr",minvName.Data()));
+          if (!hCorr) AliError(Form("Could not get %s",minvName.Data()));
           else if ( okAccEff ) hCorr->Fill(pair4Momentum.M(),inputWeight/AccxEff);
 
           if( okAccEffMC ){
@@ -904,6 +917,7 @@ Double_t AliAnalysisMuMuFlow::TriggerLptApt ( Double_t* xVal, Double_t* par )
 Bool_t AliAnalysisMuMuFlow::IsDPhiInPlane(const AliVParticle& t1, const AliVParticle& t2) const
 {
   /// Whether the pair passes the dphi cut
+  if(EP[0]<1E-8 && EP[1]<1E-8 ) return kFALSE;
 
   TLorentzVector pi(t1.Px(),t1.Py(),t1.Pz(),
                     TMath::Sqrt(AliAnalysisMuonUtility::MuonMass2()+t1.P()*t1.P()));
@@ -922,6 +936,7 @@ Bool_t AliAnalysisMuMuFlow::IsDPhiInPlane(const AliVParticle& t1, const AliVPart
 Bool_t AliAnalysisMuMuFlow::IsDPhiOutOfPlane(const AliVParticle& t1, const AliVParticle& t2) const
 {
   /// Whether the pair passes the dphi cut
+  if(EP[0]<1E-8 && EP[1]<1E-8 ) return kFALSE;
 
   TLorentzVector pi(t1.Px(),t1.Py(),t1.Pz(),
                     TMath::Sqrt(AliAnalysisMuonUtility::MuonMass2()+t1.P()*t1.P()));
@@ -947,32 +962,36 @@ void AliAnalysisMuMuFlow::NameOfIsDPhiOutOfPlane(TString& name) const
   name.Form("OUTOFPLANE");
 }
 //________________________________________________________________________
-Bool_t AliAnalysisMuMuFlow::Isq2InSmallRange(const AliVEvent& event) const
+Bool_t AliAnalysisMuMuFlow::Isq2InSmallRange(const AliVParticle& t1, const AliVParticle& t2) const
 {
   if(!fq2Map[0]) {
     AliWarning("ERROR : no q2SmallMap provided");
     return kFALSE;
   }
+  if(Q2[0][0]<1E-8 && Q2[1][0]<1E-8 ) return kFALSE;
   Double_t q2 = sqrt(Q2[0][0]*Q2[0][0]+Q2[0][1]*Q2[0][1]);
-  Int_t bin    = fq2Map[0]->FindBin(GetCentrality());
+  Int_t bin    = fq2Map[0]->GetBinContent(GetCentrality());
+  std::cout << "Small q2 : " << bin <<", value :" << q2 <<std::endl;
   return q2 < fq2Map[0]->GetBinContent(bin);
 }
 //________________________________________________________________________
-Bool_t AliAnalysisMuMuFlow::Isq2InLargeRange(const AliVEvent& event) const
+Bool_t AliAnalysisMuMuFlow::Isq2InLargeRange(const AliVParticle& t1, const AliVParticle& t2) const
 {
   if(!fq2Map[1]) {
     AliWarning("ERROR : no q2SmallMap provided");
     return kFALSE;
   }
+  if(Q2[0][0]<1E-8 && Q2[1][0]<1E-8 ) return kFALSE;
   Double_t q2 = sqrt(Q2[0][0]*Q2[0][0]+Q2[0][1]*Q2[0][1]);
-  Int_t bin    = fq2Map[1]->FindBin(GetCentrality());
+  Int_t bin    = fq2Map[1]->GetBinContent(GetCentrality());
+  std::cout << "Large q2 : " << bin <<", value :" << q2 <<std::endl;
   return q2 > fq2Map[1]->GetBinContent(bin);
 }
 
 //_____________________________________________________________________________
 void AliAnalysisMuMuFlow::NameOfIsq2InSmallRange(TString& name) const
 {
-  name.Form("smallq2");
+  name.Form("Smallq2");
 }
 //_____________________________________________________________________________
 void AliAnalysisMuMuFlow::NameOfIsq2InLargeRange(TString& name) const

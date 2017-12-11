@@ -24,8 +24,8 @@ public:
   AliAnalysisMuMuFlow(TH2* AccEffHisto=0x0, TList *q2Map=0x0, Int_t systLevel=0);
   virtual ~AliAnalysisMuMuFlow();
 
-  Bool_t Isq2InSmallRange(const AliVEvent& event) const;
-  Bool_t Isq2InLargeRange(const AliVEvent& event) const;
+  Bool_t Isq2InSmallRange(const AliVParticle& t1, const AliVParticle& t2) const;
+  Bool_t Isq2InLargeRange(const AliVParticle& t1, const AliVParticle& t2) const;
   void NameOfIsq2InSmallRange(TString& name) const;
   void NameOfIsq2InLargeRange(TString& name) const;
 
