@@ -1704,6 +1704,14 @@ AliAnalysisMuMuSpectra* AliAnalysisMuMu::FitParticle(const char* particle,const 
     while ( ( fitType = static_cast<TObjString*>(nextFitType())) )
     {
       AliDebug(1,Form("<<<<<< fitType=%s bin=%s",fitType->String().Data(),bin->Flavour().Data()));
+      TString sFitType(fitType->String());// Get fitType as a string
+      AliDebug(1,Form("FitType=%s bin=%s",sFitType.Data(),bin->Flavour().Data()));
+      if ( !sFitType.Contains(sHistoType.Data()) ) {
+        AliDebug(1,Form(" %s do not contain bin=%s",sFitType.Data(),bin->Flavour().Data()));
+        continue;// Checkpoint
+      }
+
+      AliDebug(1,Form("<<<<<< fitType=%s bin=%s",sFitType.Data(),bin->Flavour().Data()));
 
       std::cout << "" << std::endl;
       std::cout << "---------------" << "Fit " << added + 1 << "------------------" << std::endl;
@@ -2328,6 +2336,16 @@ void AliAnalysisMuMu::GetParametersFromResult(TString& fitType, AliAnalysisMuMuJ
 
         msg += " + VWG Bkg parameters";
       }
+      else if ( fitType.Contains("VWG2_") || fitType.Contains("VWGINDEPTAILS") ) //FIXME: Check that cannot be misunderstood(like Exp x Pol2..). In fact it can be misunderstood since the meanpt function name has also the name of the function to fit the bkg (free parameters). Also add the rest of the BKG functions
+      {
+        fitType += Form(":kVWG2=%f",minvResult->GetValue("kVWG2"));
+        fitType += Form(":mVWG2=%f",minvResult->GetValue("mVWG2"));
+        fitType += Form(":s1VWG2=%f",minvResult->GetValue("s1VWG2"));
+        fitType += Form(":s2VWG2=%f",minvResult->GetValue("s2VWG2"));
+        fitType += Form(":gVWG2=%f",minvResult->GetValue("gVWG2"));
+
+        msg += " + VWG2 Bkg parameters";
+      }
       else if ( fitType.Contains("POL2EXP_") || fitType.Contains("POL2EXPINDEPTAILS") )
       {
         fitType += minvResult->HasValue("kPol2Exp") ? Form(":kPol2Exp=%f",minvResult->GetValue("kPol2Exp")) :  Form(":kPol2Exp=%f",1.) ;
@@ -2359,6 +2377,18 @@ void AliAnalysisMuMu::GetParametersFromResult(TString& fitType, AliAnalysisMuMuJ
         fitType += minvResult->HasValue("c'") ? Form(":c'=%f",minvResult->GetValue("c'")) :  Form(":c'=%f",1.) ;
 
         msg += " + pol1/pl2 Bkg parameters";
+      }
+      else if ( fitType.Contains("POL2POL3") )
+      {
+        fitType += Form(":a=%f",minvResult->GetValue("a"));
+        fitType += Form(":b=%f",minvResult->GetValue("b"));
+        fitType += Form(":c=%f",minvResult->GetValue("c"));
+        fitType += Form(":a'=%f",minvResult->GetValue("a'"));
+        fitType += Form(":b'=%f",minvResult->GetValue("b'"));
+        fitType += Form(":c'=%f",minvResult->GetValue("c'"));
+        fitType += Form(":d'=%f",minvResult->GetValue("d'"));
+
+        msg += " + Pol2Pol3 Bkg parameters";
       }
 
       std::cout << "Using " << msg.Data() << " from " << minvResult->GetName() <<  " inv mass result" << std::endl;
