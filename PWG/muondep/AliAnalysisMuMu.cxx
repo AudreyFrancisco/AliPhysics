@@ -1659,10 +1659,10 @@ AliAnalysisMuMuSpectra* AliAnalysisMuMu::FitParticle(const char* particle,const 
       hname = corrected ? Form("MeanPtVsMinvUS_AccEffCorr+%s%s",bin->AsString().Data(),mixflag1.Data()) : Form("MeanPtVsMinvUS+%s%s",bin->AsString().Data(),mixflag1.Data());
     else if( sHistoType.Contains("mpt2") )
       hname = corrected ? Form("MeanPtSquareVsMinvUS_AccEffCorr+%s%s",bin->AsString().Data(),mixflag1.Data()) : Form("MeanPtSquareVsMinvUS+%s%s",bin->AsString().Data(),mixflag1.Data());
-	  else if ( sHistoType.CompareTo("mV2") )
+	  else if ( sHistoType.Contains("mV2") )
       hname = corrected ? Form("MeanV2VsMinvUS_AccEffCorr+%s_%s",bin->AsString().Data(),EPdetector.Data()) : Form("MeanV2VsMinvUS+%s_%s",bin->AsString().Data(),EPdetector.Data());
-    else if ( sHistoType.CompareTo("SP") )
-      hname = corrected ? Form("SPVsMinvUS_AccEffCorr+%s_%s",bin->AsString().Data(),EPdetector.Data()) : Form("SPVsMinvUS+%s_%s",bin->AsString().Data(),EPdetector.Data());
+    else if ( sHistoType.Contains("SP") )
+      hname = corrected ? Form("SPVsMinvUS_AccEffCorr+%s_%s",bin->AsString().Data(),EPdetector.Data()) : Form("SPVsMinvUS+%s_EP_%s",bin->AsString().Data(),EPdetector.Data());
     else {
       AliError("Wrong spectra type choice: Possibilities are: 'minv', 'mpt', 'mpt2', 'mV2' or 'SP'");
       continue;
@@ -1672,7 +1672,7 @@ AliAnalysisMuMuSpectra* AliAnalysisMuMu::FitParticle(const char* particle,const 
     TString isCorr(corrected ? " AccEffCorr " : " ");
     isCorr += ( mix )  ? " with mixing event method " : " ";
     std::cout << "---------------------------------//---------------------------------" << std::endl;
-    std::cout << "Fitting" << isCorr.Data() << sHistoType.Data() << " spectra in " << id->Data() << std::endl;
+    std::cout << "Fitting" << isCorr.Data() << sHistoType.Data() << " spectra in " << id->Data() << " : "<< hname.Data()<<std::endl;
 
     // Finally gets it
     if ( OC()->Histo(id->Data(),hname.Data()) ) histo = static_cast<TH1*>(OC()->Histo(id->Data(),hname.Data())->Clone(Form("%s%d",sHistoType.Data(),n++)));
@@ -3231,6 +3231,7 @@ Int_t AliAnalysisMuMu::FitJpsi(const char* binType, const char* flavour, const T
       cout <<      " ================================================================ " << endl;
       cout <<      "                       FitJpsi                  " << endl;
       cout <<      " ================================================================ " << endl;
+      cout <<      "                 histoType : " << histoType << endl;
   }
 
   const char* particle = "psi";
