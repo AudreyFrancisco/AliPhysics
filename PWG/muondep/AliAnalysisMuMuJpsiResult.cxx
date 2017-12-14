@@ -9345,7 +9345,7 @@ void AliAnalysisMuMuJpsiResult::FitMV2PSIPSIPRIMECB2VWG2_BKGMV2POL2()
   std::cout << "FitResultt=" << static_cast<int>(fitResult) << std::endl;
   std::cout << "CovMatrixStatus = " << fitResult->CovMatrixStatus() << std::endl;
 
-  cout << "FitChi2PerNDF = " << fitMeanv2->GetChisquare()<<"/"<<fitMeanv2->GetNDF() << endl;
+  std::cout << "FitChi2PerNDF = " << fitMeanv2->GetChisquare()<<"/"<<fitMeanv2->GetNDF() << std::endl;
     //___________ Further attempts to fit if the first one fails
   // if ( static_cast<int>(fitResult) ||  static_cast<int>(fitResult->CovMatrixStatus())!=3 ) ProcessMv2Fit(fitResult,fitMeanv2,bck,fitOption,12,4); // Int_t iParKPsip, Int_t iLastParBkg);
   //___________

@@ -1629,7 +1629,7 @@ AliAnalysisMuMuSpectra* AliAnalysisMuMu::FitParticle(const char* particle,const 
   if( !sFlavour.IsNull()) spectraName += Form("-%s",flavour);
   if ( corrected )   spectraName += "-AccEffCorr";
 
-  TString EPdetector = "SPD";//{"VZEROA", "VZEROA","SPD"};
+  TString EPdetector = "VZEROA";//{"VZEROA", "VZEROA","SPD"};
 
   // ---- MAIN PART : Loop on every binning range ----
 
