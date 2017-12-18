@@ -56,6 +56,7 @@ public:
   void UseEventPlaneMethod(Bool_t b){fcomputeEP=b;}
   void UseScalarProductMethod(Bool_t b){fcomputeSP=b;}
   void UsSESEMethod(Bool_t b){fESE=b;}
+  void SetNDetectors(Int_t n){fNDetectors=n;}
 
 
 protected:
