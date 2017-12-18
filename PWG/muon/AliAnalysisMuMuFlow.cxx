@@ -144,17 +144,59 @@ AliAnalysisMuMuFlow::DefineHistogramCollection(const char* eventSelection,
     CreatePairHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("EPforpairs_%s",fDetectors[i].Data()),Form("EP distribution for each pair for%s",fDetectors[i].Data()),
                      200, -3.2, 3.2,-2);//dphi corrected to be in [O,pi]
     CreatePairHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("Qnforpairs_%s",fDetectors[i].Data()),Form("Qn distribution for each pair for%s",fDetectors[i].Data()),
-                     300, 0-10., 10., -2.);
+                     300, 0.,-20., 20., -2.);
     CreatePairHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("Qnforpairsvscent_%s",fDetectors[i].Data()),Form("Qn vector for pairs from %s; centrality (%%);q_{2}^{%s}",fDetectors[i].Data(),fDetectors[i].Data()),
-                     50, 0., 90., 500, 0., 2.);
+                     50, 0., 90., 200, -20., 20.);
     ///
     CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("Qn_%s",fDetectors[i].Data()),Form("Qn vector from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
+                     400, -20., 20., -2);
+    CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("Qn_%s_overM",fDetectors[i].Data()),Form("Qn vector from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
                      400, -10., 10., -2);
+    CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("Qn_%s_oversqrtM",fDetectors[i].Data()),Form("Qn vector from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
+                     400, -10., 10., -2);
+
     CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnX_%s",fDetectors[i].Data()),Form("QnX vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
+                     200, -20., 20., -2);
+    CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnX_%s_oversqrtM",fDetectors[i].Data()),Form("QnX vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
                      200, -10., 10., -2);
+    CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnX_%s_overM",fDetectors[i].Data()),Form("QnX vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
+                     200, -10., 10., -2);
+    CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnX_%s_overL",fDetectors[i].Data()),Form("QnX vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
+                     200, -10., 10., -2);
+
     CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnY_%s",fDetectors[i].Data()),Form("QnY vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
+                     200, -20., 20., -2);
+    CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnY_%s_oversqrtM",fDetectors[i].Data()),Form("QnY vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
                      200, -10., 10., -2);
+    CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnY_%s_overM",fDetectors[i].Data()),Form("QnY vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
+                     200, -10., 10., -2);
+    CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnY_%s_overL",fDetectors[i].Data()),Form("QnY vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
+                     200, -10., 10., -2);
+
+    CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnX_%svscent",fDetectors[i].Data()),Form("QnX vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
+                     20, 0., 90., 500, -20., 20.);
+    CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnX_%svscent_oversqrtM",fDetectors[i].Data()),Form("QnX vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
+                     20, 0., 90., 500, -10., 10.);
+    CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnX_%svscent_overM",fDetectors[i].Data()),Form("QnX vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
+                     20, 0., 90., 500, -10., 10.);
+    CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnX_%svscent_overL",fDetectors[i].Data()),Form("QnX vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
+                     20, 0., 90., 500, -10., 10.);
+
+    CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnY_%svscent",fDetectors[i].Data()),Form("QnY vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
+                     20, 0., 90., 500, -20., 20.);
+    CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnY_%svscent_oversqrtM",fDetectors[i].Data()),Form("QnY vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
+                     20, 0., 90., 500, -10., 10.);
+    CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnY_%svscent_overM",fDetectors[i].Data()),Form("QnY vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
+                     20, 0., 90., 500, -10., 10.);
+    CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnY_%svscent_overL",fDetectors[i].Data()),Form("QnY vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
+                     20, 0., 90., 500, -10., 10.);
+
+
     CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("Qnvscent_%s",fDetectors[i].Data()),Form("Qn vector from %s; centrality (%%);q_{2}^{%s}",fDetectors[i].Data(),fDetectors[i].Data()),
+                     20, 0., 90., 500, -20., 20.);
+    CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("Qnvscent_%s_oversqrtM",fDetectors[i].Data()),Form("Qn vector from %s; centrality (%%);q_{2}^{%s}",fDetectors[i].Data(),fDetectors[i].Data()),
+                     20, 0., 90., 500, -10., 10.);
+    CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("Qnvscent_%s_overM",fDetectors[i].Data()),Form("Qn vector from %s; centrality (%%);q_{2}^{%s}",fDetectors[i].Data(),fDetectors[i].Data()),
                      20, 0., 90., 500, -10., 10.);
     for(Int_t j=i+1; j<fNDetectors;j++){
       if(fcomputeEP){
@@ -175,7 +217,12 @@ AliAnalysisMuMuFlow::DefineHistogramCollection(const char* eventSelection,
                        500, -1., 1.,500, -1., 1.);
         CreateEventHistos(kHistoForData | kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("Q%s*Q%s",fDetectors[i].Data(),fDetectors[j].Data()),
                   Form("SP Q%s*Q%s ;Centrality",fDetectors[i].Data(),fDetectors[j].Data()),nCentBins,centMin,centMax,0);
-
+        CreateEventHistos(kHistoForData | kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("Q%s*Q%s_oversqrtM",fDetectors[i].Data(),fDetectors[j].Data()),
+                  Form("SP Q%s*Q%s ;Centrality",fDetectors[i].Data(),fDetectors[j].Data()),nCentBins,centMin,centMax,0);
+        CreateEventHistos(kHistoForData | kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("Q%s*Q%s_overL",fDetectors[i].Data(),fDetectors[j].Data()),
+                  Form("SP Q%s*Q%s ;Centrality",fDetectors[i].Data(),fDetectors[j].Data()),nCentBins,centMin,centMax,0);
+        CreateEventHistos(kHistoForData | kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("Q%s*Q%s_overM",fDetectors[i].Data(),fDetectors[j].Data()),
+                  Form("SP Q%s*Q%s ;Centrality",fDetectors[i].Data(),fDetectors[j].Data()),nCentBins,centMin,centMax,0);
       }
     }
   }
@@ -398,15 +445,15 @@ void AliAnalysisMuMuFlow::FillHistosForPair(const char* eventSelection,
 
     SP[i] = U.X()*Qn[i].X()+U.Y()*Qn[i].Y();
     if ( !IsHistogramDisabled(Form("EPforpairs_%s",fDetectors[i].Data())) ) proxy->Histo(Form("EPforpairs_%s",fDetectors[i].Data()))->Fill(phiEP[i]);
-    if (fcomputeSP && !IsHistogramDisabled(Form("Qnforpairs_%s",fDetectors[i].Data())) ) proxy->Histo(Form("Qnforpairs_%s",fDetectors[i].Data()))->Fill(sqrt(Q2[i][0]*Q2[i][0]+Q2[i][1]*Q2[i][1]));
-    if (fcomputeSP && !IsHistogramDisabled(Form("Qnforpairsvscent_%s",fDetectors[i].Data())) ) proxy->Histo(Form("Qnforpairsvscent_%s",fDetectors[i].Data()))->Fill(GetCentrality(),sqrt(Q2[i][0]*Q2[i][0]+Q2[i][1]*Q2[i][1]));
+    if (fcomputeSP && !IsHistogramDisabled(Form("Qnforpairs_%s",fDetectors[i].Data())) ) proxy->Histo(Form("Qnforpairs_%s",fDetectors[i].Data()))->Fill(TMath::Sqrt(Q2[i][0]*Q2[i][0]+Q2[i][1]*Q2[i][1]));
+    if (fcomputeSP && !IsHistogramDisabled(Form("Qnforpairsvscent_%s",fDetectors[i].Data())) ) proxy->Histo(Form("Qnforpairsvscent_%s",fDetectors[i].Data()))->Fill(GetCentrality(),TMath::Sqrt(Q2[i][0]*Q2[i][0]+Q2[i][1]*Q2[i][1]));
     if ( !IsHistogramDisabled(Form("DPHI_%s",fDetectors[i].Data())) ) proxy->Histo(Form("DPHI_%s",fDetectors[i].Data()))->Fill(dphi[i]);
     if (fcomputeSP && !IsHistogramDisabled(Form("SP_%s",fDetectors[i].Data())) ) proxy->Histo(Form("SP_%s",fDetectors[i].Data()))->Fill(SP[i]);
   }
 
   Bool_t inPlane = ( dphi[0] < 3.142 && dphi[0] > 2.356  )||( dphi[0] < 0.785 && dphi[0] > 0 );
 
-  // Double_t x_ESE[8]={pair4Momentum.M(),pair4Momentum.Pt(),dphi[0],cos(2*dphi[0]),sqrt(Qn[0]*Qn[0]),GetCentrality(),phiEP[0],phiEP[1]}; //minv      pt     dphi     q2     cent    EPp  EPev
+  // Double_t x_ESE[8]={pair4Momentum.M(),pair4Momentum.Pt(),dphi[0],cos(2*dphi[0]),TMath::Sqrt(Qn[0]*Qn[0]),GetCentrality(),phiEP[0],phiEP[1]}; //minv      pt     dphi     q2     cent    EPp  EPev
   // if( fESE && !IsHistogramDisabled("ESE_SPD"))static_cast<THnSparse*>(proxy->GetObject("ESE_SPD"))->Fill(x_ESE,inputWeight);
   // x_ESE[2] = dphi[1];
   // x_ESE[3] = cos(2*dphi[1]);
@@ -415,7 +462,7 @@ void AliAnalysisMuMuFlow::FillHistosForPair(const char* eventSelection,
   // x_ESE[7] = phiEP[0];
   // if( !IsHistogramDisabled("ESE_V0A"))static_cast<THnSparse*>(proxy->GetObject("ESE_V0A"))->Fill(x_ESE,inputWeight);
 
-  // Double_t x_ESE_SP[6]={pair4Momentum.M(),pair4Momentum.Pt(),SP[0]/sqrt(Qn[1]*Qn[2]),(SP[0]-cos(Qn[0].X())*cos(Qn[0].X())-sin(Qn[0].X())*sin(Qn[0].X()))/sqrt(Qn[1]*Qn[2]-Qn[1].X()*Qn[2].X()-Qn[1].Y()*Qn[2].Y())/sqrt(Qn[0]*Qn[0]),GetCentrality(),sqrt(Qn[0].X()*Qn[0].X()+Qn[0].X()*Qn[0].X())}; //minv      pt     SP     SPcorr     cent   q2
+  // Double_t x_ESE_SP[6]={pair4Momentum.M(),pair4Momentum.Pt(),SP[0]/sqrt(Qn[1]*Qn[2]),(SP[0]-cos(Qn[0].X())*cos(Qn[0].X())-sin(Qn[0].X())*sin(Qn[0].X()))/sqrt(Qn[1]*Qn[2]-Qn[1].X()*Qn[2].X()-Qn[1].Y()*Qn[2].Y())/sqrt(Qn[0]*Qn[0]),GetCentrality(),TMath::Sqrt(Qn[0].X()*Qn[0].X()+Qn[0].X()*Qn[0].X())}; //minv      pt     SP     SPcorr     cent   q2
 
   // if( fESE && !IsHistogramDisabled("ESE_SP_SPD"))static_cast<THnSparse*>(proxy->GetObject("ESE_SP_SPD"))->Fill(x_ESE_SP,inputWeight);
 
@@ -619,7 +666,7 @@ void AliAnalysisMuMuFlow::FillHistosForPair(const char* eventSelection,
             //     else hprofMC->Fill(pair4Momentum.M(),SPMC[i],inputWeight);
             //     TProfile* hprofMCcorr = Prof(eventSelection,triggerClassName,centrality,Form("%s_corr",hprofMCName.Data()));
             //     if ( !hprofMCcorr)AliError(Form("Could not get %s",Form("%s_corr",hprofMCName.Data())));
-            //     else hprofMCcorr->Fill(pair4MomentumMC->M(),sqrt(SPMC[i]-Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y()),inputWeight);//Correct
+            //     else hprofMCcorr->Fill(pair4MomentumMC->M(),TMath::Sqrt(SPMC[i]-Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y()),inputWeight);//Correct
             //   }
               // TString mUMCName(Form("UMC_%s",minvName.Data()));
               // if ( !IsHistogramDisabled(mUMCName.Data() )) proxy->Histo(mUMCName.Data())->Fill(UMC.X(),UMC.Y());
@@ -725,7 +772,7 @@ void AliAnalysisMuMuFlow::FillHistosForPair(const char* eventSelection,
                 else hprofMC->Fill(pair4Momentum.M(),SP[i],inputWeight/AccxEff);
                 TProfile* hprofMCcorr = Prof(eventSelection,triggerClassName,centrality,Form("%s_corr",hprofMCName.Data()));
                 if ( !hprofMCcorr)AliError(Form("Could not get %s",Form("%s_corr",hprofMCName.Data())));
-                else hprofMCcorr->Fill(pair4MomentumMC->M(),sqrt(SP[i]-Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y()),inputWeight/AccxEff);//Correct
+                else hprofMCcorr->Fill(pair4MomentumMC->M(),TMath::Sqrt(SP[i]-Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y()),inputWeight/AccxEff);//Correct
               }
               }
             }
@@ -757,8 +804,9 @@ void AliAnalysisMuMuFlow::FillHistosForEvent(const char* eventSelection,
     return;
   }
   Double_t phiEP[fNDetectors];
-  TVector2 Qn[3];
+  TVector2 Qn[fNDetectors];
   Int_t step =3;
+  Float_t sumW[fNDetectors];
   //Get a TList containing Tlist of Qnvectors for each detector
   //Detector > correction step (cf QnCorr : raw, plain, rec, align + info quality) > harmonic (QX, QY, EP)
   TList* detectorlist = flowQnMgr->GetQnVectorList();
@@ -775,22 +823,24 @@ void AliAnalysisMuMuFlow::FillHistosForEvent(const char* eventSelection,
       if (qn == NULL) {
       // align step was not found, trying to get something else
         AliError(Form("%s step was not found for detector %s",fEqSteps[step].Data(),fDetectors[i].Data()));
+        return;
       }
       else if( !qn->IsGoodQuality()){
         AliError("Bad quality Qn");
         return;
       }
       else {
+        sumW[i]= qn->GetSumOfWeights();
         //EP
         phiEP[i] = static_cast<Double_t> (qn->EventPlane(2)); //2nd harmonic
         if(phiEP[i] == 0.) AliError(Form("EP=0 but qn vector is not null for detector %s at step %s",fDetectors[i].Data(),fEqSteps[step].Data()));
         else EP[i]=phiEP[i];
         //Qn
-        Qn[i].Set(static_cast<Double_t> (qn->Qx(fHar))*TMath::Sqrt(qn->GetSumOfWeights()),static_cast<Double_t> (qn->Qy(fHar))*TMath::Sqrt(qn->GetSumOfWeights()));
+        Qn[i].Set(static_cast<Double_t> (qn->Qx(fHar))*sumW[i],static_cast<Double_t> (qn->Qy(fHar))*sumW[i]);
         if(Qn[i].X() <1E-8|| Qn[i].Y() <1E-8) AliError(Form(" Qx=0 but qn vector is not null for detector %s at step %s",fDetectors[i].Data(),fEqSteps[step].Data()));
         else {
           Q2[i][0]=Qn[i].X();
-          Q2[i][1]=Qn[i].Y();
+          Q2[i][1]=Qn[i].Y();//not normalized
         }
       }
     }
@@ -802,10 +852,33 @@ void AliAnalysisMuMuFlow::FillHistosForEvent(const char* eventSelection,
     if( !IsHistogramDisabled(Form("EVENTPLANE_%s",fDetectors[i].Data())) ) Histo(eventSelection,triggerClassName,centrality,Form("EVENTPLANE_%s",fDetectors[i].Data()))->Fill(phiEP[i]);
     if( !IsHistogramDisabled(Form("Cos2EP_%s",fDetectors[i].Data())) ) Histo(eventSelection,triggerClassName,centrality,Form("Cos2EP_%s",fDetectors[i].Data()))->Fill(TMath::Cos(2*phiEP[i]));
     if( !IsHistogramDisabled(Form("Sin2EP_%s",fDetectors[i].Data())) ) Histo(eventSelection,triggerClassName,centrality,Form("Sin2EP_%s",fDetectors[i].Data()))->Fill(TMath::Sin(2*phiEP[i]));
-    if( fcomputeSP && !IsHistogramDisabled(Form("Qn_%s",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("Qn_%s",fDetectors[i].Data()))->Fill(sqrt(Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y()));
-    if( fcomputeSP && !IsHistogramDisabled(Form("QnX_%s",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnX_%s",fDetectors[i].Data()))->Fill(Qn[i].X());
+    if( fcomputeSP && !IsHistogramDisabled(Form("Qn_%s",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("Qn_%s",fDetectors[i].Data()))->Fill(TMath::Sqrt(Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y()));
+    if( fcomputeSP && !IsHistogramDisabled(Form("Qn_%s_overM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("Qn_%s_overM",fDetectors[i].Data()))->Fill(TMath::Sqrt(Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y())/sumW[i]);
+    if( fcomputeSP && !IsHistogramDisabled(Form("Qn_%s_oversqrtM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("Qn_%s_oversqrtM",fDetectors[i].Data()))->Fill(TMath::Sqrt(Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y())/TMath::Sqrt(sumW[i]));
+
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnX_%s",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnX_%s",fDetectors[i].Data()))->Fill(Qn[i].X()*sumW[i]); //not normalized
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnX_%s_oversqrtM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnX_%s_oversqrtM",fDetectors[i].Data()))->Fill(Qn[i].X()/TMath::Sqrt(sumW[i]));
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnX_%s_overM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnX_%s_overM",fDetectors[i].Data()))->Fill(Qn[i].X()/sumW[i]);
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnX_%s_overL",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnX_%s_overL",fDetectors[i].Data()))->Fill(Qn[i].X()/TMath::Sqrt(Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y()));
+
     if( fcomputeSP && !IsHistogramDisabled(Form("QnY_%s",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnY_%s",fDetectors[i].Data()))->Fill(Qn[i].Y());
-    if( fcomputeSP && !IsHistogramDisabled(Form("Qnvscent_%s",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("Qnvscent_%s",fDetectors[i].Data()))->Fill(GetCentrality(),sqrt(Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y()));
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnY_%s_oversqrtM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnY_%s_oversqrtM",fDetectors[i].Data()))->Fill(Qn[i].Y()/TMath::Sqrt(sumW[i]));
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnY_%s_overM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnY_%s_overM",fDetectors[i].Data()))->Fill(Qn[i].Y()/sumW[i]);
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnY_%s_overL",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnY_%s_overL",fDetectors[i].Data()))->Fill(Qn[i].Y()/TMath::Sqrt(Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y()));
+
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnX_%svscent",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnX_%svscent",fDetectors[i].Data()))->Fill(GetCentrality(),Qn[i].X());
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnX_%svscent_oversqrtM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnX_%svscent_oversqrtM",fDetectors[i].Data()))->Fill(GetCentrality(),Qn[i].X()/TMath::Sqrt(sumW[i]));
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnX_%svscent_overM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnX_%svscent_overM",fDetectors[i].Data()))->Fill(GetCentrality(),Qn[i].X()/sumW[i]);
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnX_%svscent_overL",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnX_%svscent_overL",fDetectors[i].Data()))->Fill(GetCentrality(),Qn[i].X()/TMath::Sqrt(Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y()));
+
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnY_%svscent",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnY_%svscent",fDetectors[i].Data()))->Fill(GetCentrality(),Qn[i].Y());
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnY_%svscent_oversqrtM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnY_%svscent_oversqrtM",fDetectors[i].Data()))->Fill(GetCentrality(),Qn[i].Y()/TMath::Sqrt(sumW[i]));
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnY_%svscent_overM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnY_%svscent_overM",fDetectors[i].Data()))->Fill(GetCentrality(),Qn[i].Y()/sumW[i]);
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnY_%svscent_overL",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnY_%svscent_overL",fDetectors[i].Data()))->Fill(GetCentrality(),Qn[i].Y()/TMath::Sqrt(Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y()));
+
+    if( fcomputeSP && !IsHistogramDisabled(Form("Qnvscent_%s",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("Qnvscent_%s",fDetectors[i].Data()))->Fill(GetCentrality(),TMath::Sqrt(Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y()));
+    if( fcomputeSP && !IsHistogramDisabled(Form("Qnvscent_%s_oversqrtM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("Qnvscent_%s_oversqrtM",fDetectors[i].Data()))->Fill(GetCentrality(),TMath::Sqrt(Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y())/TMath::Sqrt(sumW[i]));
+    if( fcomputeSP && !IsHistogramDisabled(Form("Qnvscent_%s_overM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("Qnvscent_%s_overM",fDetectors[i].Data()))->Fill(GetCentrality(),TMath::Sqrt(Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y())/sumW[i]);
     for(Int_t j=i+1; j<fNDetectors;j++){
       //EP
       Double_t deltaEP =phiEP[i]-phiEP[j];
@@ -817,9 +890,12 @@ void AliAnalysisMuMuFlow::FillHistosForEvent(const char* eventSelection,
       //   Histo(eventSelection,triggerClassName,centrality,Form("hEvPlaneReso%s_%s",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(TMath::Cos(fHar*deltaEP));
 
       //Fill Qn vector histos
-      if (fcomputeEP &&  !IsHistogramDisabled(Form("EP%svsEP%s",fDetectors[i].Data(),fDetectors[j].Data()) )) Histo(eventSelection,triggerClassName,centrality,Form("EP%svsEP%s",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(phiEP[i],phiEP[j]);
-      if ( fcomputeSP && !IsHistogramDisabled(Form("Qn%svsQn%s",fDetectors[i].Data(),fDetectors[j].Data())) ) Histo(eventSelection,triggerClassName,centrality,Form("Qn%svsQn%s",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(sqrt(Qn[i]*Qn[i]),sqrt(Qn[j]*Qn[j]));
+      if ( fcomputeEP &&  !IsHistogramDisabled(Form("EP%svsEP%s",fDetectors[i].Data(),fDetectors[j].Data()) )) Histo(eventSelection,triggerClassName,centrality,Form("EP%svsEP%s",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(phiEP[i],phiEP[j]);
+      if ( fcomputeSP && !IsHistogramDisabled(Form("Qn%svsQn%s",fDetectors[i].Data(),fDetectors[j].Data())) ) Histo(eventSelection,triggerClassName,centrality,Form("Qn%svsQn%s",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(TMath::Sqrt(Qn[i]*Qn[i]),TMath::Sqrt(Qn[j]*Qn[j]));
       if ( fcomputeSP && !IsHistogramDisabled(Form("Q%s*Q%s",fDetectors[i].Data(),fDetectors[j].Data())) )Prof(eventSelection,triggerClassName,centrality,Form("Q%s*Q%s",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(GetCentrality(),Qn[i].X()*Qn[j].X()+Qn[i].Y()*Qn[j].Y());
+      if ( fcomputeSP && !IsHistogramDisabled(Form("Q%s*Q%s",fDetectors[i].Data(),fDetectors[j].Data())) )Prof(eventSelection,triggerClassName,centrality,Form("Q%s*Q%s_overM",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(GetCentrality(),(Qn[i].X()*Qn[j].X()+Qn[i].Y()*Qn[j].Y())/(sumW[i]*sumW[j]));
+      if ( fcomputeSP && !IsHistogramDisabled(Form("Q%s*Q%s",fDetectors[i].Data(),fDetectors[j].Data())) )Prof(eventSelection,triggerClassName,centrality,Form("Q%s*Q%s_oversqrtM",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(GetCentrality(),(Qn[i].X()*Qn[j].X()+Qn[i].Y()*Qn[j].Y())/TMath::Sqrt(sumW[i]*sumW[j]));
+      if ( fcomputeSP && !IsHistogramDisabled(Form("Q%s*Q%s",fDetectors[i].Data(),fDetectors[j].Data())) )Prof(eventSelection,triggerClassName,centrality,Form("Q%s*Q%s_overL",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(GetCentrality(),(Qn[i].X()*Qn[j].X()+Qn[i].Y()*Qn[j].Y())/(TMath::Sqrt(Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y())*TMath::Sqrt(Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y())));
     }
   }
 }
@@ -935,7 +1011,7 @@ Double_t AliAnalysisMuMuFlow::TriggerLptApt ( Double_t* xVal, Double_t* par )
 Bool_t AliAnalysisMuMuFlow::IsDPhiInPlane(const AliVParticle& t1, const AliVParticle& t2) const
 {
   /// Whether the pair passes the dphi cut
-  if(EP[0]<1E-8 && EP[1]<1E-8 ) return kFALSE;
+  if((Q2[0][0]*Q2[0][0])<1E-8 && (Q2[0][1]*Q2[0][1])<1E-8) return kFALSE;
 
   TLorentzVector pi(t1.Px(),t1.Py(),t1.Pz(),
                     TMath::Sqrt(AliAnalysisMuonUtility::MuonMass2()+t1.P()*t1.P()));
@@ -954,7 +1030,7 @@ Bool_t AliAnalysisMuMuFlow::IsDPhiInPlane(const AliVParticle& t1, const AliVPart
 Bool_t AliAnalysisMuMuFlow::IsDPhiOutOfPlane(const AliVParticle& t1, const AliVParticle& t2) const
 {
   /// Whether the pair passes the dphi cut
-  if(EP[0]<1E-8 && EP[1]<1E-8 ) return kFALSE;
+  if((Q2[0][0]*Q2[0][0])<1E-8 && (Q2[0][1]*Q2[0][1])<1E-8) return kFALSE;
 
   TLorentzVector pi(t1.Px(),t1.Py(),t1.Pz(),
                     TMath::Sqrt(AliAnalysisMuonUtility::MuonMass2()+t1.P()*t1.P()));
@@ -986,10 +1062,10 @@ Bool_t AliAnalysisMuMuFlow::Isq2InSmallRange(const AliVParticle& t1, const AliVP
     AliWarning("ERROR : no q2SmallMap provided");
     return kFALSE;
   }
-  if(Q2[0][0]<1E-8 && Q2[1][0]<1E-8 ) return kFALSE;
+  if((Q2[0][0]*Q2[0][0])<1E-8 && (Q2[0][1]*Q2[0][1])<1E-8 ) return kFALSE;
   Double_t q2 = sqrt(Q2[0][0]*Q2[0][0]+Q2[0][1]*Q2[0][1]);
   // Int_t bin    = fq2Map[0]->GetBinContent(fq2Map[0]->FindBin(GetCentrality()));
-  std::cout << "centrality " << GetCentrality() << "Small q2 : " << q2 <<std::endl;
+  // std::cout << "centrality " << GetCentrality() << "Small q2 : " << q2 <<std::endl;
   return q2 < 0.08;//fq2Map[0]->GetBinContent(bin);
 }
 //________________________________________________________________________
@@ -999,10 +1075,10 @@ Bool_t AliAnalysisMuMuFlow::Isq2InLargeRange(const AliVParticle& t1, const AliVP
     AliWarning("ERROR : no q2SmallMap provided");
     return kFALSE;
   }
-  if(Q2[0][0]<1E-8 && Q2[1][0]<1E-8 ) return kFALSE;
+  if((Q2[0][0]*Q2[0][0])<1E-8 && (Q2[0][1]*Q2[0][1])<1E-8 ) return kFALSE;
   Double_t q2 = sqrt(Q2[0][0]*Q2[0][0]+Q2[0][1]*Q2[0][1]);
   // Int_t bin    = fq2Map[1]->GetBinContent(fq2Map[1]->FindBin(GetCentrality()));
-  std::cout << "centrality " << GetCentrality() << "Large q2 : " << q2 <<std::endl;
+  // std::cout << "centrality " << GetCentrality() << "Large q2 : " << q2 <<std::endl;
   return q2 > 0.108;//fq2Map[1]->GetBinContent(bin);
 }
 
