@@ -137,65 +137,67 @@ AliAnalysisMuMuFlow::DefineHistogramCollection(const char* eventSelection,
                      100, -1., 1.,-2);
     CreatePairHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("DPHI_%s",fDetectors[i].Data()),Form("#mu+#mu- Dphi distribution with %s",fDetectors[i].Data()),
                      200, -0.01, 3.2,-2);//dphi corrected to be in [O,pi]
-    CreatePairHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("SP_%s",fDetectors[i].Data()),Form("#mu+#mu- Dphi distribution with %s",fDetectors[i].Data()),
-                     200, -0.01, 3.2,-2);//dphi corrected to be in [O,pi]
+    CreatePairHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("SP_%s",fDetectors[i].Data()),Form("#mu+#mu- SP distribution with %s",fDetectors[i].Data()),
+                     200, -20., 20.,-2);//dphi corrected to be in [O,pi]
+    CreatePairHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("SP_%s_Norm",fDetectors[i].Data()),Form("#mu+#mu- SP distribution with %s",fDetectors[i].Data()),
+                     200, -5., 5.,-2);//dphi corrected to be in [O,pi]
 
     //Form("EPforpairs_%s",fDetectors[i].Data()
     CreatePairHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("EPforpairs_%s",fDetectors[i].Data()),Form("EP distribution for each pair for%s",fDetectors[i].Data()),
                      200, -3.2, 3.2,-2);//dphi corrected to be in [O,pi]
     CreatePairHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("Qnforpairs_%s",fDetectors[i].Data()),Form("Qn distribution for each pair for%s",fDetectors[i].Data()),
-                     300, 0.,-20., 20., -2.);
+                     300, 0.,-20., 100., -2.);
     CreatePairHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("Qnforpairsvscent_%s",fDetectors[i].Data()),Form("Qn vector for pairs from %s; centrality (%%);q_{2}^{%s}",fDetectors[i].Data(),fDetectors[i].Data()),
-                     50, 0., 90., 200, -20., 20.);
+                     50, 0., 90., 200, -20., 100.);
     ///
     CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("Qn_%s",fDetectors[i].Data()),Form("Qn vector from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
-                     400, -20., 20., -2);
+                     400, -20., 100., -2);
     CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("Qn_%s_overM",fDetectors[i].Data()),Form("Qn vector from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
-                     400, -10., 10., -2);
+                     400, -5., 5., -2);
     CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("Qn_%s_oversqrtM",fDetectors[i].Data()),Form("Qn vector from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
-                     400, -10., 10., -2);
+                     400, -10., 20., -2);
 
     CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnX_%s",fDetectors[i].Data()),Form("QnX vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
-                     200, -20., 20., -2);
+                     200, -20., 100., -2);
     CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnX_%s_oversqrtM",fDetectors[i].Data()),Form("QnX vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
-                     200, -10., 10., -2);
+                     200, -50., 100., -2);
     CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnX_%s_overM",fDetectors[i].Data()),Form("QnX vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
-                     200, -10., 10., -2);
+                     200, -5., 5., -2);
     CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnX_%s_overL",fDetectors[i].Data()),Form("QnX vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
-                     200, -10., 10., -2);
+                     200, -1.1, 1.1, -2);
 
     CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnY_%s",fDetectors[i].Data()),Form("QnY vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
-                     200, -20., 20., -2);
+                     200, -100., 100., -2);
     CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnY_%s_oversqrtM",fDetectors[i].Data()),Form("QnY vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
-                     200, -10., 10., -2);
+                     200, -50., 100., -2);
     CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnY_%s_overM",fDetectors[i].Data()),Form("QnY vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
-                     200, -10., 10., -2);
+                     200, -5., 5., -2);
     CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnY_%s_overL",fDetectors[i].Data()),Form("QnY vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
-                     200, -10., 10., -2);
+                     200, -1.1, 1.1, -2);
 
     CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnX_%svscent",fDetectors[i].Data()),Form("QnX vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
-                     20, 0., 90., 500, -20., 20.);
+                     20, 0., 90., 500, -100., 100.);
     CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnX_%svscent_oversqrtM",fDetectors[i].Data()),Form("QnX vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
                      20, 0., 90., 500, -10., 10.);
     CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnX_%svscent_overM",fDetectors[i].Data()),Form("QnX vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
-                     20, 0., 90., 500, -10., 10.);
+                     20, 0., 90., 500, -100., 100.);
     CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnX_%svscent_overL",fDetectors[i].Data()),Form("QnX vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
-                     20, 0., 90., 500, -10., 10.);
+                     20, 0., 90., 500, -1.1, 1.1);
 
     CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnY_%svscent",fDetectors[i].Data()),Form("QnY vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
                      20, 0., 90., 500, -20., 20.);
     CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnY_%svscent_oversqrtM",fDetectors[i].Data()),Form("QnY vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
-                     20, 0., 90., 500, -10., 10.);
+                     20, 0., 90., 500, -100., 100.);
     CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnY_%svscent_overM",fDetectors[i].Data()),Form("QnY vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
-                     20, 0., 90., 500, -10., 10.);
+                     20, 0., 90., 500, -5., 5.);
     CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("QnY_%svscent_overL",fDetectors[i].Data()),Form("QnY vector component from %s; q_{2}^{%s};N_{entries}",fDetectors[i].Data(),fDetectors[i].Data()),
-                     20, 0., 90., 500, -10., 10.);
+                     20, 0., 90., 500, -1.1, 1.1);
 
 
     CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("Qnvscent_%s",fDetectors[i].Data()),Form("Qn vector from %s; centrality (%%);q_{2}^{%s}",fDetectors[i].Data(),fDetectors[i].Data()),
                      20, 0., 90., 500, -20., 20.);
     CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("Qnvscent_%s_oversqrtM",fDetectors[i].Data()),Form("Qn vector from %s; centrality (%%);q_{2}^{%s}",fDetectors[i].Data(),fDetectors[i].Data()),
-                     20, 0., 90., 500, -10., 10.);
+                     20, 0., 90., 500, -100., 100.);
     CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("Qnvscent_%s_overM",fDetectors[i].Data()),Form("Qn vector from %s; centrality (%%);q_{2}^{%s}",fDetectors[i].Data(),fDetectors[i].Data()),
                      20, 0., 90., 500, -10., 10.);
     for(Int_t j=i+1; j<fNDetectors;j++){
@@ -214,7 +216,7 @@ AliAnalysisMuMuFlow::DefineHistogramCollection(const char* eventSelection,
         CreateEventHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("Qn%svsQn%s",fDetectors[i].Data(),fDetectors[j].Data()),Form("#mu+#mu- resolution : %s vs %s",fDetectors[i].Data(),fDetectors[j].Data()),
                        500, 0., 2., 500,0.,2.);
         CreatePairHistos(kHistoForData| kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("SP%svsSP%s",fDetectors[i].Data(),fDetectors[j].Data()),Form("#mu+#mu- resolution : %s vs %s",fDetectors[i].Data(),fDetectors[j].Data()),
-                       500, -1., 1.,500, -1., 1.);
+                       500, -10., 10.,500, -10., 10.);
         CreateEventHistos(kHistoForData | kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("Q%s*Q%s",fDetectors[i].Data(),fDetectors[j].Data()),
                   Form("SP Q%s*Q%s ;Centrality",fDetectors[i].Data(),fDetectors[j].Data()),nCentBins,centMin,centMax,0);
         CreateEventHistos(kHistoForData | kHistoForMCInput,eventSelection,triggerClassName,centrality,Form("Q%s*Q%s_oversqrtM",fDetectors[i].Data(),fDetectors[j].Data()),
@@ -251,11 +253,11 @@ AliAnalysisMuMuFlow::DefineHistogramCollection(const char* eventSelection,
                        Form("#mu+#mu- inv. mass %s;M_{#mu^{+}#mu^{-}} (GeV/c^{2});Counts",r->AsString().Data()),nMinvBins,minvMin,minvMax,-2);
 
 
-      if(fcomputeSP){
-        TString mUName(Form("U_%s",minvName.Data()));
-        CreatePairHistos(kHistoForData | kHistoForMCInput,eventSelection,triggerClassName,centrality,mUName.Data(),
-                         "#mu+#mu- Q vector ;u_{x};u_{y}",600, -1., 1., 600, -1., 1.);
-      }
+      // if(fcomputeSP){
+      //   TString mUName(Form("U_%s",minvName.Data()));
+      //   CreatePairHistos(kHistoForData | kHistoForMCInput,eventSelection,triggerClassName,centrality,mUName.Data(),
+      //                    "#mu+#mu- Q vector ;u_{x};u_{y}",600, -1., 1., 600, -1., 1.);
+      // }
       if ( fcomputeMeanV2 && !minvName.Contains("PHI")){
         TString mYName(Form("MeanYVs%s",minvName.Data()));
         CreatePairHistos(kHistoForData | kHistoForMCInput,eventSelection,triggerClassName,centrality,mYName.Data(),
@@ -298,11 +300,11 @@ AliAnalysisMuMuFlow::DefineHistogramCollection(const char* eventSelection,
           CreatePairHistos(kHistoForData | kHistoForMCInput,eventSelection,triggerClassName,centrality,mYName.Data(),
                            Form("#mu+#mu- mean (AE corrected) y %s;M_{#mu^{+}#mu^{-}} (GeV/c^{2});<y^{#mu^{+}#mu^{-} (GeV/c^{2})}>",r->AsString().Data()),nMinvBins,minvMin,minvMax,0);
         }
-        if(fcomputeSP){
-        TString mUAEName(Form("U_%s",minvName.Data()));
-        CreatePairHistos(kHistoForData | kHistoForMCInput,eventSelection,triggerClassName,centrality,mUAEName.Data(),
-                         "#mu+#mu- Q vector (Acc #times Eff Corrected) ;u_{x};u_{y}",600, -1., 1., 600, -1., 1.);
-        }
+        // if(fcomputeSP){
+        // TString mUAEName(Form("U_%s",minvName.Data()));
+        // CreatePairHistos(kHistoForData | kHistoForMCInput,eventSelection,triggerClassName,centrality,mUAEName.Data(),
+        //                  "#mu+#mu- Q vector (Acc #times Eff Corrected) ;u_{x};u_{y}",600, -1., 1., 600, -1., 1.);
+        // }
         for(Int_t i=0; i<fNDetectors;i++){
           if(fcomputeMeanV2){
             TString mV2Name = Form("MeanV2Vs%s_EP_%s",minvName.Data(),fDetectors[i].Data());
@@ -449,6 +451,7 @@ void AliAnalysisMuMuFlow::FillHistosForPair(const char* eventSelection,
     if (fcomputeSP && !IsHistogramDisabled(Form("Qnforpairsvscent_%s",fDetectors[i].Data())) ) proxy->Histo(Form("Qnforpairsvscent_%s",fDetectors[i].Data()))->Fill(GetCentrality(),TMath::Sqrt(Q2[i][0]*Q2[i][0]+Q2[i][1]*Q2[i][1]));
     if ( !IsHistogramDisabled(Form("DPHI_%s",fDetectors[i].Data())) ) proxy->Histo(Form("DPHI_%s",fDetectors[i].Data()))->Fill(dphi[i]);
     if (fcomputeSP && !IsHistogramDisabled(Form("SP_%s",fDetectors[i].Data())) ) proxy->Histo(Form("SP_%s",fDetectors[i].Data()))->Fill(SP[i]);
+    if (fcomputeSP && !IsHistogramDisabled(Form("SP_%s_Norm",fDetectors[i].Data())) ) proxy->Histo(Form("SP_%s_Norm",fDetectors[i].Data()))->Fill(SP[i]/TMath::Sqrt(Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y()));
   }
 
   Bool_t inPlane = ( dphi[0] < 3.142 && dphi[0] > 2.356  )||( dphi[0] < 0.785 && dphi[0] > 0 );
@@ -653,8 +656,8 @@ void AliAnalysisMuMuFlow::FillHistosForPair(const char* eventSelection,
                 if ( !hprofcorr)AliError(Form("Could not get %s",Form("%s_corr",hprofName.Data())));
                 else hprofcorr->Fill(pair4Momentum.M(),SP[i]-Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y(),inputWeight);
               }
-              TString mUName(Form("U_%s",minvName.Data()));
-              if ( !IsHistogramDisabled(mUName.Data() )) proxy->Histo(mUName.Data())->Fill(U.X(),U.Y());
+              // TString mUName(Form("U_%s",minvName.Data()));
+              // if ( !IsHistogramDisabled(mUName.Data() )) proxy->Histo(mUName.Data())->Fill(U.X(),U.Y());
             }
 
             // if( okMC ){
