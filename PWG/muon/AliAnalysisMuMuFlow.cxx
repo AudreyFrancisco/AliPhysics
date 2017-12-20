@@ -456,6 +456,8 @@ void AliAnalysisMuMuFlow::FillHistosForPair(const char* eventSelection,
 
   Bool_t inPlane = ( dphi[0] < 3.142 && dphi[0] > 2.356  )||( dphi[0] < 0.785 && dphi[0] > 0 );
 
+  std::cout << "FillHistosForPairs: " << pair4Momentum.Phi() << " dphi " << dphi[0] << " : " << inPlane << std::endl;
+
   // Double_t x_ESE[8]={pair4Momentum.M(),pair4Momentum.Pt(),dphi[0],cos(2*dphi[0]),TMath::Sqrt(Qn[0]*Qn[0]),GetCentrality(),phiEP[0],phiEP[1]}; //minv      pt     dphi     q2     cent    EPp  EPev
   // if( fESE && !IsHistogramDisabled("ESE_SPD"))static_cast<THnSparse*>(proxy->GetObject("ESE_SPD"))->Fill(x_ESE,inputWeight);
   // x_ESE[2] = dphi[1];
@@ -579,7 +581,7 @@ void AliAnalysisMuMuFlow::FillHistosForPair(const char* eventSelection,
       }
     }
 
-    if(phiEP[0]<1E-8 && phiEP[1]<1E-8 ) ok = kFALSE;
+    // if(phiEP[0]<1E-8 && phiEP[1]<1E-8 ) ok = kFALSE;
 
     // Check if pair pass all conditions, either MC or not, and fill Minv Histogrames
     if ( ok || okMC ){
@@ -840,16 +842,14 @@ void AliAnalysisMuMuFlow::FillHistosForEvent(const char* eventSelection,
         else EP[i]=phiEP[i];
         //Qn
         Qn[i].Set(static_cast<Double_t> (qn->Qx(fHar))*sumW[i],static_cast<Double_t> (qn->Qy(fHar))*sumW[i]);
-        if(Qn[i].X() <1E-8|| Qn[i].Y() <1E-8) AliError(Form(" Qx=0 but qn vector is not null for detector %s at step %s",fDetectors[i].Data(),fEqSteps[step].Data()));
-        else {
+
           Q2[i][0]=Qn[i].X();
           Q2[i][1]=Qn[i].Y();//not normalized
-        }
       }
     }
   }
 
-  if(Q2[0][0]<1E-8 && Q2[1][0]<1E-8 ) return ;
+  // if(Q2[0][0]<1E-8 && Q2[1][0]<1E-8 ) return ;
   //Filling the histos
   for(Int_t i=0;i<fNDetectors;i++){
     if( !IsHistogramDisabled(Form("EVENTPLANE_%s",fDetectors[i].Data())) ) Histo(eventSelection,triggerClassName,centrality,Form("EVENTPLANE_%s",fDetectors[i].Data()))->Fill(phiEP[i]);
@@ -1014,7 +1014,7 @@ Double_t AliAnalysisMuMuFlow::TriggerLptApt ( Double_t* xVal, Double_t* par )
 Bool_t AliAnalysisMuMuFlow::IsDPhiInPlane(const AliVParticle& t1, const AliVParticle& t2) const
 {
   /// Whether the pair passes the dphi cut
-  if((Q2[0][0]*Q2[0][0])<1E-8 && (Q2[0][1]*Q2[0][1])<1E-8) return kFALSE;
+  // if((Q2[0][0]*Q2[0][0])<1E-8 && (Q2[0][1]*Q2[0][1])<1E-8) return kFALSE;
 
   TLorentzVector pi(t1.Px(),t1.Py(),t1.Pz(),
                     TMath::Sqrt(AliAnalysisMuonUtility::MuonMass2()+t1.P()*t1.P()));
@@ -1026,14 +1026,15 @@ Bool_t AliAnalysisMuMuFlow::IsDPhiInPlane(const AliVParticle& t1, const AliVPart
   if( dphi <  0 ) dphi+=2*TMath::Pi();
   if( dphi >=TMath::Pi()) dphi-= TMath::Pi();
 
-  return  (( dphi < 3.142 && dphi > 2.356  )||( dphi < 0.785 && dphi > 0 ));
+  std::cout << "isdphiinplane phi : " << pair4Momentum.Phi() << " dphi " << dphi << " : " << (( dphi < TMath::Pi() && dphi > 3.*TMath::Pi()/4.  )||( dphi < TMath::Pi()/4. && dphi > 0 )) << std::endl;
+  return  (( dphi < TMath::Pi() && dphi > 3.*TMath::Pi()/4.  )||( dphi < TMath::Pi()/4. && dphi > 0 ));
 }
 
 //_____________________________________________________________________________
 Bool_t AliAnalysisMuMuFlow::IsDPhiOutOfPlane(const AliVParticle& t1, const AliVParticle& t2) const
 {
   /// Whether the pair passes the dphi cut
-  if((Q2[0][0]*Q2[0][0])<1E-8 && (Q2[0][1]*Q2[0][1])<1E-8) return kFALSE;
+  // if((Q2[0][0]*Q2[0][0])<1E-8 && (Q2[0][1]*Q2[0][1])<1E-8) return kFALSE;
 
   TLorentzVector pi(t1.Px(),t1.Py(),t1.Pz(),
                     TMath::Sqrt(AliAnalysisMuonUtility::MuonMass2()+t1.P()*t1.P()));
@@ -1045,7 +1046,9 @@ Bool_t AliAnalysisMuMuFlow::IsDPhiOutOfPlane(const AliVParticle& t1, const AliVP
   if( dphi <  0 ) dphi+=2*TMath::Pi();
   if( dphi >=TMath::Pi()) dphi-= TMath::Pi();
 
-  return  ( dphi < 2.356 && dphi > 0.785 ); // dphi in [-pi/4,pi/4]
+  std::cout << "isdphioutofplane phi : " << pair4Momentum.Phi() << " dphi " << dphi << " : " << ( dphi < 3.*TMath::Pi()/4. && dphi > TMath::Pi()/4.) << std::endl;
+
+  return  ( dphi < 3.*TMath::Pi()/4. && dphi > TMath::Pi()/4.); // dphi in [-pi/4,pi/4]
 }
 
 //_____________________________________________________________________________
@@ -1065,7 +1068,7 @@ Bool_t AliAnalysisMuMuFlow::Isq2InSmallRange(const AliVParticle& t1, const AliVP
     AliWarning("ERROR : no q2SmallMap provided");
     return kFALSE;
   }
-  if((Q2[0][0]*Q2[0][0])<1E-8 && (Q2[0][1]*Q2[0][1])<1E-8 ) return kFALSE;
+  // if((Q2[0][0]*Q2[0][0])<1E-8 && (Q2[0][1]*Q2[0][1])<1E-8 ) return kFALSE;
   Double_t q2 = sqrt(Q2[0][0]*Q2[0][0]+Q2[0][1]*Q2[0][1]);
   // Int_t bin    = fq2Map[0]->GetBinContent(fq2Map[0]->FindBin(GetCentrality()));
   // std::cout << "centrality " << GetCentrality() << "Small q2 : " << q2 <<std::endl;
@@ -1078,7 +1081,7 @@ Bool_t AliAnalysisMuMuFlow::Isq2InLargeRange(const AliVParticle& t1, const AliVP
     AliWarning("ERROR : no q2SmallMap provided");
     return kFALSE;
   }
-  if((Q2[0][0]*Q2[0][0])<1E-8 && (Q2[0][1]*Q2[0][1])<1E-8 ) return kFALSE;
+  // if((Q2[0][0]*Q2[0][0])<1E-8 && (Q2[0][1]*Q2[0][1])<1E-8 ) return kFALSE;
   Double_t q2 = sqrt(Q2[0][0]*Q2[0][0]+Q2[0][1]*Q2[0][1]);
   // Int_t bin    = fq2Map[1]->GetBinContent(fq2Map[1]->FindBin(GetCentrality()));
   // std::cout << "centrality " << GetCentrality() << "Large q2 : " << q2 <<std::endl;
