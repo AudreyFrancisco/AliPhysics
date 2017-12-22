@@ -356,7 +356,8 @@ void AliAnalysisMuMuSpectraProcessorPbPb::DrawResults( const char* what, const c
   std::vector<double> NofWhat;
   std::vector<double> NofWhatErr;
   std::vector<double> SoverB;
-  std::vector<double> BinRange;
+  std::vector<double> BinMin;
+  std::vector<double> BinMax;
   std::vector<double> massJpsi;
   std::vector<double> massJpsiErr;
   std::vector<double> sigmaJpsi;
@@ -427,11 +428,11 @@ void AliAnalysisMuMuSpectraProcessorPbPb::DrawResults( const char* what, const c
       if(subresult->HasValue("sJPsi"))           sigmaJpsiErr.push_back( subresult->GetErrorStat("sJPsi") );
       else sigmaJpsiErr.push_back(0.0);
 
-      if(subresult->HasValue("FitChi2PerNDF"))   chi2perndf.push_back( subresult->GetErrorStat("FitChi2PerNDF") );
+      if(subresult->HasValue("FitChi2PerNDF"))   chi2perndf.push_back( subresult->GetValue("FitChi2PerNDF") );
       else chi2perndf.push_back(0.0);
 
-      BinRange.push_back ( r->Xmin() );
-      BinRange.push_back ( r->Xmax() );
+      BinMin.push_back ( r->Xmin() );
+      BinMax.push_back ( r->Xmax() );
     }
   }
 
@@ -521,29 +522,34 @@ void AliAnalysisMuMuSpectraProcessorPbPb::DrawResults( const char* what, const c
 
       // --- Config. first legend pad ---
 
-      TLegend* leg = new TLegend(0.5209804,0.2662884,0.7326179,0.7057458);
-      leg->SetTextSize(0.05);
+      TPaveText* leg = new TPaveText(0.519804,0.2662884,0.8526179,0.7057458,"brNDC");
+      leg->SetTextSize(0.048);
       leg->SetBorderSize(0);
+      leg->SetFillStyle(0);
+      leg->SetLineWidth(2);
+      leg->SetTextAlign(12);
+      leg->SetTextFont(42);
 
-      leg->AddEntry((TObject*)0,Form("#chi^{2}/ndf = %.2f ",chi2perndf[n-1]),"");
-      leg->AddEntry((TObject*)0,Form("S/B = %.1f",SoverB[n-1]),"");
-      leg->AddEntry((TObject*)0,Form("%s = %.0f +/-  %.0f",what,NofWhat[n-1],NofWhatErr[n-1]),"");
-      leg->AddEntry((TObject*)0,Form("m_{J/#psi} = %.0f +/-  %.1f  MeV/#it{c}",1000*massJpsi[n-1],1000*massJpsiErr[n-1]),"");
-      leg->AddEntry((TObject*)0,Form("#sigma_{J/#psi} = %.0f +/-  %.1f MeV/#it{c}",1000*sigmaJpsi[n-1],1000*sigmaJpsiErr[n-1]),"");
+      leg->AddText(Form("#chi^{2}/ndf = %.2f ",chi2perndf[n-1]));
+      leg->AddText(Form("S/B = %.1f",SoverB[n-1]));
+      leg->AddText(Form("%s = %.0f +/-  %.0f",what,NofWhat[n-1],NofWhatErr[n-1]));
+      leg->AddText(Form("m_{J/#psi} = %.0f +/-  %.1f  MeV/#it{c}^{2}",1000*massJpsi[n-1],1000*massJpsiErr[n-1]));
+      leg->AddText(Form("#sigma_{J/#psi} = %.0f +/-  %.1f MeV/#it{c}^{2}",1000*sigmaJpsi[n-1],1000*sigmaJpsiErr[n-1]));
       leg->Draw("same");
 
       // --- Playground for a second pad if needed   ---
 
-      TPaveText* pt = new TPaveText(0.55,0.75,0.75,0.95,"brNDC");
+      TPaveText* pt = new TPaveText(0.55,0.72,0.75,0.95,"brNDC");
       pt->SetBorderSize(0);
       pt->SetFillStyle(0);
       pt->SetLineWidth(2);
       pt->SetTextAlign(12);
       pt->SetTextFont(42);
-      pt->SetTextSize(0.058);
+      pt->SetTextSize(0.05);
       // pt->AddText("ALICE Performance 20/08/2016 ");
-      pt->AddText("ALICE pp #sqrt{#it{s}} = 5.02 TeV, L_{int} = 109 #pm 2.1 % nb^{-1}");
-      pt->AddText("0 < #it{p}_{T} < 12 GeV/#it{c}^{2}");
+      pt->AddText("ALICE Pb-Pb #sqrt{#it{s}} = 5.02 TeV, L_{int} = 225 #pm 2.1 % #mub^{-1}");
+      pt->AddText("Inclusive J/#psi #rightarrow #mu^{+}#mu^{-}");
+      pt->AddText(Form("%.0f < #it{p}_{T} < %.0f GeV/#it{c}^{2}",BinMin[n-1],BinMax[n-1]));
       pt->AddText("2.5 < #it{y} < 4");
 
       // if(BinType.CompareTo("PSI-YVSPT-2DBIN1")==0){
