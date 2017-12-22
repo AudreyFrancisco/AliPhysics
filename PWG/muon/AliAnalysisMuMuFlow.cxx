@@ -44,7 +44,6 @@ fcomputeMeanV2(kTRUE),
 fcomputeEP(kTRUE),
 fcomputeSP(kTRUE),
 fESE(kFALSE),
-fWeightMuon(kFALSE),
 fAccEffHisto(0x0),
 fMinvBinSeparator("+"),
 fsystLevel(systLevel),
@@ -62,6 +61,7 @@ fNDetectors(3),
 fHar(2),
 EP{0.,0.,0.},
 Q2{{0,0},{0,0},{0,0}},
+fSumW{1.,1.,1.},
 fq2Map{0x0,0x0}
 {
   // FIXME ? find the AccxEff histogram from HistogramCollection()->Histo("/EXCHANGE/JpsiAccEff")
@@ -104,7 +104,7 @@ AliAnalysisMuMuFlow::DefineHistogramCollection(const char* eventSelection,
 
   // no bins defined by the external steering macro, use our own defaults
   //if (!fBinsToFill) SetBinsToFill("psi","integrated,ptvsy,yvspt,pt,y,phi");
-  if (!fBinsToFill) SetBinsToFill("psi","pt,y, dphiSPD, dphivsptSPD");
+  if (!fBinsToFill) SetBinsToFill("psi","integrated,pt,y, dphiSPD, dphivsptSPD");
 
   // mass range
   Double_t minvMin = fMinvMin;
@@ -339,6 +339,67 @@ void AliAnalysisMuMuFlow::DefineMinvRange(Double_t minvMin, Double_t minvMax, Do
 }
 
 //_____________________________________________________________________________
+void AliAnalysisMuMuFlow::SetEvent(AliVEvent* event, AliMCEvent* mcEvent)
+{
+  /// Set the event, compute multiplicities and add them as a list to the event
+  // The function access the corrected Qn vector from the Qn correction framework (PWGPP/EVCHAR/FlowVectorCorrections)
+  // Check the documentation at https://twiki.cern.ch/twiki/bin/view/ALICE/StartUsingR2FlowVectorCorrections
+  AliAnalysisMuMuBase::SetEvent(event,mcEvent); // To have Event() and MCEvent() method working
+
+  EP[0]=999;
+
+  AliQnCorrectionsManager *flowQnMgr;
+  AliAnalysisTaskFlowVectorCorrections *flowQnVectorTask =
+      static_cast<AliAnalysisTaskFlowVectorCorrections *>(AliAnalysisManager::GetAnalysisManager()->GetTask("FlowQnVectorCorrections"));
+  if (flowQnVectorTask != NULL) {
+    flowQnMgr = flowQnVectorTask->GetAliQnCorrectionsManager();
+  }
+  else {
+    AliFatal("This task needs the Flow Qn vector corrections framework and it is not present. Aborting!!!");
+    return;
+  }
+  Double_t phiEP[fNDetectors];
+  TVector2 Qn[fNDetectors];
+  Int_t step =3;
+  //Get a TList containing Tlist of Qnvectors for each detector
+  //Detector > correction step (cf QnCorr : raw, plain, rec, align + info quality) > harmonic (QX, QY, EP)
+  TList* detectorlist = flowQnMgr->GetQnVectorList();
+  if (!detectorlist) AliError("detectorlist is missing... You should check what happened");
+  //here we get and fill
+  for(Int_t i=0; i<fNDetectors; i++){
+    if(i==0)step=4;
+    else step=3;
+    TList* qnlist = static_cast<TList*> (detectorlist->FindObject(fDetectors[i].Data()));
+    if (!qnlist) AliError("Detectorlist was found but there is no entry for your detector");
+    else{
+      AliQnCorrectionsQnVector* qn = static_cast<AliQnCorrectionsQnVector*> (qnlist->FindObject(fEqSteps[step].Data())); //last step
+
+      if (qn == NULL) {
+      // align step was not found, trying to get something else
+        AliError(Form("%s step was not found for detector %s",fEqSteps[step].Data(),fDetectors[i].Data()));
+        return;
+      }
+      else if( !qn->IsGoodQuality()){
+        AliError("Bad quality Qn");
+        return;
+      }
+      else {
+        fSumW[i]= qn->GetSumOfWeights();
+        fSumW[i]=fSumW[i];
+        //EP
+        phiEP[i] = static_cast<Double_t> (qn->EventPlane(2)); //2nd harmonic
+        if(phiEP[i] == 0.) AliError(Form("EP=0 but qn vector is not null for detector %s at step %s",fDetectors[i].Data(),fEqSteps[step].Data()));
+        else EP[i]=phiEP[i];
+        //Qn
+        Qn[i].Set(static_cast<Double_t> (qn->Qx(fHar))*fSumW[i],static_cast<Double_t> (qn->Qy(fHar))*fSumW[i]);
+
+          Q2[i][0]=Qn[i].X();
+          Q2[i][1]=Qn[i].Y();//not normalized
+      }
+    }
+  }
+}
+//_____________________________________________________________________________
 void AliAnalysisMuMuFlow::FillHistosForPair(const char* eventSelection,
                                             const char* triggerClassName,
                                             const char* centrality,
@@ -361,7 +422,7 @@ void AliAnalysisMuMuFlow::FillHistosForPair(const char* eventSelection,
   AliVParticle               * mcTracki(0x0);
   AliVParticle               * mcTrackj(0x0);
   TLorentzVector             * pair4MomentumMC(0x0);
-  Double_t inputWeightMC(1.);
+  Double_t inputWeight(1.);
   AliMergeableCollectionProxy* mcProxy(0x0);
 
   // Make sure we have an associated tracks in simulation stack if running on MC
@@ -398,9 +459,6 @@ void AliAnalysisMuMuFlow::FillHistosForPair(const char* eventSelection,
     TLorentzVector mcpj(mcTrackj->Px(),mcTrackj->Py(),mcTrackj->Pz(),TMath::Sqrt(AliAnalysisMuonUtility::MuonMass2()+mcTrackj->P()*mcTrackj->P()));
     mcpj+=mcpi;
 
-    // Weight tracks if specified
-    if(!fWeightMuon)      inputWeightMC = WeightPairDistribution(mother->Pt(),mother->Y());
-    else if(fWeightMuon)  inputWeightMC = WeightMuonDistribution(mcTracki->Px()) * WeightMuonDistribution(mcTrackj->Px());
   }
 
   // Construct dimuons vector
@@ -414,11 +472,6 @@ void AliAnalysisMuMuFlow::FillHistosForPair(const char* eventSelection,
 
   // Create proxy in AliMergeableCollection
   AliMergeableCollectionProxy* proxy = HistogramCollection()->CreateProxy(BuildPath(eventSelection,triggerClassName,centrality,pairCutName));
-
-  // Weight tracks if specified
-  Double_t inputWeight=0.;
-  if(!fWeightMuon)      inputWeight = WeightPairDistribution(pair4Momentum.Pt(),pair4Momentum.Rapidity());
-  else if(fWeightMuon)  inputWeight = WeightMuonDistribution(tracki.Pt()) * WeightMuonDistribution(trackj.Pt());
 
   //********************
   // Get QN and EP from QnCorrections Framework
@@ -635,13 +688,13 @@ void AliAnalysisMuMuFlow::FillHistosForPair(const char* eventSelection,
               hprofYName= Form("MeanYVs%s",minvName.Data());
               TProfile* hprofY = Prof(eventSelection,triggerClassName,centrality,pairCutName,hprofYName.Data());
               if ( !hprofY )AliError(Form("Could not get %s",hprofYName.Data()));
-              else hprofY->Fill(pair4MomentumMC->M(),pair4MomentumMC->Rapidity(),inputWeightMC);
+              else hprofY->Fill(pair4MomentumMC->M(),pair4MomentumMC->Rapidity(),inputWeight);
               // Costheta
               for(Int_t i=0; i<fNDetectors;i++){
                 hprofmV2Name= Form("MeanV2Vs%s_EP_%s",minvName.Data(),fDetectors[i].Data());
                 TProfile* hprofmV2 = Prof(eventSelection,triggerClassName,centrality,pairCutName,hprofmV2Name.Data());
                 if ( !hprofmV2)AliError(Form("Could not get %s",hprofmV2Name.Data()));
-                else hprofmV2->Fill(pair4MomentumMC->M(),cos(2*dphi[i]),inputWeightMC);
+                else hprofmV2->Fill(pair4MomentumMC->M(),cos(2*dphi[i]),inputWeight);
               }
             }
           }
@@ -717,7 +770,7 @@ void AliAnalysisMuMuFlow::FillHistosForPair(const char* eventSelection,
           if( okAccEffMC ){
             hCorr = mcProxy->Histo(minvName.Data());
             if (!hCorr) AliError(Form("Could not get MC %s",minvName.Data()));
-            else hCorr->Fill(pair4MomentumMC->M(),inputWeightMC/AccxEffMC);
+            else hCorr->Fill(pair4MomentumMC->M(),inputWeight/AccxEffMC);
           }
 
           if (r->Quantity() == "PT"||r->IsIntegrated()){
@@ -796,95 +849,42 @@ void AliAnalysisMuMuFlow::FillHistosForEvent(const char* eventSelection,
                                             const char* centrality)
 {
   // Fill histos with event planes and Qn vectors + compute the resolution with the 3 sub-event method
-  // The function access the corrected Qn vector from the Qn correction framework (PWGPP/EVCHAR/FlowVectorCorrections)
-  // Check the documentation at https://twiki.cern.ch/twiki/bin/view/ALICE/StartUsingR2FlowVectorCorrections
-  AliQnCorrectionsManager *flowQnMgr;
-  AliAnalysisTaskFlowVectorCorrections *flowQnVectorTask =
-      static_cast<AliAnalysisTaskFlowVectorCorrections *>(AliAnalysisManager::GetAnalysisManager()->GetTask("FlowQnVectorCorrections"));
-  if (flowQnVectorTask != NULL) {
-    flowQnMgr = flowQnVectorTask->GetAliQnCorrectionsManager();
-  }
-  else {
-    AliFatal("This task needs the Flow Qn vector corrections framework and it is not present. Aborting!!!");
-    return;
-  }
-  Double_t phiEP[fNDetectors];
-  TVector2 Qn[fNDetectors];
-  Int_t step =3;
-  Float_t sumW[fNDetectors];
-  //Get a TList containing Tlist of Qnvectors for each detector
-  //Detector > correction step (cf QnCorr : raw, plain, rec, align + info quality) > harmonic (QX, QY, EP)
-  TList* detectorlist = flowQnMgr->GetQnVectorList();
-  if (!detectorlist) AliError("detectorlist is missing... You should check what happened");
-  //here we get and fill
-  for(Int_t i=0; i<fNDetectors; i++){
-    if(i==0)step=4;
-    else step=3;
-    TList* qnlist = static_cast<TList*> (detectorlist->FindObject(fDetectors[i].Data()));
-    if (!qnlist) AliError("Detectorlist was found but there is no entry for your detector");
-    else{
-      AliQnCorrectionsQnVector* qn = static_cast<AliQnCorrectionsQnVector*> (qnlist->FindObject(fEqSteps[step].Data())); //last step
-
-      if (qn == NULL) {
-      // align step was not found, trying to get something else
-        AliError(Form("%s step was not found for detector %s",fEqSteps[step].Data(),fDetectors[i].Data()));
-        return;
-      }
-      else if( !qn->IsGoodQuality()){
-        AliError("Bad quality Qn");
-        return;
-      }
-      else {
-        sumW[i]= qn->GetSumOfWeights();
-        //EP
-        phiEP[i] = static_cast<Double_t> (qn->EventPlane(2)); //2nd harmonic
-        if(phiEP[i] == 0.) AliError(Form("EP=0 but qn vector is not null for detector %s at step %s",fDetectors[i].Data(),fEqSteps[step].Data()));
-        else EP[i]=phiEP[i];
-        //Qn
-        Qn[i].Set(static_cast<Double_t> (qn->Qx(fHar))*sumW[i],static_cast<Double_t> (qn->Qy(fHar))*sumW[i]);
-
-          Q2[i][0]=Qn[i].X();
-          Q2[i][1]=Qn[i].Y();//not normalized
-      }
-    }
-  }
-
   // if(Q2[0][0]<1E-8 && Q2[1][0]<1E-8 ) return ;
   //Filling the histos
   for(Int_t i=0;i<fNDetectors;i++){
-    if( !IsHistogramDisabled(Form("EVENTPLANE_%s",fDetectors[i].Data())) ) Histo(eventSelection,triggerClassName,centrality,Form("EVENTPLANE_%s",fDetectors[i].Data()))->Fill(phiEP[i]);
-    if( !IsHistogramDisabled(Form("Cos2EP_%s",fDetectors[i].Data())) ) Histo(eventSelection,triggerClassName,centrality,Form("Cos2EP_%s",fDetectors[i].Data()))->Fill(TMath::Cos(2*phiEP[i]));
-    if( !IsHistogramDisabled(Form("Sin2EP_%s",fDetectors[i].Data())) ) Histo(eventSelection,triggerClassName,centrality,Form("Sin2EP_%s",fDetectors[i].Data()))->Fill(TMath::Sin(2*phiEP[i]));
-    if( fcomputeSP && !IsHistogramDisabled(Form("Qn_%s",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("Qn_%s",fDetectors[i].Data()))->Fill(TMath::Sqrt(Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y()));
-    if( fcomputeSP && !IsHistogramDisabled(Form("Qn_%s_overM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("Qn_%s_overM",fDetectors[i].Data()))->Fill(TMath::Sqrt(Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y())/sumW[i]);
-    if( fcomputeSP && !IsHistogramDisabled(Form("Qn_%s_oversqrtM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("Qn_%s_oversqrtM",fDetectors[i].Data()))->Fill(TMath::Sqrt(Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y())/TMath::Sqrt(sumW[i]));
+    if( !IsHistogramDisabled(Form("EVENTPLANE_%s",fDetectors[i].Data())) ) Histo(eventSelection,triggerClassName,centrality,Form("EVENTPLANE_%s",fDetectors[i].Data()))->Fill(EP[i]);
+    if( !IsHistogramDisabled(Form("Cos2EP_%s",fDetectors[i].Data())) ) Histo(eventSelection,triggerClassName,centrality,Form("Cos2EP_%s",fDetectors[i].Data()))->Fill(TMath::Cos(2*EP[i]));
+    if( !IsHistogramDisabled(Form("Sin2EP_%s",fDetectors[i].Data())) ) Histo(eventSelection,triggerClassName,centrality,Form("Sin2EP_%s",fDetectors[i].Data()))->Fill(TMath::Sin(2*EP[i]));
+    if( fcomputeSP && !IsHistogramDisabled(Form("Qn_%s",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("Qn_%s",fDetectors[i].Data()))->Fill(TMath::Sqrt(Q2[i][0]*Q2[i][0]+Q2[i][1]*Q2[i][1]));
+    if( fcomputeSP && !IsHistogramDisabled(Form("Qn_%s_overM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("Qn_%s_overM",fDetectors[i].Data()))->Fill(TMath::Sqrt(Q2[i][0]*Q2[i][0]+Q2[i][1]*Q2[i][1])/fSumW[i]);
+    if( fcomputeSP && !IsHistogramDisabled(Form("Qn_%s_oversqrtM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("Qn_%s_oversqrtM",fDetectors[i].Data()))->Fill(TMath::Sqrt(Q2[i][0]*Q2[i][0]+Q2[i][1]*Q2[i][1])/TMath::Sqrt(fSumW[i]));
 
-    if( fcomputeSP && !IsHistogramDisabled(Form("QnX_%s",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnX_%s",fDetectors[i].Data()))->Fill(Qn[i].X()*sumW[i]); //not normalized
-    if( fcomputeSP && !IsHistogramDisabled(Form("QnX_%s_oversqrtM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnX_%s_oversqrtM",fDetectors[i].Data()))->Fill(Qn[i].X()/TMath::Sqrt(sumW[i]));
-    if( fcomputeSP && !IsHistogramDisabled(Form("QnX_%s_overM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnX_%s_overM",fDetectors[i].Data()))->Fill(Qn[i].X()/sumW[i]);
-    if( fcomputeSP && !IsHistogramDisabled(Form("QnX_%s_overL",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnX_%s_overL",fDetectors[i].Data()))->Fill(Qn[i].X()/TMath::Sqrt(Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y()));
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnX_%s",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnX_%s",fDetectors[i].Data()))->Fill(Q2[i][0]*fSumW[i]); //not normalized
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnX_%s_oversqrtM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnX_%s_oversqrtM",fDetectors[i].Data()))->Fill(Q2[i][0]/TMath::Sqrt(fSumW[i]));
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnX_%s_overM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnX_%s_overM",fDetectors[i].Data()))->Fill(Q2[i][0]/fSumW[i]);
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnX_%s_overL",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnX_%s_overL",fDetectors[i].Data()))->Fill(Q2[i][0]/TMath::Sqrt(Q2[i][0]*Q2[i][0]+Q2[i][1]*Q2[i][1]));
 
-    if( fcomputeSP && !IsHistogramDisabled(Form("QnY_%s",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnY_%s",fDetectors[i].Data()))->Fill(Qn[i].Y());
-    if( fcomputeSP && !IsHistogramDisabled(Form("QnY_%s_oversqrtM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnY_%s_oversqrtM",fDetectors[i].Data()))->Fill(Qn[i].Y()/TMath::Sqrt(sumW[i]));
-    if( fcomputeSP && !IsHistogramDisabled(Form("QnY_%s_overM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnY_%s_overM",fDetectors[i].Data()))->Fill(Qn[i].Y()/sumW[i]);
-    if( fcomputeSP && !IsHistogramDisabled(Form("QnY_%s_overL",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnY_%s_overL",fDetectors[i].Data()))->Fill(Qn[i].Y()/TMath::Sqrt(Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y()));
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnY_%s",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnY_%s",fDetectors[i].Data()))->Fill(Q2[i][1]);
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnY_%s_oversqrtM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnY_%s_oversqrtM",fDetectors[i].Data()))->Fill(Q2[i][1]/TMath::Sqrt(fSumW[i]));
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnY_%s_overM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnY_%s_overM",fDetectors[i].Data()))->Fill(Q2[i][1]/fSumW[i]);
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnY_%s_overL",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnY_%s_overL",fDetectors[i].Data()))->Fill(Q2[i][1]/TMath::Sqrt(Q2[i][0]*Q2[i][0]+Q2[i][1]*Q2[i][1]));
 
-    if( fcomputeSP && !IsHistogramDisabled(Form("QnX_%svscent",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnX_%svscent",fDetectors[i].Data()))->Fill(GetCentrality(),Qn[i].X());
-    if( fcomputeSP && !IsHistogramDisabled(Form("QnX_%svscent_oversqrtM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnX_%svscent_oversqrtM",fDetectors[i].Data()))->Fill(GetCentrality(),Qn[i].X()/TMath::Sqrt(sumW[i]));
-    if( fcomputeSP && !IsHistogramDisabled(Form("QnX_%svscent_overM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnX_%svscent_overM",fDetectors[i].Data()))->Fill(GetCentrality(),Qn[i].X()/sumW[i]);
-    if( fcomputeSP && !IsHistogramDisabled(Form("QnX_%svscent_overL",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnX_%svscent_overL",fDetectors[i].Data()))->Fill(GetCentrality(),Qn[i].X()/TMath::Sqrt(Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y()));
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnX_%svscent",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnX_%svscent",fDetectors[i].Data()))->Fill(GetCentrality(),Q2[i][0]);
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnX_%svscent_oversqrtM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnX_%svscent_oversqrtM",fDetectors[i].Data()))->Fill(GetCentrality(),Q2[i][0]/TMath::Sqrt(fSumW[i]));
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnX_%svscent_overM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnX_%svscent_overM",fDetectors[i].Data()))->Fill(GetCentrality(),Q2[i][0]/fSumW[i]);
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnX_%svscent_overL",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnX_%svscent_overL",fDetectors[i].Data()))->Fill(GetCentrality(),Q2[i][0]/TMath::Sqrt(Q2[i][0]*Q2[i][0]+Q2[i][1]*Q2[i][1]));
 
-    if( fcomputeSP && !IsHistogramDisabled(Form("QnY_%svscent",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnY_%svscent",fDetectors[i].Data()))->Fill(GetCentrality(),Qn[i].Y());
-    if( fcomputeSP && !IsHistogramDisabled(Form("QnY_%svscent_oversqrtM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnY_%svscent_oversqrtM",fDetectors[i].Data()))->Fill(GetCentrality(),Qn[i].Y()/TMath::Sqrt(sumW[i]));
-    if( fcomputeSP && !IsHistogramDisabled(Form("QnY_%svscent_overM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnY_%svscent_overM",fDetectors[i].Data()))->Fill(GetCentrality(),Qn[i].Y()/sumW[i]);
-    if( fcomputeSP && !IsHistogramDisabled(Form("QnY_%svscent_overL",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnY_%svscent_overL",fDetectors[i].Data()))->Fill(GetCentrality(),Qn[i].Y()/TMath::Sqrt(Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y()));
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnY_%svscent",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnY_%svscent",fDetectors[i].Data()))->Fill(GetCentrality(),Q2[i][1]);
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnY_%svscent_oversqrtM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnY_%svscent_oversqrtM",fDetectors[i].Data()))->Fill(GetCentrality(),Q2[i][1]/TMath::Sqrt(fSumW[i]));
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnY_%svscent_overM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnY_%svscent_overM",fDetectors[i].Data()))->Fill(GetCentrality(),Q2[i][1]/fSumW[i]);
+    if( fcomputeSP && !IsHistogramDisabled(Form("QnY_%svscent_overL",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("QnY_%svscent_overL",fDetectors[i].Data()))->Fill(GetCentrality(),Q2[i][1]/TMath::Sqrt(Q2[i][0]*Q2[i][0]+Q2[i][1]*Q2[i][1]));
 
-    if( fcomputeSP && !IsHistogramDisabled(Form("Qnvscent_%s",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("Qnvscent_%s",fDetectors[i].Data()))->Fill(GetCentrality(),TMath::Sqrt(Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y()));
-    if( fcomputeSP && !IsHistogramDisabled(Form("Qnvscent_%s_oversqrtM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("Qnvscent_%s_oversqrtM",fDetectors[i].Data()))->Fill(GetCentrality(),TMath::Sqrt(Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y())/TMath::Sqrt(sumW[i]));
-    if( fcomputeSP && !IsHistogramDisabled(Form("Qnvscent_%s_overM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("Qnvscent_%s_overM",fDetectors[i].Data()))->Fill(GetCentrality(),TMath::Sqrt(Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y())/sumW[i]);
+    if( fcomputeSP && !IsHistogramDisabled(Form("Qnvscent_%s",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("Qnvscent_%s",fDetectors[i].Data()))->Fill(GetCentrality(),TMath::Sqrt(Q2[i][0]*Q2[i][0]+Q2[i][1]*Q2[i][1]));
+    if( fcomputeSP && !IsHistogramDisabled(Form("Qnvscent_%s_oversqrtM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("Qnvscent_%s_oversqrtM",fDetectors[i].Data()))->Fill(GetCentrality(),TMath::Sqrt(Q2[i][0]*Q2[i][0]+Q2[i][1]*Q2[i][1])/TMath::Sqrt(fSumW[i]));
+    if( fcomputeSP && !IsHistogramDisabled(Form("Qnvscent_%s_overM",fDetectors[i].Data()))) Histo(eventSelection,triggerClassName,centrality,Form("Qnvscent_%s_overM",fDetectors[i].Data()))->Fill(GetCentrality(),TMath::Sqrt(Q2[i][0]*Q2[i][0]+Q2[i][1]*Q2[i][1])/fSumW[i]);
     for(Int_t j=i+1; j<fNDetectors;j++){
       //EP
-      Double_t deltaEP =phiEP[i]-phiEP[j];
+      Double_t deltaEP =EP[i]-EP[j];
       if(TMath::Abs(deltaEP)>TMath::Pi()/fHar){
         if(deltaEP>0.) deltaEP-=2.*TMath::Pi()/fHar;
         else deltaEP+=2.*TMath::Pi()/fHar;
@@ -893,12 +893,12 @@ void AliAnalysisMuMuFlow::FillHistosForEvent(const char* eventSelection,
       //   Histo(eventSelection,triggerClassName,centrality,Form("hEvPlaneReso%s_%s",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(TMath::Cos(fHar*deltaEP));
 
       //Fill Qn vector histos
-      if ( fcomputeEP &&  !IsHistogramDisabled(Form("EP%svsEP%s",fDetectors[i].Data(),fDetectors[j].Data()) )) Histo(eventSelection,triggerClassName,centrality,Form("EP%svsEP%s",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(phiEP[i],phiEP[j]);
-      if ( fcomputeSP && !IsHistogramDisabled(Form("Qn%svsQn%s",fDetectors[i].Data(),fDetectors[j].Data())) ) Histo(eventSelection,triggerClassName,centrality,Form("Qn%svsQn%s",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(TMath::Sqrt(Qn[i]*Qn[i]),TMath::Sqrt(Qn[j]*Qn[j]));
-      if ( fcomputeSP && !IsHistogramDisabled(Form("Q%s*Q%s",fDetectors[i].Data(),fDetectors[j].Data())) )Prof(eventSelection,triggerClassName,centrality,Form("Q%s*Q%s",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(GetCentrality(),Qn[i].X()*Qn[j].X()+Qn[i].Y()*Qn[j].Y());
-      if ( fcomputeSP && !IsHistogramDisabled(Form("Q%s*Q%s",fDetectors[i].Data(),fDetectors[j].Data())) )Prof(eventSelection,triggerClassName,centrality,Form("Q%s*Q%s_overM",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(GetCentrality(),(Qn[i].X()*Qn[j].X()+Qn[i].Y()*Qn[j].Y())/(sumW[i]*sumW[j]));
-      if ( fcomputeSP && !IsHistogramDisabled(Form("Q%s*Q%s",fDetectors[i].Data(),fDetectors[j].Data())) )Prof(eventSelection,triggerClassName,centrality,Form("Q%s*Q%s_oversqrtM",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(GetCentrality(),(Qn[i].X()*Qn[j].X()+Qn[i].Y()*Qn[j].Y())/TMath::Sqrt(sumW[i]*sumW[j]));
-      if ( fcomputeSP && !IsHistogramDisabled(Form("Q%s*Q%s",fDetectors[i].Data(),fDetectors[j].Data())) )Prof(eventSelection,triggerClassName,centrality,Form("Q%s*Q%s_overL",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(GetCentrality(),(Qn[i].X()*Qn[j].X()+Qn[i].Y()*Qn[j].Y())/(TMath::Sqrt(Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y())*TMath::Sqrt(Qn[i].X()*Qn[i].X()+Qn[i].Y()*Qn[i].Y())));
+      if ( fcomputeEP &&  !IsHistogramDisabled(Form("EP%svsEP%s",fDetectors[i].Data(),fDetectors[j].Data()) )) Histo(eventSelection,triggerClassName,centrality,Form("EP%svsEP%s",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(EP[i],EP[j]);
+      if ( fcomputeSP && !IsHistogramDisabled(Form("Qn%svsQn%s",fDetectors[i].Data(),fDetectors[j].Data())) ) Histo(eventSelection,triggerClassName,centrality,Form("Qn%svsQn%s",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(TMath::Sqrt(Q2[i][0]*Q2[i][0]+Q2[i][1]*Q2[i][1]),TMath::Sqrt(Q2[j][0]*Q2[j][0]+Q2[j][1]*Q2[j][1]));
+      if ( fcomputeSP && !IsHistogramDisabled(Form("Q%s*Q%s",fDetectors[i].Data(),fDetectors[j].Data())) )Prof(eventSelection,triggerClassName,centrality,Form("Q%s*Q%s",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(GetCentrality(),Q2[i][0]*Q2[j][0]+Q2[i][1]*Q2[j][1]);
+      if ( fcomputeSP && !IsHistogramDisabled(Form("Q%s*Q%s",fDetectors[i].Data(),fDetectors[j].Data())) )Prof(eventSelection,triggerClassName,centrality,Form("Q%s*Q%s_overM",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(GetCentrality(),(Q2[i][0]*Q2[j][1]*Q2[i][1]*Q2[j][1])/(fSumW[i]*fSumW[j]));
+      if ( fcomputeSP && !IsHistogramDisabled(Form("Q%s*Q%s",fDetectors[i].Data(),fDetectors[j].Data())) )Prof(eventSelection,triggerClassName,centrality,Form("Q%s*Q%s_oversqrtM",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(GetCentrality(),(Q2[i][0]*Q2[j][1]*Q2[i][1]*Q2[j][1])/TMath::Sqrt(fSumW[i]*fSumW[j]));
+      if ( fcomputeSP && !IsHistogramDisabled(Form("Q%s*Q%s",fDetectors[i].Data(),fDetectors[j].Data())) )Prof(eventSelection,triggerClassName,centrality,Form("Q%s*Q%s_overL",fDetectors[i].Data(),fDetectors[j].Data()))->Fill(GetCentrality(),(Q2[i][0]*Q2[j][1]*Q2[i][1]*Q2[j][1])/(TMath::Sqrt(Q2[i][0]*Q2[i][0]+Q2[i][1]*Q2[i][1])*TMath::Sqrt(Q2[i][0]*Q2[i][0]+Q2[i][1]*Q2[i][1])));
     }
   }
 }
@@ -944,73 +944,6 @@ Double_t AliAnalysisMuMuFlow::GetAccxEff(Double_t pt,Double_t rapidity)
 
 
 //_____________________________________________________________________________
-Double_t AliAnalysisMuMuFlow::WeightMuonDistribution(Double_t pt)
-{
-  ///Return a weight for a single pt and y, which depend on the varied distributions.
-  // FIXME: hard coded, find a clean way to fix the distribution parameters from outside
-
-  if (!HasMC() ) return 1.;
-  if (!fWeightMuon) return 1.;
-
-
-  //================ Trigger Efficiency distribution pp@5TeV ==============//
-  //value for input distribution
-  Double_t parptpp5 [8]     = {6.24341e-01,2.68680e-01,6.57929e-01,1.00000e+00,1.00000e+00,1.00000e+00,-1.00000e+00,9.67072e-01}; //Initial dunction
-  Double_t parptpp5corr [8] = {6.24341e-01,2.70085e-01,5.85241e-01,1.00000e+00,1.00000e+00,1.00000e+00,-1.00000e+00,9.67072e-01}; //Corrected one
-
-  //______
-  Double_t weight(1.),funcptsyst(0.);
-  switch ( fsystLevel )
-  {
-    case 0:
-      weight = 1;
-      break;
-    case 1:
-      funcptsyst = TriggerLptApt(&pt,parptpp5);
-      if ( funcptsyst > 0 ) weight = funcptsyst;
-      else  weight = 1;
-      break;
-    case 2:
-      funcptsyst = TriggerLptApt(&pt,parptpp5corr);
-      if ( funcptsyst > 0 ) weight = funcptsyst;
-      else  weight = 1;
-      break;
-  }
-
-  return weight;
-}
-
-//_____________________________________________________________________________
-Double_t AliAnalysisMuMuFlow::WeightPairDistribution(Double_t pt,Double_t rapidity)
-{
-  //Return a weight for a dimuon pt and y, which depend on the varied distributions.
-  // FIXME: hard coded, find a clean way to fix the distribution parameters from outside
-
-  if ( !HasMC() )    return 1.;
-  if ( fWeightMuon ) return 1.;
-  if ( !fPtFuncOld ) return 1.;
-  if ( !fPtFuncNew ) return 1.;
-  if ( !fYFuncOld )  return 1.;
-  if ( !fYFuncNew )  return 1.;
-
-  Double_t weight = fPtFuncNew->Eval(pt) / fPtFuncOld->Eval(pt) * fYFuncNew->Eval(rapidity) / fYFuncOld->Eval(rapidity);
-  return weight;
-}
-
-//______________________________________________
-Double_t AliAnalysisMuMuFlow::TriggerLptApt ( Double_t* xVal, Double_t* par )
-{
-  // trigger response function
-  Double_t xx             = xVal[0];
-  Double_t currX          = TMath::Max(xx,par[6]);
-  Double_t sqrtTwo        = TMath::Sqrt(2.);
-  Double_t yVal           = par[7]+par[0]*(TMath::Erf((currX-par[1])/par[2]/sqrtTwo)-1.);
-  if ( xx < par[6] ) yVal += par[3]*(TMath::Erf((-xx-par[4])/par[5]/sqrtTwo) - TMath::Erf((-par[6]-par[4])/par[5]/sqrtTwo));
-
-  return yVal;
-}
-
-//_____________________________________________________________________________
 Bool_t AliAnalysisMuMuFlow::IsDPhiInPlane(const AliVParticle& t1, const AliVParticle& t2) const
 {
   /// Whether the pair passes the dphi cut
@@ -1022,12 +955,18 @@ Bool_t AliAnalysisMuMuFlow::IsDPhiInPlane(const AliVParticle& t1, const AliVPart
                                TMath::Sqrt(AliAnalysisMuonUtility::MuonMass2()+t2.P()*t2.P()));
   pair4Momentum += pi;
 
-  Double_t dphi = EP[0] - pair4Momentum.Phi();
+  return IsDPhiInPlane(pair4Momentum.Phi());
+}
+//_____________________________________________________________________________
+Bool_t AliAnalysisMuMuFlow::IsDPhiInPlane(Double_t phi, Int_t nEP) const
+{
+
+  Double_t dphi = EP[nEP] - phi;
   if( dphi <  0 ) dphi+=2*TMath::Pi();
   if( dphi >=TMath::Pi()) dphi-= TMath::Pi();
+  std::cout << "isdphiinplane phi : " << phi << " dphi " << dphi << " : " << (( dphi < TMath::Pi() && dphi > 3.*TMath::Pi()/4.  )||( dphi < TMath::Pi()/4. && dphi > 0 )) << std::endl;
 
-  std::cout << "isdphiinplane phi : " << pair4Momentum.Phi() << " dphi " << dphi << " : " << (( dphi < TMath::Pi() && dphi > 3.*TMath::Pi()/4.  )||( dphi < TMath::Pi()/4. && dphi > 0 )) << std::endl;
-  return  (( dphi < TMath::Pi() && dphi > 3.*TMath::Pi()/4.  )||( dphi < TMath::Pi()/4. && dphi > 0 ));
+  return (( dphi < TMath::Pi() && dphi > 3.*TMath::Pi()/4.  )||( dphi < TMath::Pi()/4. && dphi > 0 ));
 }
 
 //_____________________________________________________________________________
@@ -1042,13 +981,7 @@ Bool_t AliAnalysisMuMuFlow::IsDPhiOutOfPlane(const AliVParticle& t1, const AliVP
                                TMath::Sqrt(AliAnalysisMuonUtility::MuonMass2()+t2.P()*t2.P()));
   pair4Momentum += pi;
 
-  Double_t dphi = EP[0] - pair4Momentum.Phi();
-  if( dphi <  0 ) dphi+=2*TMath::Pi();
-  if( dphi >=TMath::Pi()) dphi-= TMath::Pi();
-
-  std::cout << "isdphioutofplane phi : " << pair4Momentum.Phi() << " dphi " << dphi << " : " << ( dphi < 3.*TMath::Pi()/4. && dphi > TMath::Pi()/4.) << std::endl;
-
-  return  ( dphi < 3.*TMath::Pi()/4. && dphi > TMath::Pi()/4.); // dphi in [-pi/4,pi/4]
+  return !IsDPhiInPlane(pair4Momentum.Phi());
 }
 
 //_____________________________________________________________________________
@@ -1111,79 +1044,4 @@ Double_t AliAnalysisMuMuFlow::GetCentrality() const{
   if ( multSelection ) return multSelection->GetMultiplicityPercentile("V0M");
   else return 0.;
 }
-//________________________________________________________________________
-void AliAnalysisMuMuFlow::SetOriginPtFunc(TString formula, const Double_t *param,Double_t xMin, Double_t xMax)
-{
-  /// Create the original function with the parameters used in simulation to generate the pT distribution.
-  /// It must be in the form [0]*(...) to allow for global normalization.
-  /// The [xMin,xMax] range is used to normalized the function.
-  /// Some parameters can be fixed when fitting the generated distribution for cross-check.
 
-  assert(param);
-
-  delete fPtFuncOld;
-  fPtFuncOld = new TF1("fPtFuncOld", formula.Data(), xMin, xMax);
-  fPtFuncOld->SetParameters(param);
-  NormFunc(fPtFuncOld, xMin, xMax);
-
-}
-
-//________________________________________________________________________
-void AliAnalysisMuMuFlow::SetNewPtFunc(TString formula, const Double_t *param,Double_t xMin, Double_t xMax)
-{
-  /// Create the new function with its initial parameters to fit the generated/weighted pT distribution.
-  /// It must be in the form [0]*(...) to allow for global normalization.
-  /// The [xMin,xMax] range is used to normalized the function.
-  /// Some parameters can be fixed when fitting the generated distribution.
-
-  assert(param);
-
-  delete fPtFuncNew;
-  fPtFuncNew = new TF1("fPtFuncNew", formula.Data(), xMin, xMax);
-  fPtFuncNew->SetParameters(param);
-  NormFunc(fPtFuncNew, xMin, xMax);
-
-}
-
-//________________________________________________________________________
-void AliAnalysisMuMuFlow::SetOriginYFunc(TString formula, const Double_t *param,Double_t xMin, Double_t xMax)
-{
-  /// Create the original function with the parameters used in simulation to generate the y distribution.
-  /// It must be in the form [0]*(...) to allow for global normalization.
-  /// The [xMin,xMax] range is used to normalized the function.
-  /// Some parameters can be fixed when fitting the generated distribution for cross-check.
-
-  assert(param);
-
-  delete fYFuncOld;
-  fYFuncOld = new TF1("fYFuncOld", formula.Data(), xMin, xMax);
-  fYFuncOld->SetParameters(param);
-  NormFunc(fYFuncOld, xMin, xMax);
-
-}
-
-//________________________________________________________________________
-void AliAnalysisMuMuFlow::SetNewYFunc(TString formula, const Double_t *param, Double_t xMin, Double_t xMax)
-{
-  /// Create the new function with its initial parameters to fit the generated/weighted y distribution.
-  /// It must be in the form [0]*(...) to allow for global normalization.
-  /// The [xMin,xMax] range is used to normalized the function.
-  /// Some parameters can be fixed when fitting the generated distribution.
-
-  assert(param);
-
-  delete fYFuncNew;
-  fYFuncNew = new TF1("fYFuncNew", formula.Data(), xMin, xMax);
-  fYFuncNew->SetParameters(param);
-  NormFunc(fYFuncNew, xMin, xMax);
-
-}
-
-//________________________________________________________________________
-void AliAnalysisMuMuFlow::NormFunc(TF1 *f, Double_t min, Double_t max)
-{
-  /// normalize the function to its integral in the given range
-   f->SetNpx(100.*(max-min));
-  Double_t integral = f->Integral(min, max);
-  if (integral != 0.) f->SetParameter(0, f->GetParameter(0)/integral);
-}

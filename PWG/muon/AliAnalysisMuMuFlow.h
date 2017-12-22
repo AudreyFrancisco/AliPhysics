@@ -36,14 +36,18 @@ public:
 
   Bool_t ShouldCorrectDimuonForAccEff() { return (fAccEffHisto != 0x0); }
 
-  void SetMuonWeight() { fWeightMuon=kTRUE; }
+  virtual void SetEvent(AliVEvent* event, AliMCEvent* mcEvent=0x0);
+
+  // Bool_t ShouldCorrectDimuonForAccEff() { return (fAccEffHisto != 0x0); }
+
+  // void SetMuonWeight() { fWeightMuon=kTRUE; }
 
   void SetBinsToFill(const char* particle, const char* bins);
 
-  // create the original function with the parameters used in simulation to generate the pT distribution
-  void SetOriginPtFunc(TString formula, const Double_t *param, Double_t xMin, Double_t xMax);
-  // create the new function with its initial parameters to fit the generated/weighted pT distribution
-  void SetNewPtFunc(TString formula, const Double_t *param, Double_t xMin, Double_t xMax);
+  // // create the original function with the parameters used in simulation to generate the pT distribution
+  // void SetOriginPtFunc(TString formula, const Double_t *param, Double_t xMin, Double_t xMax);
+  // // create the new function with its initial parameters to fit the generated/weighted pT distribution
+  // void SetNewPtFunc(TString formula, const Double_t *param, Double_t xMin, Double_t xMax);
 
   // create the original function with the parameters used in simulation to generate the y distribution
   void SetOriginYFunc(TString formula, const Double_t *param, Double_t xMin, Double_t xMax);
@@ -78,18 +82,14 @@ private:
 
   void CreateMinvHistograms(const char* eventSelection, const char* triggerClassName, const char* centrality);
 
-  // normalize the function to its integral in the given range
-  void NormFunc(TF1 *f, Double_t min, Double_t max);
 
   TString GetMinvHistoName(const AliAnalysisMuMuBinning::Range& r, Bool_t accEffCorrected) const;
 
   Double_t GetAccxEff(Double_t pt,Double_t rapidity);
 
-  Double_t WeightMuonDistribution(Double_t pt);
+  // Double_t WeightMuonDistribution(Double_t pt);
 
-  Double_t WeightPairDistribution(Double_t pt,Double_t rapidity);
-
-  Double_t TriggerLptApt(Double_t *x, Double_t *par);
+  // Double_t WeightPairDistribution(Double_t pt,Double_t rapidity);
 
   // TVector2 GetQn(Int_t detector) const { return Q2[detector]; }
   // void SetQn(Int_t detector, TVector2 Qn) { Q2[detector].Set(Qn); }
@@ -98,12 +98,14 @@ private:
 
   Double_t GetCentrality() const;
 
+  Bool_t IsDPhiInPlane(Double_t phi, Int_t nEP=0) const;
+
 private:
   Bool_t fcomputeMeanV2; //mv2 with EP method
   Bool_t fcomputeEP; //dist in dphi bins
   Bool_t fcomputeSP; //scalar product
   Bool_t fESE; //event shape engineering
-  Bool_t fWeightMuon;
+  // Bool_t fWeightMuon;
   TH2F     * fAccEffHisto;
   TString fMinvBinSeparator;
   Int_t fsystLevel;
@@ -121,6 +123,7 @@ private:
   Int_t fHar;
   Double_t EP[3];
   Double_t Q2[3][2];
+  Float_t fSumW[3];
   TString fEqSteps  [5] = {"raw", "plain", "rec", "align","twist"};
   TString fDetectors[3] = {"SPD","VZEROA", "VZEROC"};
   TH1F *fq2Map[2];
