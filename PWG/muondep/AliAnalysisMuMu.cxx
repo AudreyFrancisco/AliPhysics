@@ -1667,8 +1667,8 @@ AliAnalysisMuMuSpectra* AliAnalysisMuMu::FitParticle(const char* particle,const 
       AliError("Wrong spectra type choice: Possibilities are: 'minv', 'mpt', 'mpt2', 'mV2' or 'SP'");
       continue;
     }
-    if( fitMethod->Contains("IN")) hname = Form("INPLANE_%s",hname.Data());
-    else if( fitMethod->Contains("OUT")) hname = Form("OUTOFPLANE_%s",hname.Data());
+    // if( fitMethod->Contains("IN")) hname = Form("INPLANE_%s",hname.Data());
+    // else if( fitMethod->Contains("OUT")) hname = Form("OUTOFPLANE_%s",hname.Data());
 
     // Print the fitting process on the terminal
     TString isCorr(corrected ? " AccEffCorr " : " ");
