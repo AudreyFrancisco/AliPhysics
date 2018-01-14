@@ -2638,9 +2638,9 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2VWG2()
   fHisto->GetListOfFunctions()->Delete();
 
   TString histoName = fHisto->GetTitle();
-  TString sfitOption= histoName.Contains("Corrected") ? "SERLM" : "SERLM"; //SERLM
+  TString sfitOption= histoName.Contains("Corrected") ? "SERL" : "SERL"; //SERLM
   const char* fitOption = sfitOption.Data(); //We can add NO to avoid plotting
-  const char* fitOptionBg = "SERO"; //We can add NO to avoid plotting//SER
+  const char* fitOptionBg = "SER"; //We can add NO to avoid plotting//SER
 
 
   //__________ Get tails parameters, fitting range and SigmaPsiP
@@ -3256,7 +3256,7 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2POL2POL3()
   fHisto->GetListOfFunctions()->Delete();
 
   TString histoName = fHisto->GetTitle();
-  TString sfitOption= histoName.Contains("Corrected") ? "SERLM" : "SERLM";
+  TString sfitOption= histoName.Contains("Corrected") ? "SERL" : "SERL";
   const char* fitOption = sfitOption.Data(); //We can add NO to avoid plotting
   const char* fitOptionBg = "SER"; //We can add NO to avoid plotting
 
@@ -4963,9 +4963,9 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWVWG2()
 
   fHisto->GetListOfFunctions()->Delete();
   TString histoName = fHisto->GetTitle();
-  TString sfitOption= histoName.Contains("Corrected") ? "SERLM" : "SERLM";
+  TString sfitOption= histoName.Contains("Corrected") ? "SERL" : "SERL";
   const char* fitOption = sfitOption.Data();
-  const char* fitOptionBg = "SERI";
+  const char* fitOptionBg = "SER";
 
 
   //__________ Get tails parameters, fitting range and SigmaPsiP
@@ -5540,7 +5540,7 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMENA60NEWPOL2POL3()
   fHisto->GetListOfFunctions()->Delete();
 
   TString histoName = fHisto->GetTitle();
-  TString sfitOption= histoName.Contains("Corrected") ? "SERLM" : "SERLM";
+  TString sfitOption= histoName.Contains("Corrected") ? "SERL" : "SERL";
   const char* fitOption = sfitOption.Data();
   const char* fitOptionBg = "SER";
 
