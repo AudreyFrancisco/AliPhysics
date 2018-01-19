@@ -3268,8 +3268,8 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2POL2POL3()
   Double_t fitRangeLow  = GetValue(kFitRangeLow);
   Double_t fitRangeHigh = GetValue(kFitRangeHigh);
   Double_t paramSPsiP   = GetValue("FSigmaPsiP");
-  // Double_t meanJPsi     = GetValue("meanJPsi");
-  // Double_t sigmaJPsi    = GetValue("sigmaJPsi");
+  Double_t meanJPsi     = GetValue("meanJPsi");
+  Double_t sigmaJPsi    = GetValue("sigmaJPsi");
 
   Double_t a_init    = IsValidValue(GetValue("a_init"))  ? GetValue("a_init")  : -130.;
   Double_t b_init    = IsValidValue(GetValue("b_init"))  ? GetValue("b_init")  : 350.;
@@ -3347,11 +3347,17 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2POL2POL3()
   bin = fHisto->FindBin(3.10);
   fitTotal->SetParameter(7, fHisto->GetBinContent(bin)); // norm
 
-  fitTotal->SetParameter(8, 3.15); // mean
-  fitTotal->SetParLimits(8, 2.95, 3.2);
+  if (IsValidValue(meanJPsi)) fitTotal->FixParameter(6,meanJPsi);
+  else{
+    fitTotal->SetParameter(8, 3.15); // mean
+    fitTotal->SetParLimits(8, 2.95, 3.2);
+  }
 
-  fitTotal->SetParameter(9, 0.08); // sigma
-  fitTotal->SetParLimits(9, 0.05, 0.09);
+  if (IsValidValue(sigmaJPsi)) fitTotal->FixParameter(7, sigmaJPsi);
+  else{
+    fitTotal->SetParameter(9, 0.08); // sigma
+    fitTotal->SetParLimits(9, 0.05, 0.09);
+  }
 
   if ( IsValidValue(alphaLow) ) {
     fitTotal->FixParameter(10, alphaLow);
