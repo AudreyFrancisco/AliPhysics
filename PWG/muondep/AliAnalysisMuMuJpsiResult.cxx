@@ -3032,12 +3032,12 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2POL1POL2()
   else bin = fHisto->FindBin(3.09);
   fitTotal->SetParameter(5, fHisto->GetBinContent(bin)); // norm
 
-  if(IsValidValue(meanJPsi))fitTotal->SetParameter(5,meanJPsi); // mean
+  if(IsValidValue(meanJPsi))fitTotal->SetParameter(6,meanJPsi); // mean
   else fitTotal->SetParameter(6, 3.15); // mean
 
   fitTotal->SetParLimits(6, 2.95, 3.2);
 
-  if(IsValidValue(sigmaJPsi))fitTotal->SetParameter(5,sigmaJPsi);
+  if(IsValidValue(sigmaJPsi))fitTotal->SetParameter(7,sigmaJPsi);
   else fitTotal->SetParameter(7, 0.08); // sigma
   fitTotal->SetParLimits(7, 0.03, 0.2);
 
@@ -3347,13 +3347,13 @@ void AliAnalysisMuMuJpsiResult::FitPSIPSIPRIMECB2POL2POL3()
   bin = fHisto->FindBin(3.10);
   fitTotal->SetParameter(7, fHisto->GetBinContent(bin)); // norm
 
-  if (IsValidValue(meanJPsi)) fitTotal->FixParameter(6,meanJPsi);
+  if (IsValidValue(meanJPsi)) fitTotal->FixParameter(8,meanJPsi);
   else{
     fitTotal->SetParameter(8, 3.15); // mean
     fitTotal->SetParLimits(8, 2.95, 3.2);
   }
 
-  if (IsValidValue(sigmaJPsi)) fitTotal->FixParameter(7, sigmaJPsi);
+  if (IsValidValue(sigmaJPsi)) fitTotal->FixParameter(9, sigmaJPsi);
   else{
     fitTotal->SetParameter(9, 0.08); // sigma
     fitTotal->SetParLimits(9, 0.05, 0.09);
